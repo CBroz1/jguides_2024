@@ -1,4 +1,5 @@
 import datajoint as dj
+from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import (
     insert_cross_validation_table,
@@ -77,7 +78,7 @@ class KFoldTrainTestSplit(ComputedBase):
     # Train and test indices for k fold cross validation
     -> KFoldTrainTestSplitSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     train_set_df_object_id : varchar(40)
     test_set_df_object_id : varchar(40)
     train_test_set_df_object_id : varchar(40)

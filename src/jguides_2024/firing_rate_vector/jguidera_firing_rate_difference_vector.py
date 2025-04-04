@@ -2,6 +2,7 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 import spyglass as nd
+from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
@@ -62,7 +63,7 @@ class FRDiffVec(ComputedBase):
     # Firing rate difference vectors in an epoch
     -> FRDiffVecSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     fr_diff_vec_object_id : varchar(40)
     vector_tip_time_object_id : varchar(40)
     vector_tail_time_object_id : varchar(40)

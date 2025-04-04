@@ -2,8 +2,8 @@ import datajoint as dj
 import matplotlib.pyplot as plt
 import numpy as np
 import spyglass as nd
-from spyglass.common import ElectrodeGroup
-from spyglass.spikesorting import SortGroup
+from spyglass.common import AnalysisNwbfile, ElectrodeGroup
+from spyglass.spikesorting.v0.spikesorting_recording import SortGroup
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
@@ -479,7 +479,7 @@ class CurationSet(ComputedBase):
     # Curation names corresponding to brain regions in a brain region cohort
     -> CurationSetSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     curation_names_df_object_id : varchar(40)
     """
 

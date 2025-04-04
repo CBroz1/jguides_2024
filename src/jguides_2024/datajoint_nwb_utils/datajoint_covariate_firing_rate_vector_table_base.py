@@ -4796,9 +4796,7 @@ class PopulationAnalysisSelBase(SelBase):
                         )
 
                         if verbose:
-                            print(
-                                "Upstream table populated for current key..."
-                            )
+                            print("Upstream table populated for current key...")
 
                         # Add in summary table param name
 

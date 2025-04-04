@@ -83,7 +83,7 @@ class PptInterp(ComputedBase):
     # Proportion path traversed interpolated using time bins from ResTimeBinsPool
     -> PptInterpSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_interp_object_id : varchar(40)
     ppt_range : blob  # copied from Ppt for convenience
     """
@@ -189,7 +189,7 @@ class PptDig(ComputedBase):
     # Digitized interpolated fraction path traversed
     -> PptDigSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_dig_object_id : varchar(40)
     """
 
@@ -271,7 +271,7 @@ class PptRCB(CovariateRCB):
     # Sampled raised cosine basis, proportion path traversed
     -> PptRCBSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_rcb_df_object_id : varchar(40)
     """
 

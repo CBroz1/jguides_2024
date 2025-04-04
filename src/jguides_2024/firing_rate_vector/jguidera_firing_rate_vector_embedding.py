@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import spyglass as nd
+from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     AcrossFRVecTypeTableSelBase,
@@ -383,7 +384,7 @@ class FRVecEmb(ComputedBase):
     # UMAP embedding of firing rate vectors
     -> FRVecEmbSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     embedding_object_id : varchar(40)
     epoch_vector_object_id : varchar(40)
     """

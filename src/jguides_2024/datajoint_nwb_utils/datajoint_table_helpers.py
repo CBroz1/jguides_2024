@@ -10,7 +10,7 @@ import spyglass as nd
 from datajoint import DataJointError
 from matplotlib import pyplot as plt
 from networkx import NetworkXError
-from spyglass.common import IntervalList, Session
+from spyglass.common import AnalysisNwbfile, IntervalList, Session
 from spyglass.utils.dj_helper_fn import fetch_nwb as fetch_nwb_
 
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
@@ -86,9 +86,7 @@ def fetch1_tolerate_no_entry(table, attribute=None):
 
 def fetch_nwb(table):
 
-    return fetch_nwb_(
-        table, (nd.common.AnalysisNwbfile, "analysis_file_abs_path")
-    )
+    return fetch_nwb_(table, (AnalysisNwbfile, "analysis_file_abs_path"))
 
 
 def fetch1_dataframe_tolerate_no_entry(table_subset, object_name=None):
@@ -502,10 +500,8 @@ def create_analysis_nwbf(key, nwb_objects, nwb_object_names):
         )
 
     # Create analysis nwb file
-    key["analysis_file_name"] = nd.common.AnalysisNwbfile().create(
-        nwb_file_name
-    )
-    nwb_analysis_file = nd.common.AnalysisNwbfile()
+    key["analysis_file_name"] = AnalysisNwbfile().create(nwb_file_name)
+    nwb_analysis_file = AnalysisNwbfile()
 
     # Check that objects all dfs (code currently assumes this in defining table_name)
     if not all([isinstance(x, pd.DataFrame) for x in nwb_objects]):

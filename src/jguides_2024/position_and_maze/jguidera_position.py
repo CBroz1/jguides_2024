@@ -1,10 +1,10 @@
 # This module defines tables related to position_and_maze
-
 import datajoint as dj
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import spyglass as nd
+from spyglass.common import AnalysisNwbfile
 from spyglass.common.common_position import (
     IntervalLinearizedPosition,
     IntervalPositionInfo,
@@ -230,7 +230,7 @@ class IntervalPositionInfoRelabel(ComputedBase):
         def fetch_nwb(self, *attrs, **kwargs):
             return fetch_nwb(
                 self,
-                (nd.common.AnalysisNwbfile, "analysis_file_abs_path"),
+                (AnalysisNwbfile, "analysis_file_abs_path"),
                 *attrs,
                 **kwargs,
             )
@@ -415,7 +415,7 @@ class IntervalLinearizedPositionRelabel(ComputedBase):
         def fetch_nwb(self, *attrs, **kwargs):
             return fetch_nwb(
                 self,
-                (nd.common.AnalysisNwbfile, "analysis_file_abs_path"),
+                (AnalysisNwbfile, "analysis_file_abs_path"),
                 *attrs,
                 **kwargs,
             )
@@ -448,7 +448,7 @@ class IntervalLinearizedPositionRescaled(ComputedBase):
     position_info_param_name : varchar(50)
     interval_list_name : varchar(50)
     linearization_param_name : varchar(100)
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     interval_linearized_position_rescaled_object_id : varchar(40)
     """
 

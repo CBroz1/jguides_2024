@@ -2,6 +2,10 @@
 name = "jguides_2024"
 authors = [{ name = "Jen Guidera"}]
 version = "0.0.1"
+dependencies = [
+  "spyglass-neuro",
+  "statannotations"
+]
 
 [build-system]
 requires = ["setuptools", "wheel"]

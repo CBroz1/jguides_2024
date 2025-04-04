@@ -756,9 +756,7 @@ class DioWellTrials(ComputedBase):
         trial_nums = self.fetch1("epoch_trial_numbers")
         trial_times = self.epoch_trial_times()
         if len(trial_nums) != len(trial_times):
-            raise Exception(
-                "different number of trial numbers and trial times"
-            )
+            raise Exception("different number of trial numbers and trial times")
 
         # Find the index of the trial interval in which each time falls
         idxs = [

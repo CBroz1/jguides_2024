@@ -1,6 +1,7 @@
 import datajoint as dj
 import pandas as pd
 import spyglass as nd
+from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
@@ -16,9 +17,9 @@ from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellArrivalTrialsParams,
 )
 from jguides_2024.time_and_trials.jguidera_res_set import (
-    ResSet,
     ResSetParams,
     populate_jguidera_res_set,
+    reset,
 )
 from jguides_2024.time_and_trials.jguidera_time_bins import (
     DioWATrialsTimeBins,
@@ -49,7 +50,7 @@ def insert_res_time_bins_table(table, parent_table, key):
     time_bin_centers = time_bins_df["time_bin_centers"]
     time_bin_edges = time_bins_df["time_bin_edges"]
     # Apply restriction
-    valid_time_bin_centers, valid_bool = ResSet().apply_restriction(
+    valid_time_bin_centers, valid_bool = reset().apply_restriction(
         key, time_bin_centers, time_bin_edges
     )
     res_time_bins_df = pd.DataFrame.from_dict(
@@ -67,7 +68,7 @@ class ResEpochTimeBinsSel(SelBase):
     definition = """
     # Selection from upstream tables for ResEpochTimeBins
     -> EpochTimeBins
-    -> ResSet
+    -> reset
     """
 
     # TODO (feature): restrict entries
@@ -79,7 +80,7 @@ class ResEpochTimeBins(ComputedBase):
     # Time bins within epoch with restrictions applied
     -> ResEpochTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_epoch_time_bins_object_id : varchar(40)
     """
 
@@ -115,12 +116,12 @@ class ResDioWATrialsTimeBinsSel(SelBase):
     definition = """
     # Selection from upstream tables for ResDioWATrialsTimeBins
     -> DioWATrialsTimeBinsParams
-    -> ResSet
+    -> reset
     ---
     dio_well_arrival_trials_param_name : varchar(40)  # for convenience
     """
 
-    # Override parent class method so can ensure restriction time period consistent across ResSet and
+    # Override parent class method so can ensure restriction time period consistent across reset and
     # DioWATrialsTimeBins
     def insert_defaults(self, **kwargs):
         # Get entries in trials pool table with matching trials param name
@@ -150,7 +151,7 @@ class ResDioWATrialsTimeBinsSel(SelBase):
                     )
                 }
             )
-            for insert_key in (ResSet * DioWATrialsTimeBins & key).fetch("KEY"):
+            for insert_key in (reset * DioWATrialsTimeBins & key).fetch("KEY"):
                 self.insert1(insert_key)
 
 
@@ -160,7 +161,7 @@ class ResDioWATrialsTimeBins(ComputedBase):
     # Time bins during trials based on single well arrival detected with dios, with restrictions applied
     -> ResDioWATrialsTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_dio_well_arrival_trials_time_bins_object_id : varchar(40)
     dio_well_arrival_trials_param_name : varchar(40)  # for convenience when inserting into table
     """
@@ -202,12 +203,12 @@ class ResDioWellADTrialsTimeBinsSel(SelBase):
     definition = """
     # Selection from upstream tables for ResDioWellADTrialsTimeBins
     -> DioWellADTrialsTimeBinsParams
-    -> ResSet
+    -> reset
     ---
     dio_well_ad_trials_param_name : varchar(40)  # for convenience
     """
 
-    # Override parent class method so can ensure restriction time period consistent across ResSet and
+    # Override parent class method so can ensure restriction time period consistent across reset and
     # DioWellADTrialsTimeBins
     def insert_defaults(self, **kwargs):
         # Get entries in trials pool table with matching trials param name
@@ -234,7 +235,7 @@ class ResDioWellADTrialsTimeBinsSel(SelBase):
                     )
                 }
             )
-            for insert_key in (ResSet * DioWellADTrialsTimeBins & key).fetch(
+            for insert_key in (reset * DioWellADTrialsTimeBins & key).fetch(
                 "KEY"
             ):
                 self.insert1(insert_key)
@@ -246,7 +247,7 @@ class ResDioWellADTrialsTimeBins(ComputedBase):
     # Time bins during trials that begin at well arrivals and end at well departure detected with dios, with restrictions applied
     -> ResDioWellADTrialsTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_dio_well_ad_trials_time_bins_object_id : varchar(40)
     dio_well_ad_trials_param_name : varchar(40)  # for convenience when inserting into table
     """
@@ -281,7 +282,7 @@ key.update({"dio_well_arrival_trials_param_name": dio_well_arrival_trials_param_
 df = (DioWATrialsTimeBins & key).fetch1_dataframe()
 res_df = (ResDioWATrialsTimeBins & key).fetch1_dataframe()
 for attribute in ["time_bin_centers"]:
-    if not (getattr(df, attribute) == getattr(res_df, attribute)).all():  
+    if not (getattr(df, attribute) == getattr(res_df, attribute)).all():
         raise Exception(f"{attribute} not same across DioWATrialsTimeBins and ResDioWATrialsTimeBins")
 if not (np.vstack(df.time_bin_edges) == np.vstack(res_df.time_bin_edges)).all():  # error results with all function
     raise Exception(f"time bin edges not same across DioWATrialsTimeBins and ResDioWATrialsTimeBins")

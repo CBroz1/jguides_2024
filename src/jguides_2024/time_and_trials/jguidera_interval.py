@@ -14,6 +14,7 @@ from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
     get_epoch_time_interval,
 )
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
 
 schema = dj.schema("jguidera_interval")  # define custom schema
 

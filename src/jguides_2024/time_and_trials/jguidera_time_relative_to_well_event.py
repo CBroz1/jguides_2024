@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import spyglass as nd
+from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
@@ -82,7 +83,7 @@ class TimeRelWA(ComputedBase):
     # Time relative to well arrival
     -> TimeRelWASel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_rel_wa_object_id : varchar(100)
     """
 
@@ -299,7 +300,7 @@ class TimeRelWADig(ComputedBase):
     # Digitized time relative to well arrival
     -> TimeRelWADigSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_rel_wa_dig_object_id : varchar(100)
     """
 
@@ -461,7 +462,7 @@ class TimeRelWADigSingleAxis(ComputedBase):
     # Digitized time relative to well arrival on a single axis
     -> TimeRelWADigSingleAxisSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_rel_wa_dig_single_axis_df_object_id : varchar(40)
     """
 
@@ -621,12 +622,12 @@ class TimeRelWARCB(CovariateRCB):
     # Sampled raised cosine basis, time relative to well arrival
     -> TimeRelWARCBSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_rel_wa_rcb_df_object_id : varchar(40)
     """
 
     def make(self, key):
-        # Get digitized time relative to well arrival (on single axis) as integer. Note that couldnt
+        # Get digitized time relative to well arrival (on single axis) as integer. Note that couldn't
         # save out as int upstream because some cases have nans, which seem to require float datatype to be
         # saved in analysis nwb file
         time_rel_wa_dig = (
@@ -669,12 +670,11 @@ def populate_jguidera_time_relative_to_well_event(
 
 
 def drop_jguidera_time_relative_to_well_event():
-    from jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
-        drop_jguidera_firing_rate_difference_vector_similarity_ave,
-    )
-
     from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
         drop_jguidera_well_event_firing_rate_vector,
+    )
+    from jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
+        drop_jguidera_firing_rate_difference_vector_similarity_ave,
     )
 
     drop_jguidera_well_event_firing_rate_vector()

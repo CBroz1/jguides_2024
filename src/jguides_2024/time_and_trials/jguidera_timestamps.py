@@ -1,5 +1,6 @@
 import datajoint as dj
 import pandas as pd
+from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
@@ -23,7 +24,7 @@ class EpochTimestamps(ComputedBase):
     # Timestamps within epoch
     -> TaskIdentification
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     epoch_timestamps_object_id : varchar(40)
     """
 

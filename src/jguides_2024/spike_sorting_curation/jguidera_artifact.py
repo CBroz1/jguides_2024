@@ -15,6 +15,7 @@ from spyglass.spikesorting import (
     ArtifactRemovedIntervalList,
     SpikeSortingRecording,
 )
+from spyglass.spikesorting.v0 import ArtifactDetectionParameters
 from spyglass.utils.nwb_helper_fn import get_valid_intervals
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
@@ -342,9 +343,7 @@ def detect_artifacts_across_sort_groups(
 
     # Check inputs well defined
     if zscore_thresh is None and amplitude_thresh is None:
-        raise Exception(
-            "Either z score or amplitude threshold must be defined"
-        )
+        raise Exception("Either z score or amplitude threshold must be defined")
 
     # Load traces and timestamps
     traces, valid_timestamps = load_ssr_traces(
@@ -696,7 +695,7 @@ def populate_ArtifactDetectionParameters():
         artifact_params,
     ) in global_artifact_detection_params.items():
         for prefix in ["", "group_"]:
-            nd.spikesorting.ArtifactDetectionParameters.insert1(
+            ArtifactDetectionParameters.insert1(
                 {
                     "artifact_params_name": prefix + artifact_params_name,
                     "artifact_params": artifact_params,

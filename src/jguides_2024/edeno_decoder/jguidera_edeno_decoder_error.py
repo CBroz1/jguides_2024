@@ -101,7 +101,7 @@ class EdenoDecodeErr(ComputedBase):
     # Decoding errors using edeno Bayesian decoder
     -> EdenoDecodeErrSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     edeno_decode_err_object_id : varchar(40)
     """
 
@@ -546,9 +546,7 @@ class EdenoDecodeErrSummSel(SelBase):
                         )
 
                         if verbose:
-                            print(
-                                "Upstream table populated for current key..."
-                            )
+                            print("Upstream table populated for current key...")
 
                         # Add in summary table param name
                         for boot_set_name in boot_set_names:
@@ -579,7 +577,7 @@ class EdenoDecodeErrSumm(PathWellPopSummBase):
     # Summary of decode errors using edeno Bayesian decoder
     -> EdenoDecodeErrSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

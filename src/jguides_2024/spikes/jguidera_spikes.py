@@ -5,8 +5,7 @@ import copy
 import datajoint as dj
 import numpy as np
 import pandas as pd
-import spyglass as nd
-from spyglass.common import IntervalList
+from spyglass.common import AnalysisNwbfile, IntervalList
 from spyglass.spikesorting import CuratedSpikeSorting, SortInterval
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
@@ -62,7 +61,7 @@ class EpochSpikeTimes(ComputedBase):
     -> CuratedSpikeSorting
     -> TaskIdentification
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     epoch_spike_times_object_id : varchar(40)
     """
 
@@ -176,7 +175,7 @@ class EpochSpikeTimes(ComputedBase):
             # To be able to delete entries in EpochSpikeTimes, must first delete entries in EpochSpikeTimesRelabelParams
             # (since EpochSpikeTimesRelabel cohort table depends on EpochSpikeTimes and has parts table -- must delete
             # entries in main table before can delete entries in part table. Note the proper place to apply our key for
-            # EpochSpikeTimes to have the inteded effects in deleting entries from EpochSpikeTimesRelabel is the
+            # EpochSpikeTimes to have the intended effects in deleting entries from EpochSpikeTimesRelabel is the
             # EpochSpikeTimesRelabelParams, and NOT EpochSpikeTimesRelabel (the main table here does not share primary
             # key attributes with EpochSpikeTimes, whereas EpochSpikeTimesRelabelParams does).
             (
@@ -296,7 +295,7 @@ class EpochSpikeTimesRelabelParams(SecKeyParamsBase):
                 starting_interval_list_names, pos_nwb_file_names
             )
         ]
-        # Exclude table entries for which above epoch isnt same as epoch in key
+        # Exclude table entries for which above epoch isn't same as epoch in key
         valid_pos_table_entries = [
             x for x, y in zip(pos_table_entries, pos_epochs) if x["epoch"] == y
         ]
@@ -366,7 +365,7 @@ class EpochSpikeTimesRelabel(ComputedBase):
         -> EpochSpikeTimesRelabel
         -> EpochSpikeTimes
         ---
-        -> nd.common.AnalysisNwbfile
+        -> AnalysisNwbfile
         epoch_spike_times_object_id : varchar(100)
         """
 
@@ -451,7 +450,7 @@ class EpochMeanFiringRate(ComputedBase):
     # Mean firing rate of units during epoch
     -> EpochSpikeTimesRelabel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     epoch_mean_firing_rate_object_id : varchar(40)
     """
 

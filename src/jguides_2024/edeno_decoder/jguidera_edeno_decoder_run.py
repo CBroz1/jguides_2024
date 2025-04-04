@@ -10,13 +10,16 @@ import datajoint as dj
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import spyglass as nd
 import xarray as xr
 from replay_trajectory_classification import (
     ClusterlessClassifier,
     SortedSpikesClassifier,
 )
-from spyglass.common import IntervalLinearizedPosition, IntervalList
+from spyglass.common import (
+    AnalysisNwbfile,
+    IntervalLinearizedPosition,
+    IntervalList,
+)
 from spyglass.decoding import (
     ClusterlessClassifierParameters,
     SortedSpikesClassifierParameters,
@@ -2147,7 +2150,7 @@ class EdenoDecodeMAP(ComputedBase):
     # Maximum a posteriori probability estimate of decode variable
     -> EdenoDecodeMAPSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     edeno_decode_map_object_id : varchar(40)
     """
 

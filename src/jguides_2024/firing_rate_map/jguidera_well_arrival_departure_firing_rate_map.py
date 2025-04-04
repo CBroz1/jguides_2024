@@ -1,5 +1,6 @@
 import datajoint as dj
 import numpy as np
+from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import (
     insert_single_trial_firing_rate_map_smoothed_well_table,
@@ -59,13 +60,13 @@ class FrmapWADParams(TemporalFrmapParamsBase):
 
 @schema
 class STFrmapWAD(ComputedBase):
-    definition = """ 
+    definition = """
     # Firing rate as a function of relative time within trials relative to well arrival/departure
     -> DioWellADTrials
     -> EpochSpikeTimesRelabel
     -> FrmapWADParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     st_frmap_wad_object_id : varchar(40)
     """
 
@@ -104,7 +105,7 @@ class STFrmapWADSm(ComputedBase):
     -> STFrmapWAD
     -> FrmapWADSmParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     st_frmap_wad_sm_object_id : varchar(40)
     """
 
@@ -152,7 +153,7 @@ class STFrmapWADSmWT(ComputedBase):
     # Smoothed well arrival to departure single trial firing rate on warped time axis
     -> STFrmapWADSmWTSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     st_frmap_wad_sm_wt_object_id : varchar(40)
     """
 
@@ -233,7 +234,7 @@ class FrmapWADSmWT(FrmapBase):
     -> STFrmapWADSmWT
     -> FrmapWADSmWTParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     frmap_wad_sm_wt_object_id : varchar(40)
     """
 

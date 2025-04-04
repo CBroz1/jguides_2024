@@ -130,7 +130,7 @@ class TrialExpecVal(ComputedBase):
     # Expected value for trials
     -> TrialExpecValSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     trial_expec_val_object_id : varchar(40)
     """
 
@@ -294,7 +294,7 @@ class TimeExpecVal(CovDigmethBase):
     # Expected value at times
     -> TimeExpecValSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_expec_val_object_id : varchar(40)
     """
 
@@ -320,9 +320,7 @@ class TimeExpecVal(CovDigmethBase):
         # Get "post delay or departure" trial intervals
         trial_times = table_entry.get_post_delay_or_departure_trials()
         if len(epoch_trial_nums) != len(trial_times):
-            raise Exception(
-                "different number of trial numbers and trial times"
-            )
+            raise Exception("different number of trial numbers and trial times")
 
         # Find the index of the trial interval in which each time falls
         time_bin_centers = time_bins_df.time_bin_centers.values
