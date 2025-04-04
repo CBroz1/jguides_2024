@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import custom datajoint tables
-os.chdir("/home/jguidera/Src/jguides_2024/")
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
     get_epochs_id,
@@ -359,7 +358,7 @@ for _, subject_df_subset in subject_df.iterrows():
                         if params_obj.kwargs_list is not None:
                             kwargs = params_obj.kwargs_list[row_idx]
 
-                        # Apply embeddding params
+                        # Apply embedding params
                         kwargs = EmbeddingParams().apply_embedding_params(
                             key, kwargs
                         )

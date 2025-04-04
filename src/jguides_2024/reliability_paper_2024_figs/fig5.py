@@ -1,8 +1,6 @@
 import os
 
 # Import custom datajoint tables
-analysis_dir = "/home/jguidera/Src/jguides_2024"
-os.chdir(analysis_dir)
 from reliability_paper_2024_figs.population_reliability_plot_helpers import (
     _add_medium_long_sized_plot_params,
     _add_medium_sized_plot_params,
@@ -10,6 +8,7 @@ from reliability_paper_2024_figs.population_reliability_plot_helpers import (
     fr_vec_plot,
 )
 
+analysis_dir = "/home/jguidera/Src/jguides_2024"
 # Path traversal
 
 # Single trial, same outbound path different outbound path, correct time_and_trials,

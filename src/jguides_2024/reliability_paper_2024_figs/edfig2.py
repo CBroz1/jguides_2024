@@ -5,8 +5,6 @@ import numpy as np
 import pandas as pd
 
 # Import custom datajoint tables
-analysis_dir = "/home/jguidera/Src/jguides_2024"
-os.chdir(analysis_dir)
 from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     format_brain_region,
     get_subject_id,
@@ -36,6 +34,8 @@ from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
 from src.jguides_2024.utils.pca_wrappers import PCAContainer
 from src.jguides_2024.utils.plot_helpers import format_ax, save_figure
 from src.jguides_2024.utils.stats_helpers import random_sample
+
+analysis_dir = "/home/jguidera/Src/jguides_2024"
 
 # Define parameters
 nwb_file_names = get_thesis_nwb_file_names()

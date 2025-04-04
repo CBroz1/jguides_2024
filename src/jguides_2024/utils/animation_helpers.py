@@ -14,6 +14,8 @@ def save_animation(
     # Save animation if indicated
     if save_anim:
         print(f"Saving {file_name}...")
+        prev_dir = os.getcwd()
         os.chdir(save_dir)  # change to directory where saving
         writervideo = animation.FFMpegWriter(fps=fps)
         anim.save(f"{file_name}{file_type}", writer=writervideo)
+        os.chdir(prev_dir)

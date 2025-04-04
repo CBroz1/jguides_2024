@@ -2,7 +2,6 @@ def _get_table(table_name):
     # Avoid circular import
     import os
 
-    os.chdir("/home/jguidera/Src/jguides_2024")
     from src.jguides_2024.edeno_decoder.jguidera_edeno_decoder_error import (
         EdenoDecodeErr,
         EdenoDecodeErrParams,

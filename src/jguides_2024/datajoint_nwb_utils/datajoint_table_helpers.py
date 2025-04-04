@@ -1161,6 +1161,7 @@ def get_schema_table_names_from_file(schema_name, schema_path=None):
     # Get from file. Here, tables listed in order of file. Useful if want this ordering
 
     # Change to directory with schema if passed
+    prev_dir = os.getcwd()
     if schema_path is not None:
         os.chdir(schema_path)
 
@@ -1178,6 +1179,7 @@ def get_schema_table_names_from_file(schema_name, schema_path=None):
 
     # Extract table names from these lines
     table_lines = file_contents[table_idxs]
+    os.chdir(prev_dir)  # change back to previous directory
     return [x.replace("class ", "").split("(")[0] for x in table_lines]
 
 
@@ -1233,7 +1235,6 @@ def get_default_param(param_name):
 def get_param_defaults_map():
 
     # Local import to avoid circular import error
-    os.chdir("/home/jguidera/Src/jguides_2024/")
     from src.jguides_2024.position_and_maze.jguidera_ppt import PptParams
     from src.jguides_2024.spikes.jguidera_res_spikes import (
         ResEpochSpikesSmParams,

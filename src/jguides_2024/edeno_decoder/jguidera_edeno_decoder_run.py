@@ -1313,7 +1313,7 @@ class EdenoDecode(ComputedBase):
             pos_trial_t = pos_t[
                 np.logical_and(pos_t > ppt_trial_t[0], pos_t < ppt_trial_t[-1])
             ]  # upsampled position_and_maze times within trial
-            ppt = [np.nan] * len(pos_trial_t)  # intialize
+            ppt = [np.nan] * len(pos_trial_t)  # initialize
             if (
                 not only_two_junction_paths
                 or path_name in return_n_junction_path_names(2)
@@ -1887,6 +1887,7 @@ class EdenoDecode(ComputedBase):
 
         for storage_params in EDStorageParams().fetch("storage_params"):
 
+            prev_dir = os.getcwd()
             os.chdir(storage_params["path_results"])
 
             for subject_id in get_reliability_paper_nwb_file_names(
@@ -1907,7 +1908,7 @@ class EdenoDecode(ComputedBase):
                 for file_name in bad_file_names:
                     os.remove(file_name)
 
-                os.chdir("..")
+                os.chdir(prev_dir)
 
     def cleanup_lone_entries(self, safemode=None):
         # Delete table entries that have no corresponding file
@@ -1927,12 +1928,16 @@ class EdenoDecode(ComputedBase):
                 storage_params["path_results"],
                 get_subject_id(key["nwb_file_name"]),
             )
+
+            prev_dir = os.getcwd()
             os.chdir(results_path)
 
             file_names = (self & key).fetch1("file_names")
 
             if not all([os.path.exists(x) for x in file_names.values()]):
                 bad_keys.append(key)
+
+            os.chdir(prev_dir)
 
         print(f"Found {len(bad_keys)} bad keys. Deleting...")
         for bad_key in bad_keys:

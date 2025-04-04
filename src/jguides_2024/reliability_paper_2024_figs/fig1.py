@@ -6,7 +6,6 @@ from matplotlib import gridspec
 from matplotlib.patches import Rectangle
 
 # Import custom datajoint tables
-os.chdir("/home/jguidera/Src/jguides_2024/")
 from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     format_brain_region,
     get_nwb_file_name_epoch_text,

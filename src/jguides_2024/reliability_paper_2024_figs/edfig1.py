@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import custom datajoint tables
-analysis_dir = "/home/jguidera/Src/jguides_2024"
-os.chdir(analysis_dir)
 from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_plot_marker,
     get_reliability_paper_nwb_file_names,
@@ -25,6 +23,7 @@ from src.jguides_2024.utils.plot_helpers import (
 )
 from src.jguides_2024.utils.vector_helpers import unpack_single_element
 
+analysis_dir = "/home/jguidera/Src/jguides_2024"
 # Define plotting params
 epoch_gap = 0.2
 fontsize = 30

@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import custom datajoint tables
-analysis_dir = "/home/jguidera/Src/jguides_2024"
-os.chdir(analysis_dir)
 from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_reliability_paper_nwb_file_names,
 )
@@ -44,7 +42,7 @@ from src.jguides_2024.utils.plot_helpers import save_figure
 from src.jguides_2024.utils.save_load_helpers import pickle_file, unpickle_file
 from src.jguides_2024.utils.string_helpers import format_bool
 
-# Define additional functions
+analysis_dir = "/home/jguidera/Src/jguides_2024"
 
 
 def _get_param_names(

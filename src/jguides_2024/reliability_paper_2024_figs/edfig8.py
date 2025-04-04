@@ -2,8 +2,6 @@ import copy
 import os
 
 # Import custom datajoint tables
-analysis_dir = "/home/jguidera/Src/jguides_2024"
-os.chdir(analysis_dir)
 from reliability_paper_2024_figs.population_reliability_plot_helpers import (
     _get_remove_axis_empty_plot,
     _get_single_epochs_plot_params,
@@ -17,6 +15,8 @@ from src.jguides_2024.edeno_decoder.jguidera_edeno_decoder_error import (
     EdenoDecodeErrSumm,
 )
 from src.jguides_2024.metadata.jguidera_epoch import TrainTestEpochSet
+
+analysis_dir = "/home/jguidera/Src/jguides_2024"
 
 
 def _get_brain_region_vals(boot_set_name, dmPFC_OFC_only=None):

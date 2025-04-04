@@ -5,8 +5,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 # Import custom tables
-analysis_dir = "/home/jguidera/Src/jguides_2024"
-os.chdir(analysis_dir)
 from reliability_paper_2024_figs.population_reliability_plot_helpers import (
     _get_recording_set_names,
     _get_remove_axis_empty_plot,
@@ -24,6 +22,7 @@ from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_
 from src.jguides_2024.utils.df_helpers import df_pop
 from src.jguides_2024.utils.plot_helpers import save_figure
 
+analysis_dir = "/home/jguidera/Src/jguides_2024"
 # Additional functions
 
 
