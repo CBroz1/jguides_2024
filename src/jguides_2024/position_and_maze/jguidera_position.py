@@ -8,6 +8,7 @@ from spyglass.common import AnalysisNwbfile
 from spyglass.common.common_position import (
     IntervalLinearizedPosition,
     IntervalPositionInfo,
+    TrackGraph,
 )
 from spyglass.utils.dj_helper_fn import fetch_nwb
 
@@ -29,6 +30,7 @@ from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_jguidera_nwbf_epoch_keys,
     get_jguidera_nwbf_names,
 )
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from jguides_2024.position_and_maze.jguidera_maze import (
     AnnotatedTrackGraph,
     AnnotatedUniversalTrackGraph,

@@ -14,6 +14,7 @@ from jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file
 from jguides_2024.datajoint_nwb_utils.unpack_nwbf import (
     get_epoch_timestamps_nwbf,
 )
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
 
 schema = dj.schema("jguidera_timestamps")
 
