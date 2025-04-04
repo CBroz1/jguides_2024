@@ -10,8 +10,8 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
     insert1_print,
+    insert_analysis_table_entry,
 )
 from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_environments,
@@ -28,13 +28,13 @@ from src.jguides_2024.task_event.jguidera_dio_event import (
 from src.jguides_2024.time_and_trials.jguidera_timestamps import EpochTimestamps
 from src.jguides_2024.utils.check_well_defined import failed_check
 from src.jguides_2024.utils.df_helpers import (
-    unpack_df_columns,
     df_filter_columns,
+    unpack_df_columns,
 )
 from src.jguides_2024.utils.vector_helpers import (
     match_increasing_elements,
-    unpack_single_element,
     remove_repeat_elements,
+    unpack_single_element,
 )
 
 schema = dj.schema("jguidera_statescript_event")

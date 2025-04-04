@@ -4,32 +4,32 @@ from collections import namedtuple
 import numpy as np
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    CohortBase,
     ComputedBase,
+    ParamNameBase,
     SecKeyParamsBase,
     SelBase,
-    ParamNameBase,
-    CohortBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    make_param_name,
-    get_table_name,
-    insert1_print,
-    get_meta_param_name,
-    get_non_param_name_primary_key_names,
-    valid_candidate_keys_bool,
-    get_next_int_id,
-    check_int_id,
-    get_table_column_names,
-    get_key_filter,
-    table_name_from_table_type,
-    check_single_table_entry,
-    get_table_secondary_key_names,
-    get_param_name_separating_character,
-    get_num_param_name,
-    fetch_entries_as_dict,
     check_epochs_id,
+    check_int_id,
+    check_single_table_entry,
+    fetch_entries_as_dict,
     get_cohort_test_entry,
+    get_key_filter,
+    get_meta_param_name,
+    get_next_int_id,
+    get_non_param_name_primary_key_names,
+    get_num_param_name,
+    get_param_name_separating_character,
+    get_table_column_names,
+    get_table_name,
+    get_table_secondary_key_names,
+    insert1_print,
+    make_param_name,
     replace_param_name_chars,
+    table_name_from_table_type,
+    valid_candidate_keys_bool,
 )
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from src.jguides_2024.utils.dict_helpers import add_defaults
@@ -39,8 +39,8 @@ from src.jguides_2024.utils.set_helpers import (
 )
 from src.jguides_2024.utils.string_helpers import strip_trailing_s
 from src.jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
     check_all_unique,
+    unpack_single_element,
 )
 
 """

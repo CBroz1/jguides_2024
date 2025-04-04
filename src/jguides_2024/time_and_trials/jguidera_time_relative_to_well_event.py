@@ -7,26 +7,26 @@ import pandas as pd
 import spyglass as nd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
     ComputedBase,
-    SecKeyParamsBase,
-    CovariateRCB,
     CovariateDigParamsBase,
+    CovariateRCB,
+    SecKeyParamsBase,
+    SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
     delete_,
+    insert_analysis_table_entry,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.glm.jguidera_basis_function import (
-    RaisedCosineBasisParams,
     RaisedCosineBasis,
+    RaisedCosineBasisParams,
 )
 from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
 from src.jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellTrials,
     DioWellDDTrials,
     DioWellDDTrialsParams,
+    DioWellTrials,
 )
 from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPool,
@@ -60,8 +60,8 @@ class TimeRelWASel(SelBase):
 
     def _get_potential_keys(self, key_filter=None):
         from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
-            get_glm_default_param,
             get_fr_vec_default_param,
+            get_glm_default_param,
         )
 
         res_time_bins_pool_param_names = [
@@ -260,8 +260,8 @@ class TimeRelWADigSel(SelBase):
     # Restrict combination of time bin width (TimeRelWADigParams) and time bins param name
     def _get_potential_keys(self, key_filter=None):
         from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
-            get_glm_default_params_map,
             get_fr_vec_default_params_map,
+            get_glm_default_params_map,
         )
 
         if key_filter is None:
@@ -413,8 +413,8 @@ class TimeRelWADigSingleAxisSel(SelBase):
             key_filter = dict()
         # Loop through default param sets
         from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
-            get_glm_default_params_map,
             get_fr_vec_default_params_map,
+            get_glm_default_params_map,
         )
 
         keys = []
@@ -669,11 +669,12 @@ def populate_jguidera_time_relative_to_well_event(
 
 
 def drop_jguidera_time_relative_to_well_event():
-    from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
-        drop_jguidera_well_event_firing_rate_vector,
-    )
     from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
         drop_jguidera_firing_rate_difference_vector_similarity_ave,
+    )
+
+    from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
+        drop_jguidera_well_event_firing_rate_vector,
     )
 
     drop_jguidera_well_event_firing_rate_vector()

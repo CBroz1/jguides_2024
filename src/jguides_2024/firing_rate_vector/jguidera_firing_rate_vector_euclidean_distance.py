@@ -7,14 +7,14 @@ import pandas as pd
 import scipy as sp
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    AcrossFRVecTypeTableSelBase,
     ComputedBase,
     PartBase,
-    AcrossFRVecTypeTableSelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
-    insert1_print,
     delete_,
+    insert1_print,
+    insert_analysis_table_entry,
 )
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema

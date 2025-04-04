@@ -11,35 +11,35 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert1_print,
     check_nwb_file_name,
+    fetch_entries_as_dict,
+    get_curation_name,
+    insert1_print,
+    insert_analysis_table_entry,
+    split_curation_name,
     split_unit_name,
     unique_table_column_sets,
-    split_curation_name,
-    get_curation_name,
-    insert_analysis_table_entry,
-    fetch_entries_as_dict,
 )
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
-    get_jguidera_nwbf_epoch_keys,
     get_brain_regions,
+    get_jguidera_nwbf_epoch_keys,
     get_jguidera_nwbf_names,
 )
 from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
 from src.jguides_2024.metadata.jguidera_metadata import (
-    TaskIdentification,
     JguideraNwbfile,
+    TaskIdentification,
 )
 from src.jguides_2024.time_and_trials.jguidera_interval import (
     EpochIntervalListName,
 )
 from src.jguides_2024.utils.check_well_defined import check_one_none
 from src.jguides_2024.utils.df_helpers import (
-    df_from_data_list,
     df_filter_columns,
+    df_from_data_list,
 )
 from src.jguides_2024.utils.list_helpers import check_return_single_element
 from src.jguides_2024.utils.plot_helpers import tint_color

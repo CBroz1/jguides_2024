@@ -4,14 +4,14 @@ import pandas as pd
 import spyglass as nd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
     fetch1_dataframes,
     fetch1_dataframes_across_epochs,
+    insert_analysis_table_entry,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (

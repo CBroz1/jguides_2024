@@ -13,9 +13,9 @@ import scipy.stats as stats
 import spikeinterface as si
 from spyglass.common import IntervalList
 from spyglass.spikesorting import (
-    SpikeSortingRecording,
-    SpikeSorting,
     SortingviewWorkspace,
+    SpikeSorting,
+    SpikeSortingRecording,
 )
 from spyglass.spikesorting.spikesorting_curation import (
     CuratedSpikeSorting,
@@ -35,8 +35,8 @@ from src.jguides_2024.metadata.jguidera_brain_region import (
 )
 from src.jguides_2024.metadata.jguidera_epoch import RunEpoch, SleepEpoch
 from src.jguides_2024.spike_sorting_curation.jguidera_spikesorting import (
-    return_spikesorting_params,
     get_default_waveform_params_name,
+    return_spikesorting_params,
 )
 from src.jguides_2024.time_and_trials.jguidera_interval import (
     EpochIntervalListName,
@@ -50,14 +50,14 @@ from src.jguides_2024.utils.parallelization_helpers import show_error
 from src.jguides_2024.utils.plot_helpers import (
     add_colorbar,
     format_ax,
-    get_fig_axes,
     get_ax_for_layout,
+    get_fig_axes,
     plot_spanning_line,
 )
 from src.jguides_2024.utils.vector_helpers import (
     check_all_unique,
-    unpack_single_element,
     overlap,
+    unpack_single_element,
 )
 
 

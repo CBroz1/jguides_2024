@@ -8,50 +8,50 @@ from matplotlib import pyplot as plt
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_subject_id,
-    plot_junction_fractions,
+    get_subject_id_shorthand,
     get_val_pairs,
     plot_horizontal_lines,
-    get_subject_id_shorthand,
+    plot_junction_fractions,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
-    SelBase,
     SecKeyParamsBase,
+    SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    delete_,
+    fetch1_tolerate_no_entry,
+    format_nwb_file_name,
+    get_boot_params,
+    get_default_param,
+    get_relationship_texts,
+    get_table_name,
+    insert1_print,
     insert_analysis_table_entry,
     unique_table_column_sets,
-    insert1_print,
-    get_relationship_texts,
-    format_nwb_file_name,
-    get_default_param,
-    get_table_name,
-    fetch1_tolerate_no_entry,
-    delete_,
-    get_boot_params,
 )
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_nwb_file_name_epochs_description,
 )
 from src.jguides_2024.metadata.jguidera_brain_region import (
-    BrainRegionColor,
     BrainRegionCohort,
+    BrainRegionColor,
     CurationSet,
 )
 from src.jguides_2024.metadata.jguidera_epoch import (
     EpochsDescription,
-    RunEpoch,
     EpochsDescriptions,
     RecordingSet,
+    RunEpoch,
 )
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell
 from src.jguides_2024.spikes.jguidera_unit import (
-    BrainRegionUnitsParams,
     BrainRegionUnitsCohortType,
-    EpsUnitsParams,
     BrainRegionUnitsFail,
+    BrainRegionUnitsParams,
+    EpsUnitsParams,
 )
 from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrials
 from src.jguides_2024.task_event.jguidera_task_performance import (
@@ -65,36 +65,36 @@ from src.jguides_2024.utils.array_helpers import (
     on_off_diagonal_ratio,
 )
 from src.jguides_2024.utils.df_helpers import (
+    df_filter1_columns_symmetric,
     df_filter_columns,
-    dfs_same_values,
-    zip_df_columns,
     df_from_data_list,
     df_pop,
-    df_filter1_columns_symmetric,
+    dfs_same_values,
     unique_df_column_sets,
+    zip_df_columns,
 )
 from src.jguides_2024.utils.dict_helpers import (
     add_defaults,
-    dict_comprehension,
     check_return_single_dict,
+    dict_comprehension,
     return_shared_key_value,
 )
 from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
 from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
 from src.jguides_2024.utils.list_helpers import (
-    zip_adjacent_elements,
     check_return_single_element,
+    zip_adjacent_elements,
 )
 from src.jguides_2024.utils.parse_matrix import parse_matrix
 from src.jguides_2024.utils.plot_helpers import (
-    plot_heatmap,
-    get_ticklabels,
     format_ax,
-    save_figure,
-    plot_ave_conf,
-    plot_spanning_line,
     get_gridspec_ax_maps,
     get_plot_idx_map,
+    get_ticklabels,
+    plot_ave_conf,
+    plot_heatmap,
+    plot_spanning_line,
+    save_figure,
 )
 from src.jguides_2024.utils.save_load_helpers import save_json
 from src.jguides_2024.utils.set_helpers import (
@@ -105,18 +105,18 @@ from src.jguides_2024.utils.state_evolution_estimation import (
     AverageVectorDuringLabeledProgression,
 )
 from src.jguides_2024.utils.string_helpers import (
-    format_number,
     format_bool,
+    format_number,
     replace_chars,
 )
 from src.jguides_2024.utils.vector_helpers import (
-    vectors_cosine_similarity,
-    vectors_euclidean_distance,
     check_all_unique,
+    find_spans_increasing_list,
+    min_max,
     unpack_single_element,
     unpack_single_vector,
-    min_max,
-    find_spans_increasing_list,
+    vectors_cosine_similarity,
+    vectors_euclidean_distance,
 )
 
 

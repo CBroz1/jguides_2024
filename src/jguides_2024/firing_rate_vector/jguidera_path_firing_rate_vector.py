@@ -6,17 +6,17 @@ import numpy as np
 import spyglass as nd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
-    CovariateFRVecSTAveParamsBase,
+    CovariateAveFRVecParamsBase,
+    CovariateAveFRVecSummBase,
     CovariateFRVecAveSelBase,
-    CovariateFRVecTrialAveBase,
-    CovariateFRVecSTAveBase,
+    CovariateFRVecAveSummParamsBase,
+    CovariateFRVecAveSummSelBase,
     CovariateFRVecBase,
     CovariateFRVecSelBase,
-    CovariateFRVecAveSummSelBase,
-    CovariateFRVecAveSummParamsBase,
-    CovariateAveFRVecParamsBase,
+    CovariateFRVecSTAveBase,
+    CovariateFRVecSTAveParamsBase,
     CovariateFRVecSTAveSummBase,
-    CovariateAveFRVecSummBase,
+    CovariateFRVecTrialAveBase,
     PathFRVecSummBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
@@ -40,24 +40,24 @@ from src.jguides_2024.metadata.jguidera_brain_region import (
 )
 from src.jguides_2024.metadata.jguidera_epoch import (
     EpochsDescription,
-    RunEpoch,
     RecordingSet,
+    RunEpoch,
 )
 from src.jguides_2024.position_and_maze.jguidera_ppt import PptParams
 from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
     PptDig,
-    populate_jguidera_ppt_interp,
     PptDigParams,
+    populate_jguidera_ppt_interp,
 )
 from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
 from src.jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
-    BrainRegionUnitsParams,
     BrainRegionUnitsCohortType,
+    BrainRegionUnitsParams,
 )
 from src.jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellTrials,
     DioWellDDTrials,
+    DioWellTrials,
 )
 from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolSel,

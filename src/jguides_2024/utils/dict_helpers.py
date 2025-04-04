@@ -17,9 +17,9 @@ from src.jguides_2024.utils.set_helpers import (
     check_set_equality,
 )
 from src.jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
     check_all_unique,
     check_vectors_equal,
+    unpack_single_element,
 )
 
 

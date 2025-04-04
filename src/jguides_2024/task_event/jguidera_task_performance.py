@@ -6,8 +6,8 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert1_print,
     convert_path_names,
+    insert1_print,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
@@ -16,13 +16,13 @@ from src.jguides_2024.task_event.jguidera_statescript_event import (
     populate_jguidera_statescript_event,
 )
 from src.jguides_2024.utils.list_helpers import (
-    return_n_empty_lists,
     check_lists_same_length,
+    return_n_empty_lists,
 )
 from src.jguides_2024.utils.set_helpers import check_membership
 from src.jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
     remove_repeat_elements,
+    unpack_single_element,
 )
 
 schema = dj.schema("jguidera_task_performance")

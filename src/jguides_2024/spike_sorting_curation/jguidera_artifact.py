@@ -10,17 +10,17 @@ import spikeinterface as si
 import spyglass as nd
 from spyglass.common import IntervalList
 from spyglass.spikesorting import (
-    ArtifactDetectionSelection,
-    SpikeSortingRecording,
-    ArtifactRemovedIntervalList,
     ArtifactDetectionParameters,
+    ArtifactDetectionSelection,
+    ArtifactRemovedIntervalList,
+    SpikeSortingRecording,
 )
 from spyglass.utils.nwb_helper_fn import get_valid_intervals
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     make_param_name,
@@ -209,8 +209,8 @@ def _visualize_artifacts_wrapper(
 ):  # for plot of all time. 1 = no downsampling)
 
     from src.jguides_2024.utils.vector_helpers import (
-        index_if_not_none,
         expand_interval,
+        index_if_not_none,
     )
 
     if plot_trace_idxs_all_time is None:

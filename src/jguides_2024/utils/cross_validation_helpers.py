@@ -17,8 +17,8 @@ from src.jguides_2024.utils.point_process_helpers import (
 from src.jguides_2024.utils.set_helpers import check_membership
 from src.jguides_2024.utils.string_helpers import abbreviate_camel_case
 from src.jguides_2024.utils.vector_helpers import (
-    repeat_elements_idxs,
     check_all_unique,
+    repeat_elements_idxs,
     unpack_single_element,
 )
 

@@ -14,8 +14,8 @@ from statannotations.Annotator import Annotator
 from src.jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
 from src.jguides_2024.utils.check_well_defined import check_one_none
 from src.jguides_2024.utils.dict_helpers import (
-    return_n_empty_dicts,
     add_defaults,
+    return_n_empty_dicts,
 )
 from src.jguides_2024.utils.set_helpers import check_membership
 from src.jguides_2024.utils.stats_helpers import return_confidence_interval

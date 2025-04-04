@@ -125,9 +125,9 @@ def get_jguidera_nwbf_epoch_keys(high_priority=False, highest_priority=True):
 
     # If go back to using spyglass table: import locally to avoid error when importing module to run other
     # functions in this script outside spyglass environment
-    from src.jguides_2024.metadata.jguidera_epoch import (
+    from src.jguides_2024.metadata.jguidera_epoch import (  # local import to avoid circular import error
         RunEpoch,
-    )  # local import to avoid circular import error
+    )
 
     # Note that cannot use RunEpoch here because would require circular import
     return [

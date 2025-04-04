@@ -4,26 +4,24 @@ import datajoint as dj
 import numpy as np
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
-    lookup_pool_table_param_name,
-    PoolSelBase,
     PoolBase,
-    PoolCohortParamsBase,
     PoolCohortBase,
     PoolCohortParamNameBase,
+    PoolCohortParamsBase,
+    PoolSelBase,
+    lookup_pool_table_param_name,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import PartBase
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    check_epochs_id,
+    delete_,
+    fetch_iterable_array,
     get_cohort_test_entry,
-    get_table_name,
+    get_epochs_id,
     get_key,
     get_key_filter,
-    fetch_iterable_array,
-    delete_,
+    get_table_name,
     insert1_print,
-)
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    get_epochs_id,
-    check_epochs_id,
 )
 from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_delay_interval,
@@ -32,17 +30,17 @@ from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from src.jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellDATrialsParams,
-    DioWellArrivalTrialsParams,
     DioWellADTrialsParams,
+    DioWellArrivalTrialsParams,
     DioWellArrivalTrialsSubParams,
+    DioWellDATrialsParams,
 )
 from src.jguides_2024.time_and_trials.jguidera_res_set import ResSetParams
 from src.jguides_2024.time_and_trials.jguidera_res_time_bins import (
-    ResEpochTimeBins,
-    populate_jguidera_res_time_bins,
     ResDioWATrialsTimeBins,
     ResDioWellADTrialsTimeBins,
+    ResEpochTimeBins,
+    populate_jguidera_res_time_bins,
 )
 from src.jguides_2024.time_and_trials.jguidera_time_bins import (
     EpochTimeBinsParams,
@@ -51,7 +49,7 @@ from src.jguides_2024.time_and_trials.jguidera_trials_pool import (
     TrialsPoolCohortParams,
 )
 from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.dict_helpers import dict_list, add_defaults
+from src.jguides_2024.utils.dict_helpers import add_defaults, dict_list
 from src.jguides_2024.utils.interval_helpers import check_intervals_list
 from src.jguides_2024.utils.list_helpers import check_return_single_element
 from src.jguides_2024.utils.set_helpers import check_membership
@@ -939,6 +937,9 @@ def populate_jguidera_res_time_bins_pool(
 
 
 def drop_jguidera_res_time_bins_pool():
+    from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
+        drop_jguidera_ppt_interp,
+    )
     from src.jguides_2024.time_and_trials.jguidera_condition_trials import (
         drop_jguidera_condition_trials,
     )
@@ -947,9 +948,6 @@ def drop_jguidera_res_time_bins_pool():
     )
     from src.jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
         drop_jguidera_kfold_cross_validation,
-    )
-    from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
-        drop_jguidera_ppt_interp,
     )
 
     drop_jguidera_condition_trials()

@@ -2,7 +2,7 @@ import itertools
 
 import datajoint as dj
 import numpy as np
-from spyglass.common import TaskEpoch, IntervalList
+from spyglass.common import IntervalList, TaskEpoch
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,

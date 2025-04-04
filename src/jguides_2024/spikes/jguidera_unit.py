@@ -9,38 +9,38 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_subject_id,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert1_print,
-    get_table_secondary_key_names,
-    get_unit_name,
-    split_unit_names,
-    get_key_filter,
-    split_curation_name,
     delete_,
     get_default_param,
-    split_unit_name,
-    make_param_name,
+    get_key_filter,
     get_table_name,
+    get_table_secondary_key_names,
+    get_unit_name,
+    insert1_print,
+    make_param_name,
+    split_curation_name,
+    split_unit_name,
+    split_unit_names,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_brain_region import (
-    SortGroupTargetedLocation,
-    BrainRegionSortGroup,
     BrainRegionCohort,
+    BrainRegionSortGroup,
     CurationSet,
     ElectrodeGroupTargetedLocation,
+    SortGroupTargetedLocation,
     get_targeted_location_from_brain_region,
 )
 from src.jguides_2024.metadata.jguidera_epoch import (
     EpochCohort,
-    RunEpoch,
     EpochsDescription,
+    RunEpoch,
 )
-from src.jguides_2024.metadata.jguidera_histology import ValidShank, LivermoreD2
+from src.jguides_2024.metadata.jguidera_histology import LivermoreD2, ValidShank
 from src.jguides_2024.metadata.jguidera_metadata import JguideraNwbfile
 from src.jguides_2024.spike_sorting_curation.jguidera_spikesorting import (
     DefineSortInterval,
@@ -53,8 +53,8 @@ from src.jguides_2024.spikes.jguidera_spikes import (
     EpochSpikeTimesRelabel,
 )
 from src.jguides_2024.utils.df_helpers import (
-    df_from_data_list,
     df_filter_columns,
+    df_from_data_list,
     df_pop,
 )
 from src.jguides_2024.utils.dict_helpers import (
@@ -63,12 +63,12 @@ from src.jguides_2024.utils.dict_helpers import (
 )
 from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
 from src.jguides_2024.utils.list_helpers import (
-    check_single_element,
     check_return_single_element,
+    check_single_element,
 )
 from src.jguides_2024.utils.set_helpers import (
-    check_set_equality,
     check_membership,
+    check_set_equality,
 )
 from src.jguides_2024.utils.stats_helpers import random_sample
 from src.jguides_2024.utils.vector_helpers import (

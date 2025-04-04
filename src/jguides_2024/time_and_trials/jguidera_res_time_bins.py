@@ -3,31 +3,31 @@ import pandas as pd
 import spyglass as nd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
     ComputedBase,
+    SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
     delete_,
+    insert_analysis_table_entry,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellArrivalTrialsParams,
     DioWellADTrialsParams,
+    DioWellArrivalTrialsParams,
 )
 from src.jguides_2024.time_and_trials.jguidera_res_set import (
     ResSet,
-    populate_jguidera_res_set,
     ResSetParams,
+    populate_jguidera_res_set,
 )
 from src.jguides_2024.time_and_trials.jguidera_time_bins import (
-    EpochTimeBins,
     DioWATrialsTimeBins,
-    populate_jguidera_time_bins,
-    EpochTimeBinsParams,
     DioWATrialsTimeBinsParams,
     DioWellADTrialsTimeBins,
     DioWellADTrialsTimeBinsParams,
+    EpochTimeBins,
+    EpochTimeBinsParams,
+    populate_jguidera_time_bins,
 )
 from src.jguides_2024.time_and_trials.jguidera_trials_pool import (
     TrialsPoolCohortParams,

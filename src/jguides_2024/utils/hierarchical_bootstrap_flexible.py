@@ -28,9 +28,9 @@ import numpy as np
 import pandas as pd
 
 from src.jguides_2024.utils.df_helpers import (
-    df_pop,
     df_filter_columns,
     df_from_data_list,
+    df_pop,
     unique_df_column_sets,
 )
 from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress

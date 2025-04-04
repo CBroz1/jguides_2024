@@ -1,10 +1,11 @@
 import datajoint as dj
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
-    PoolSelBase,
     PoolBase,
+    PoolSelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
     KFoldTrainTestSplit,
 )
@@ -15,7 +16,6 @@ from src.jguides_2024.time_and_trials.jguidera_leave_one_out_condition_trials_cr
 from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohort,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 
 # Needed for table definitions:
 ResTimeBinsPoolCohort

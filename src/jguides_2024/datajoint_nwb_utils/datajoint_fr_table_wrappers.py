@@ -14,19 +14,19 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
 )
 from src.jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
-    STFrmapPuptSm,
     FrmapPuptSm,
+    STFrmapPuptSm,
 )
 from src.jguides_2024.firing_rate_map.jguidera_well_arrival_departure_firing_rate_map import (
     FrmapWADSmWT,
 )
 from src.jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (
-    STFrmapWellArrivalSm,
     FrmapUniqueWellArrivalSm,
+    STFrmapWellArrivalSm,
 )
 from src.jguides_2024.metadata.jguidera_brain_region import (
-    BrainRegionColor,
     BrainRegionCohort,
+    BrainRegionColor,
     SortGroupTargetedLocation,
 )
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
@@ -51,12 +51,12 @@ from src.jguides_2024.utils.df_helpers import (
     zip_df_columns,
 )
 from src.jguides_2024.utils.plot_helpers import (
-    get_gridspec_ax_maps,
-    plot_heatmap,
     format_ax,
-    save_figure,
-    plot_spanning_line,
+    get_gridspec_ax_maps,
     plot_ave_conf,
+    plot_heatmap,
+    plot_spanning_line,
+    save_figure,
 )
 from src.jguides_2024.utils.set_helpers import check_membership
 from src.jguides_2024.utils.stats_helpers import average_confidence_interval

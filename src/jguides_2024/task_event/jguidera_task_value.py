@@ -7,9 +7,9 @@ import pandas as pd
 import spyglass as nd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
     ComputedBase,
     CovDigmethBase,
+    SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
@@ -20,8 +20,8 @@ from src.jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDATrialsParams,
     DioWellDDTrials,
     DioWellDDTrialsParams,
+    DioWellTrials,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellTrials
 from src.jguides_2024.task_event.jguidera_task_performance import (
     reward_outcomes_to_int,
 )
@@ -30,8 +30,8 @@ from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolSel,
 )
 from src.jguides_2024.utils.df_helpers import (
-    df_from_data_list,
     df_filter_columns,
+    df_from_data_list,
 )
 from src.jguides_2024.utils.kernel_helpers import Kernel
 from src.jguides_2024.utils.plot_helpers import get_fig_axes

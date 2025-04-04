@@ -4,14 +4,14 @@ import spyglass as nd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
-    SelBase,
-    CovariateRCB,
     CovariateDigParamsBase,
+    CovariateRCB,
+    SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
-    get_key_filter,
     delete_,
+    get_key_filter,
+    insert_analysis_table_entry,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.glm.jguidera_basis_function import (
@@ -23,10 +23,8 @@ from src.jguides_2024.time_and_trials.jguidera_ppt_trials import (
     populate_jguidera_ppt_trials,
 )
 from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
-    ResTimeBinsPoolSel,
     ResTimeBinsPool,
-)
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolSel,
     populate_jguidera_res_time_bins_pool,
 )
 from src.jguides_2024.utils.basis_function_helpers import sample_basis_functions
@@ -315,14 +313,15 @@ def populate_jguidera_ppt_interp(
 
 
 def drop_jguidera_ppt_interp():
-    from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
-        drop_jguidera_measurements_interp_pool,
+    from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
+        drop_jguidera_firing_rate_difference_vector_similarity_ave,
     )
+
     from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
         drop_jguidera_path_firing_rate_vector,
     )
-    from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
-        drop_jguidera_firing_rate_difference_vector_similarity_ave,
+    from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+        drop_jguidera_measurements_interp_pool,
     )
 
     drop_jguidera_measurements_interp_pool()

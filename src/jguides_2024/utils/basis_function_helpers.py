@@ -7,11 +7,11 @@ from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
 from src.jguides_2024.utils.plot_helpers import format_ax, get_ax_for_layout
 from src.jguides_2024.utils.series_helpers import check_series
 from src.jguides_2024.utils.vector_helpers import (
-    linspace,
-    vector_midpoints,
     check_monotonic_increasing,
-    unpack_single_element,
     check_vectors_close,
+    linspace,
+    unpack_single_element,
+    vector_midpoints,
 )
 
 

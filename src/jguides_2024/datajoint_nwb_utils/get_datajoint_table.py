@@ -11,6 +11,6 @@ def get_table(table):
     # Import after writing so can import newly made script
     from src.jguides_2024.datajoint_nwb_utils._get_datajoint_table import (
         _get_table,
-    )  #
+    )
 
     return _get_table(table)

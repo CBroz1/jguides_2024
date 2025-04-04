@@ -8,27 +8,27 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
-    insert1_print,
     delete_,
+    insert1_print,
+    insert_analysis_table_entry,
 )
 from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
-    get_nwb_file,
     events_in_epoch_bool,
+    get_nwb_file,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_epoch import RunEpoch
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from src.jguides_2024.utils.df_helpers import df_filter_columns_contains, df_pop
 from src.jguides_2024.utils.list_helpers import (
-    return_n_empty_lists,
     check_alternating_elements,
     check_return_single_element,
+    return_n_empty_lists,
 )
 from src.jguides_2024.utils.plot_helpers import format_ax
 from src.jguides_2024.utils.point_process_helpers import (
-    not_small_diff_bool,
     event_times_in_intervals_bool,
+    not_small_diff_bool,
 )
 from src.jguides_2024.utils.vector_helpers import remove_repeat_elements
 
@@ -558,10 +558,10 @@ class ProcessedDioEvents(ComputedBase):
         return super().fetch1_dataframe().set_index("dio_event_times")
 
     def delete_(self, key=None, safemode=True):
+        from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
         from src.jguides_2024.time_and_trials.jguidera_trials_pool import (
             TrialsPool,
         )
-        from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
 
         delete_(self, [TrialsPool, Ppt], key, safemode)
 

@@ -10,11 +10,10 @@ from src.jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals,
 )
 from src.jguides_2024.utils.vector_helpers import (
+    check_monotonic_increasing,
     check_uniform_spacing,
     vector_midpoints,
-    check_monotonic_increasing,
 )
-
 
 # TODO: consider naming so that easy to understand purpose of each function.
 

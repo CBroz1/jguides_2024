@@ -5,10 +5,11 @@ import os
 analysis_dir = "/home/jguidera/Src/jguides_2024"
 os.chdir(analysis_dir)
 from reliability_paper_2024_figs.population_reliability_plot_helpers import (
-    _update_boot_set_name,
     _get_remove_axis_empty_plot,
     _get_single_epochs_plot_params,
+    _update_boot_set_name,
 )
+
 from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_ordered_subject_ids,
 )

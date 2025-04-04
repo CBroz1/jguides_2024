@@ -7,22 +7,22 @@ import matplotlib.pyplot as plt
 # Import custom tables
 analysis_dir = "/home/jguidera/Src/jguides_2024"
 os.chdir(analysis_dir)
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import (
-    FRDiffVecCosSimCovNnAveSummBase,
+from reliability_paper_2024_figs.population_reliability_plot_helpers import (
+    _get_recording_set_names,
+    _get_remove_axis_empty_plot,
+    _get_single_epochs_plot_params,
+    _update_boot_set_name,
+    fr_vec_plot,
 )
+
 from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
     PathWellPopSummBase,
 )
+from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import (
+    FRDiffVecCosSimCovNnAveSummBase,
+)
 from src.jguides_2024.utils.df_helpers import df_pop
 from src.jguides_2024.utils.plot_helpers import save_figure
-from reliability_paper_2024_figs.population_reliability_plot_helpers import (
-    fr_vec_plot,
-    _get_recording_set_names,
-    _update_boot_set_name,
-    _get_remove_axis_empty_plot,
-    _get_single_epochs_plot_params,
-)
-
 
 # Additional functions
 

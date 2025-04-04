@@ -10,6 +10,7 @@ from development.jguidera_position_stop_trials import (
 from development.jguidera_well_departure_firing_rate_map import (
     drop_jguidera_well_departure_firing_rate_map,
 )
+
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_virtual_module,
 )

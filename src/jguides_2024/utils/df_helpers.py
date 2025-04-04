@@ -3,17 +3,17 @@ import pandas as pd
 import sklearn
 
 from src.jguides_2024.utils.dict_helpers import (
+    check_dict_equality,
     dict_comprehension,
     merge_dicts,
-    check_dict_equality,
 )
 from src.jguides_2024.utils.list_helpers import check_return_single_element
 from src.jguides_2024.utils.set_helpers import check_set_equality
 from src.jguides_2024.utils.vector_helpers import (
+    check_all_unique,
     check_vectors_close,
     check_vectors_equal,
     unpack_single_element,
-    check_all_unique,
 )
 
 

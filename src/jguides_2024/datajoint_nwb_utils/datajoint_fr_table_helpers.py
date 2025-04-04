@@ -8,9 +8,9 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
 )
 from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
 from src.jguides_2024.utils.df_helpers import (
-    get_empty_df,
-    df_filter_columns,
     copy_df_columns,
+    df_filter_columns,
+    get_empty_df,
 )
 from src.jguides_2024.utils.list_helpers import duplicate_elements
 from src.jguides_2024.utils.make_rate_map import (
@@ -23,10 +23,9 @@ from src.jguides_2024.utils.point_process_helpers import (
 )
 from src.jguides_2024.utils.string_helpers import strip_string
 from src.jguides_2024.utils.vector_helpers import (
-    vector_midpoints,
     convert_inf_to_nan,
+    vector_midpoints,
 )
-
 
 # Functions for making firing rate maps aligned to well events
 

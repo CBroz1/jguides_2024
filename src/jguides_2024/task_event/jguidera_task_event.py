@@ -12,8 +12,8 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from src.jguides_2024.task_event.jguidera_dio_event import (
-    PumpDiosComplete,
     ProcessedDioEvents,
+    PumpDiosComplete,
     populate_jguidera_dio_event,
 )
 from src.jguides_2024.task_event.jguidera_statescript_event import (

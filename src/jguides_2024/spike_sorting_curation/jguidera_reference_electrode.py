@@ -2,7 +2,7 @@
 import copy
 
 import datajoint as dj
-from spyglass.common import Nwbfile, ElectrodeGroup, BrainRegion
+from spyglass.common import BrainRegion, ElectrodeGroup, Nwbfile
 
 # Define schema
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (

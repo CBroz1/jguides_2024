@@ -7,28 +7,28 @@ import pandas as pd
 import spyglass as nd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
     ComputedBase,
-    SecKeyParamsBase,
     PartBase,
+    SecKeyParamsBase,
+    SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
-    format_nwb_file_name,
-    get_table_object_id_name,
-    insert1_print,
     add_upstream_res_set_params,
     delete_,
-    get_unit_name,
+    format_nwb_file_name,
     get_key_filter,
     get_table_curation_names_for_key,
+    get_table_object_id_name,
+    get_unit_name,
+    insert1_print,
+    insert_analysis_table_entry,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
 from src.jguides_2024.spikes.datajoint_spikes_table_helpers import (
-    plot_smoothed_spikes_table_result,
     firing_rate_across_sort_groups,
     firing_rate_across_sort_groups_epochs,
+    plot_smoothed_spikes_table_result,
 )
 from src.jguides_2024.spikes.jguidera_spikes import (
     EpochSpikeTimesRelabel,
@@ -42,8 +42,8 @@ from src.jguides_2024.time_and_trials.jguidera_res_time_bins import (
     ResEpochTimeBins,
 )
 from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
-    ResTimeBinsPoolSel,
     ResTimeBinsPool,
+    ResTimeBinsPoolSel,
     populate_jguidera_res_time_bins_pool,
 )
 from src.jguides_2024.time_and_trials.jguidera_time_bins import (
@@ -56,16 +56,16 @@ from src.jguides_2024.utils.convolve_point_process import (
     convolve_point_process_efficient,
 )
 from src.jguides_2024.utils.df_helpers import (
-    get_empty_df,
     df_from_data_list,
+    get_empty_df,
     zip_df_columns,
 )
 from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.plot_helpers import plot_intervals, format_ax
+from src.jguides_2024.utils.plot_helpers import format_ax, plot_intervals
 from src.jguides_2024.utils.point_process_helpers import (
-    event_times_in_intervals_bool,
-    event_times_in_intervals,
     bins_in_intervals,
+    event_times_in_intervals,
+    event_times_in_intervals_bool,
 )
 from src.jguides_2024.utils.vector_helpers import check_all_unique
 
@@ -167,9 +167,9 @@ class ResEpochSpikeCountsSel(SelBase):
         # First get param names
         res_time_bins_pool_param_names = []
         # 1) GLM analysis
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (  # necessary to avoid circular import
             get_glm_default_param,
-        )  # necessary to avoid circular import
+        )
 
         res_time_bins_pool_param_names += get_glm_default_param(
             "res_time_bins_pool_param_names"

@@ -1,9 +1,9 @@
 import datajoint as dj
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     fetch1_dataframe_from_table_entry,

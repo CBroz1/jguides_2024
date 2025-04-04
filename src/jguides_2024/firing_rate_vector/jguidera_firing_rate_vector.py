@@ -6,21 +6,21 @@ import numpy as np
 import pandas as pd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
     ComputedBase,
     PartBase,
+    SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    unique_table_column_sets,
-    insert1_print,
     delete_,
     get_epochs_id,
+    insert1_print,
+    unique_table_column_sets,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
 from src.jguides_2024.metadata.jguidera_epoch import (
-    EpochsDescription,
     EpochCohort,
+    EpochsDescription,
     RunEpoch,
 )
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
@@ -30,17 +30,17 @@ from src.jguides_2024.spikes.jguidera_res_spikes import (
 )
 from src.jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
-    populate_jguidera_unit,
     BrainRegionUnitsParams,
     EpsUnitsParams,
+    populate_jguidera_unit,
 )
 from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
-    ResTimeBinsPoolSel,
     ResTimeBinsPoolCohortParams,
+    ResTimeBinsPoolSel,
 )
 from src.jguides_2024.utils.df_helpers import (
-    unpack_single_df,
     df_filter_columns,
+    unpack_single_df,
 )
 from src.jguides_2024.utils.dict_helpers import (
     check_equality,
@@ -637,11 +637,11 @@ def drop_jguidera_firing_rate_vector():
     from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
         drop_jguidera_firing_rate_difference_vector,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
-        drop_jguidera_firing_rate_vector_euclidean_distance,
-    )
     from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
         drop_jguidera_firing_rate_vector_embedding,
+    )
+    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
+        drop_jguidera_firing_rate_vector_euclidean_distance,
     )
     from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
         drop_jguidera_path_firing_rate_vector,

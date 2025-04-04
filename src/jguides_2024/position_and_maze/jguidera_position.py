@@ -16,23 +16,23 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     SecKeyParamsBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    fetch1_dataframe,
-    insert_analysis_table_entry,
-    get_schema_table_names_from_file,
     add_param_defaults,
-    get_valid_position_info_param_names,
-    populate_insert,
-    insert1_print,
+    fetch1_dataframe,
     get_key_filter,
+    get_schema_table_names_from_file,
+    get_valid_position_info_param_names,
+    insert1_print,
+    insert_analysis_table_entry,
+    populate_insert,
 )
 from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
-    get_jguidera_nwbf_names,
     get_jguidera_nwbf_epoch_keys,
+    get_jguidera_nwbf_names,
 )
 from src.jguides_2024.position_and_maze.jguidera_maze import (
-    TrackGraphUniversalTrackGraphMap,
     AnnotatedTrackGraph,
     AnnotatedUniversalTrackGraph,
+    TrackGraphUniversalTrackGraphMap,
     flip_nodes_edge_name,
     get_universal_track_graph_name,
 )
@@ -42,12 +42,12 @@ from src.jguides_2024.time_and_trials.jguidera_interval import (
 from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
 from src.jguides_2024.utils.make_bins import make_bin_edges
 from src.jguides_2024.utils.vector_helpers import (
-    remove_repeat_elements,
-    vector_midpoints,
     none_to_string_none,
+    remove_repeat_elements,
     return_constant_vector,
+    unpack_single_element,
+    vector_midpoints,
 )
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
 
 schema_name = "jguidera_position"
 schema = dj.schema(schema_name)  # define custom schema
@@ -761,9 +761,9 @@ def digitize_linear_position_rescaled_wrapper(
 
 
 def populate_jguidera_position(key=None, tolerate_error=False):
-    from src.jguides_2024.position_and_maze.populate_position_tables import (
+    from src.jguides_2024.position_and_maze.populate_position_tables import (  # local import to avoid circular import error
         populate_position_tables_wrapper,
-    )  # local import to avoid circular import error
+    )
 
     populate_position_tables_wrapper(
         [key], tolerate_error=tolerate_error

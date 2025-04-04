@@ -5,8 +5,8 @@ import numpy as np
 import scipy as sp
 
 from src.jguides_2024.utils.df_helpers import (
-    df_from_data_list,
     df_filter_columns,
+    df_from_data_list,
     df_pop,
 )
 from src.jguides_2024.utils.vector_helpers import vectors_finite_idxs

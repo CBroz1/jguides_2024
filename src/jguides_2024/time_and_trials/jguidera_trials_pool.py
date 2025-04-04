@@ -1,35 +1,35 @@
 import datajoint as dj
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
-    PoolSelBase,
+    EpsCohortParamsBase,
     PoolBase,
-    PoolCohortParamsBase,
     PoolCohortBase,
     PoolCohortParamNameBase,
-    EpsCohortParamsBase,
+    PoolCohortParamsBase,
+    PoolSelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import CohortBase
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert1_print,
     check_single_table_entry,
-    get_cohort_test_entry,
-    get_table_name,
     delete_,
     fetch_entries_as_dict,
+    get_cohort_test_entry,
     get_epochs_id,
+    get_table_name,
+    insert1_print,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from src.jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellArrivalTrialsParams,
-    DioWellDATrialsParams,
-    DioWellArrivalTrials,
-    DioWellDATrials,
-    populate_jguidera_dio_trials,
     DioWellADTrials,
     DioWellADTrialsParams,
-    DioWellArrivalTrialsSubParams,
+    DioWellArrivalTrials,
+    DioWellArrivalTrialsParams,
     DioWellArrivalTrialsSub,
+    DioWellArrivalTrialsSubParams,
+    DioWellDATrials,
+    DioWellDATrialsParams,
+    populate_jguidera_dio_trials,
 )
 from src.jguides_2024.time_and_trials.jguidera_epoch_interval import (
     EpochInterval,

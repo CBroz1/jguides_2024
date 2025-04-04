@@ -6,44 +6,44 @@ import numpy as np
 import pandas as pd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    get_table_name,
-    make_param_name,
-    populate_flexible_key,
-    get_upstream_table_names,
-    insert_analysis_table_entry,
-    fetch1_dataframe,
-    fetch_nwb,
-    plot_datajoint_table_rate_map,
-    intersect_tables,
-    insert_manual_table_test_entry,
-    get_meta_param_name,
-    fetch1_dataframes,
-    trial_duration_from_params_table,
-    insert1_print,
-    fetch1_dataframe_from_table_entry,
-    get_table_secondary_key_names,
-    package_secondary_key,
-    get_schema_table_names_from_file,
-    get_schema_names,
-    get_downstream_table_names,
-    special_fetch1,
-    get_table_object_id_name,
-    populate_insert,
-    fetch1_tolerate_no_entry,
-    get_next_int_id,
-    check_single_table_entry,
-    fetch_entries_as_dict,
-    get_params_table_name,
-    get_epochs_id,
-    delete_,
-    get_key_filter,
     UpstreamEntries,
+    check_single_table_entry,
+    delete_,
+    fetch1_dataframe,
+    fetch1_dataframe_from_table_entry,
+    fetch1_dataframes,
+    fetch1_tolerate_no_entry,
+    fetch_entries_as_dict,
+    fetch_nwb,
+    get_downstream_table_names,
+    get_epochs_id,
+    get_key_filter,
+    get_meta_param_name,
+    get_next_int_id,
+    get_params_table_name,
+    get_schema_names,
+    get_schema_table_names_from_file,
+    get_table_name,
+    get_table_object_id_name,
+    get_table_secondary_key_names,
+    get_upstream_table_names,
+    insert1_print,
+    insert_analysis_table_entry,
+    insert_manual_table_test_entry,
+    intersect_tables,
+    make_param_name,
+    package_secondary_key,
+    plot_datajoint_table_rate_map,
+    populate_flexible_key,
+    populate_insert,
+    special_fetch1,
+    trial_duration_from_params_table,
 )
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from src.jguides_2024.utils.check_well_defined import check_one_none
 from src.jguides_2024.utils.df_helpers import (
-    df_filter_columns_isin,
     add_column_to_df,
+    df_filter_columns_isin,
 )
 from src.jguides_2024.utils.dict_helpers import check_same_values_at_shared_keys
 from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
@@ -51,17 +51,17 @@ from src.jguides_2024.utils.interval_helpers import fill_trial_values
 from src.jguides_2024.utils.make_bins import make_bin_edges
 from src.jguides_2024.utils.plot_helpers import plot_heatmap
 from src.jguides_2024.utils.point_process_helpers import (
-    get_full_event_times_relative_to_trial_start,
     event_times_in_intervals_bool,
+    get_full_event_times_relative_to_trial_start,
 )
 from src.jguides_2024.utils.set_helpers import check_membership
 from src.jguides_2024.utils.string_helpers import camel_to_snake_case
 from src.jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
-    check_length,
     check_all_unique,
-    vector_midpoints,
+    check_length,
+    unpack_single_element,
     unpack_single_vector,
+    vector_midpoints,
 )
 
 """
@@ -1208,8 +1208,8 @@ class AcrossFRVecTypeTableSelBase(SelBase):
     def _get_potential_keys(self, key_filter=None):
 
         from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
-            ResTimeBinsPoolSel,
             ResTimeBinsPoolCohortParams,
+            ResTimeBinsPoolSel,
         )
 
         if key_filter is None:

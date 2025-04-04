@@ -9,47 +9,47 @@ from spyglass.common import close_nwb_files
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_subject_id,
-    plot_junction_fractions,
     get_val_pairs,
+    plot_junction_fractions,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
     PathWellPopSummBase,
     PopulationAnalysisParamsBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
-    SecKeyParamsBase,
     ComputedBase,
+    SecKeyParamsBase,
+    SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    populate_insert,
     get_schema_table_names_from_file,
     insert_analysis_table_entry,
+    populate_insert,
     unique_table_column_sets,
 )
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from src.jguides_2024.edeno_decoder.jguidera_edeno_decoder_run import (
-    EdenoDecodeParams,
     EdenoDecode,
     EdenoDecodeMAP,
+    EdenoDecodeParams,
 )
 from src.jguides_2024.metadata.jguidera_brain_region import (
-    CurationSet,
     BrainRegionCohort,
+    CurationSet,
 )
 from src.jguides_2024.metadata.jguidera_epoch import (
     TrainTestEpoch,
     TrainTestEpochSet,
 )
 from src.jguides_2024.spikes.jguidera_unit import (
+    BrainRegionUnitsCohortType,
     BrainRegionUnitsFail,
     BrainRegionUnitsParams,
-    BrainRegionUnitsCohortType,
 )
 from src.jguides_2024.utils.df_helpers import df_from_data_list
 from src.jguides_2024.utils.dict_helpers import (
-    check_return_single_dict,
     add_defaults,
+    check_return_single_dict,
     return_shared_key_value,
 )
 from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
@@ -57,8 +57,8 @@ from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
 from src.jguides_2024.utils.list_helpers import check_return_single_element
 from src.jguides_2024.utils.plot_helpers import format_ax
 from src.jguides_2024.utils.set_helpers import (
-    check_set_equality,
     check_membership,
+    check_set_equality,
 )
 from src.jguides_2024.utils.string_helpers import format_bool, replace_chars
 

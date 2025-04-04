@@ -10,8 +10,8 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpe
     insert_cross_validation_table,
 )
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
     ComputedBase,
+    SelBase,
 )
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.time_and_trials.jguidera_condition_trials import (
