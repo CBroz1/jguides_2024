@@ -5,42 +5,90 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, get_val_pairs, \
-    plot_junction_fractions
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
-    PathWellFRVecSummBase, PopulationAnalysisParamsBase, \
-    PopulationAnalysisSelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, ParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_key_filter, make_param_name
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry
+from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+    get_subject_id,
+    get_val_pairs,
+    plot_junction_fractions,
+)
+from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
+    PathWellFRVecSummBase,
+    PopulationAnalysisParamsBase,
+    PopulationAnalysisSelBase,
+)
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
+    SelBase,
+    ParamsBase,
+)
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    get_key_filter,
+    make_param_name,
+)
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    insert_analysis_table_entry,
+)
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_nwb_file_name_epochs_description
+from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+    get_nwb_file_name_epochs_description,
+)
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import FRDiffVec, FRDiffVecParams
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import \
-    populate_jguidera_firing_rate_difference_vector_similarity, FRDiffVecCosSim
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import FRVecEucDist, \
-    populate_jguidera_firing_rate_vector_euclidean_distance
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionColor, BrainRegionCohort, CurationSet
-from src.jguides_2024.metadata.jguidera_epoch import RecordingSet, EpochsDescription
+from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
+    FRDiffVec,
+    FRDiffVecParams,
+)
+from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
+    populate_jguidera_firing_rate_difference_vector_similarity,
+    FRDiffVecCosSim,
+)
+from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
+    FRVecEucDist,
+    populate_jguidera_firing_rate_vector_euclidean_distance,
+)
+from src.jguides_2024.metadata.jguidera_brain_region import (
+    BrainRegionColor,
+    BrainRegionCohort,
+    CurationSet,
+)
+from src.jguides_2024.metadata.jguidera_epoch import (
+    RecordingSet,
+    EpochsDescription,
+)
 from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt, PptParams
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import PptInterp, populate_jguidera_ppt_interp
+from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
+    PptInterp,
+    populate_jguidera_ppt_interp,
+)
 from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
 from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsCohortType
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrialsParams, DioWellDDTrials
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams, \
-    ResTimeBinsPoolCohortParamName
-from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWA
+from src.jguides_2024.task_event.jguidera_dio_trials import (
+    DioWellDDTrialsParams,
+    DioWellDDTrials,
+)
+from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolCohortParams,
+    ResTimeBinsPoolCohortParamName,
+)
+from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
+    TimeRelWA,
+)
 from src.jguides_2024.utils.df_helpers import df_from_data_list
-from src.jguides_2024.utils.dict_helpers import add_defaults, return_shared_key_value
+from src.jguides_2024.utils.dict_helpers import (
+    add_defaults,
+    return_shared_key_value,
+)
 from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
 from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
 from src.jguides_2024.utils.make_bins import get_peri_event_bin_edges
 from src.jguides_2024.utils.plot_helpers import plot_ave_conf
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
+from src.jguides_2024.utils.point_process_helpers import (
+    event_times_in_intervals_bool,
+)
 from src.jguides_2024.utils.set_helpers import check_membership
 from src.jguides_2024.utils.stats_helpers import average_confidence_interval
-from src.jguides_2024.utils.vector_helpers import vector_midpoints, unpack_single_element
+from src.jguides_2024.utils.vector_helpers import (
+    vector_midpoints,
+    unpack_single_element,
+)
 
 # Needed for table definitions:
 FRDiffVecCosSim
@@ -102,18 +150,35 @@ class FRDiffVecCosSimCovNnAveParamsBase(ParamsBase):
 
     def _make_param_name(self, params):
 
-        nn_restrictions_text = "_".join(["_".join([k, str(v)]) for k, v in params["nn_restrictions"].items()])
+        nn_restrictions_text = "_".join(
+            [
+                "_".join([k, str(v)])
+                for k, v in params["nn_restrictions"].items()
+            ]
+        )
 
         state_restrictions_text = ""
-        for idx, (restriction, restriction_params) in enumerate(params["state_restrictions"].items()):
-            state_restrictions_text += "_"*(idx > 0) + restriction
-            restriction_params_text = "_".join([str(v) for k, v in restriction_params.items() if not np.logical_and(
-                k == "table_name", v == self._default_restrictions_table_name())])
+        for idx, (restriction, restriction_params) in enumerate(
+            params["state_restrictions"].items()
+        ):
+            state_restrictions_text += "_" * (idx > 0) + restriction
+            restriction_params_text = "_".join(
+                [
+                    str(v)
+                    for k, v in restriction_params.items()
+                    if not np.logical_and(
+                        k == "table_name",
+                        v == self._default_restrictions_table_name(),
+                    )
+                ]
+            )
             if len(restriction_params_text) > 0:
                 state_restrictions_text += restriction_params_text
 
         return make_param_name(
-            [params[k] for k in ["n_neighbors", "bin_width"]] + [nn_restrictions_text, state_restrictions_text])
+            [params[k] for k in ["n_neighbors", "bin_width"]]
+            + [nn_restrictions_text, state_restrictions_text]
+        )
 
     def _default_params(self):
         # This method should be extended in child class to add bin_width
@@ -129,24 +194,35 @@ class FRDiffVecCosSimCovNnAveParamsBase(ParamsBase):
     def _default_state_restrictions(self):
         table_name_map = {"table_name": self._default_restrictions_table_name()}
         return [
-            {"potentially_rewarded_trial": table_name_map, "stay_trial": table_name_map},
-            {"correct_trial": table_name_map, "stay_trial": table_name_map}]
+            {
+                "potentially_rewarded_trial": table_name_map,
+                "stay_trial": table_name_map,
+            },
+            {"correct_trial": table_name_map, "stay_trial": table_name_map},
+        ]
 
     def _make_params_entry(self, params):
         param_name = self._make_param_name(params)
-        return {unpack_single_element(self.primary_key): param_name, "params": params}
+        return {
+            unpack_single_element(self.primary_key): param_name,
+            "params": params,
+        }
 
     def insert_defaults(self, **kwargs):
 
         # Make params base
-        params_base = {k: self._default_params()[k] for k in ["n_neighbors", "bin_width"]}
+        params_base = {
+            k: self._default_params()[k] for k in ["n_neighbors", "bin_width"]
+        }
 
         # Add restrictions and populate table
         for nn_restrictions in self._default_nn_restrictions():
             nn_restrictions = {"nn_restrictions": nn_restrictions}
             for state_restrictions in self._default_state_restrictions():
                 state_restrictions = {"state_restrictions": state_restrictions}
-                params_entry = self._make_params_entry({**params_base, **nn_restrictions, **state_restrictions})
+                params_entry = self._make_params_entry(
+                    {**params_base, **nn_restrictions, **state_restrictions}
+                )
                 self.insert1(params_entry, skip_duplicates=True)
 
 
@@ -162,17 +238,23 @@ class FRDiffVecCosSimVarNnAveSelBase(SelBase):
 
     def insert1(self, key, **kwargs):
         # Require dio_well_dd_trials_param_name to reflect no shift of trial/start/stop times
-        if key["dio_well_dd_trials_param_name"] != self._valid_dio_well_dd_trials_param_name():
+        if (
+            key["dio_well_dd_trials_param_name"]
+            != self._valid_dio_well_dd_trials_param_name()
+        ):
             raise Exception(
                 f"dio_well_dd_trials_param_name must be {self._valid_dio_well_dd_trials_param_name} "
-                f"but is {key['dio_well_dd_trials_param_name']}")
+                f"but is {key['dio_well_dd_trials_param_name']}"
+            )
         super().insert1(key, **kwargs)
 
     def insert_defaults(self, **kwargs):
 
         # Populate upstream table
         key_filter = get_key_filter(kwargs)
-        self._get_covariate_table()().populate_(key=key_filter)  # run this here instead of below for time (avoid loop)
+        self._get_covariate_table()().populate_(
+            key=key_filter
+        )  # run this here instead of below for time (avoid loop)
 
         # Insert into table
         for key in self._get_potential_keys(key_filter):
@@ -182,19 +264,34 @@ class FRDiffVecCosSimVarNnAveSelBase(SelBase):
 
         # Define valid params
         # ...Restrict to 100ms epoch time bins
-        res_time_bins_pool_cohort_param_name = ResTimeBinsPoolCohortParams().lookup_param_name_from_shorthand(
-            "epoch_100ms")
+        res_time_bins_pool_cohort_param_name = (
+            ResTimeBinsPoolCohortParams().lookup_param_name_from_shorthand(
+                "epoch_100ms"
+            )
+        )
         # ...Collect valid params
         valid_params = {
-            "res_epoch_spikes_sm_param_name": ["0.1"], "zscore_fr": [0], "res_time_bins_pool_cohort_param_name":
-                [res_time_bins_pool_cohort_param_name]}
+            "res_epoch_spikes_sm_param_name": ["0.1"],
+            "zscore_fr": [0],
+            "res_time_bins_pool_cohort_param_name": [
+                res_time_bins_pool_cohort_param_name
+            ],
+        }
 
         # Get keys from intersection of upstream tables
         keys = super()._get_potential_keys()
 
         # Restrict to valid params
-        return [key for key in keys if np.logical_and.reduce(
-            [key[param_name] in valid_vals for param_name, valid_vals in valid_params.items()])]
+        return [
+            key
+            for key in keys
+            if np.logical_and.reduce(
+                [
+                    key[param_name] in valid_vals
+                    for param_name, valid_vals in valid_params.items()
+                ]
+            )
+        ]
 
 
 class FRDiffVecCosSimVarNnAveBase(ComputedBase):
@@ -215,7 +312,12 @@ class FRDiffVecCosSimVarNnAveBase(ComputedBase):
         # Return well departure to departure trials across epochs
 
         # Get keys to dd trials table for each epoch
-        epoch_keys = [{**key, **params} for params in (ResTimeBinsPoolCohortParams & key).get_cohort_params()]
+        epoch_keys = [
+            {**key, **params}
+            for params in (
+                ResTimeBinsPoolCohortParams & key
+            ).get_cohort_params()
+        ]
 
         # Update upstream entries tracker
         for epoch_key in epoch_keys:
@@ -223,31 +325,51 @@ class FRDiffVecCosSimVarNnAveBase(ComputedBase):
 
         # Return trial intervals
         return np.concatenate(
-            [(DioWellDDTrials & epoch_key).trial_intervals() for epoch_key in epoch_keys])
+            [
+                (DioWellDDTrials & epoch_key).trial_intervals()
+                for epoch_key in epoch_keys
+            ]
+        )
 
     def _get_ave_nn_cos(self, key, params):
         # Return average difference vector cosine similarity across nearest neighbors
         # Note that setting populate_tables to False since cannot populate another table within make function
-        table_subset = (FRDiffVecCosSim & key)
+        table_subset = FRDiffVecCosSim & key
         ave_nn_cos = table_subset.get_average_nn_cosine_similarity(
-            params["n_neighbors"], params["nn_restrictions"], params["state_restrictions"], populate_tables=False)
+            params["n_neighbors"],
+            params["nn_restrictions"],
+            params["state_restrictions"],
+            populate_tables=False,
+        )
         # update upstream entries tracker
         self._merge_tracker(table_subset)
         return ave_nn_cos
 
     def _get_covariates(self, key):
         # Return covariates across epochs
-        return [pd.concat([
-                 get_covariate_entry_fn({**key, **epoch_key}) for epoch_key in (
-                        ResTimeBinsPoolCohortParams & key).get_cohort_params()])
-            for get_covariate_entry_fn in self._get_covariate_entry_fns()]
+        return [
+            pd.concat(
+                [
+                    get_covariate_entry_fn({**key, **epoch_key})
+                    for epoch_key in (
+                        ResTimeBinsPoolCohortParams & key
+                    ).get_cohort_params()
+                ]
+            )
+            for get_covariate_entry_fn in self._get_covariate_entry_fns()
+        ]
 
     def make(self, key):
         # Get average difference vector cosine similarity in covariate bins across well departure to departure trials
 
         # Add dio well departure to departure trials param name to key so can query trials table
-        key.update({"dio_well_dd_trials_param_name": (self._get_selection_table() & key).fetch1(
-            "dio_well_dd_trials_param_name")})
+        key.update(
+            {
+                "dio_well_dd_trials_param_name": (
+                    self._get_selection_table() & key
+                ).fetch1("dio_well_dd_trials_param_name")
+            }
+        )
 
         # Get params
         params = (self._get_params_table() & key).fetch1("params")
@@ -270,10 +392,20 @@ class FRDiffVecCosSimVarNnAveBase(ComputedBase):
             # Get average difference vector cosine similarity in covariate bins across well departure to departure
             # trials. Tolerate nan so can estimate averages in bins with representation from only a subset of trials
             # ...Define covariate bins
-            bin_edges = self._make_bin_edges(params["bin_width"], covariate=covariate)
+            bin_edges = self._make_bin_edges(
+                params["bin_width"], covariate=covariate
+            )
             # ...Get average cosine similarity in covariate bins and append to dfs
-            dfs.append(average_value_in_trials_in_bins(
-                covariate, ave_nn_cos, bin_edges, trial_intervals, "cos_sim", tolerate_nan=True))
+            dfs.append(
+                average_value_in_trials_in_bins(
+                    covariate,
+                    ave_nn_cos,
+                    bin_edges,
+                    trial_intervals,
+                    "cos_sim",
+                    tolerate_nan=True,
+                )
+            )
 
         # Insert into main table
         insert_key = {k: key[k] for k in self.primary_key}
@@ -282,8 +414,15 @@ class FRDiffVecCosSimVarNnAveBase(ComputedBase):
         # Insert into part tables
         self._insert_part_tables(insert_key)
 
-    def fetch1_dataframe(self, object_id_name=None, restore_empty_nwb_object=True, df_index_name="bin_center"):
-        return super().fetch1_dataframe(object_id_name, restore_empty_nwb_object, df_index_name)
+    def fetch1_dataframe(
+        self,
+        object_id_name=None,
+        restore_empty_nwb_object=True,
+        df_index_name="bin_center",
+    ):
+        return super().fetch1_dataframe(
+            object_id_name, restore_empty_nwb_object, df_index_name
+        )
 
     def _get_plot_color(self):
         # Get color based on brain region
@@ -293,20 +432,36 @@ class FRDiffVecCosSimVarNnAveBase(ComputedBase):
         # Get color based on brain region
         plot_params.update({"color": self._get_plot_color()})
         # Add default plot params
-        default_params = {"alpha": 1,
-            "title": "{nwb_file_name}, eps {epochs_id}, {brain_region}".format(**self.fetch1("KEY")),
-            "xlabel": f"{self._covariate_name()}", "ylabel": "cos sim", "fontsize": 12}
-        plot_params = add_defaults(plot_params, default_params, add_nonexistent_keys=True)
+        default_params = {
+            "alpha": 1,
+            "title": "{nwb_file_name}, eps {epochs_id}, {brain_region}".format(
+                **self.fetch1("KEY")
+            ),
+            "xlabel": f"{self._covariate_name()}",
+            "ylabel": "cos sim",
+            "fontsize": 12,
+        }
+        plot_params = add_defaults(
+            plot_params, default_params, add_nonexistent_keys=True
+        )
         plot_ave_conf(ax, x_vals, mean, conf_bounds, **plot_params)
 
     def plot_results(self, ax=None, object_id_name=None, **plot_params):
         # Get name of results df if not passed
         if object_id_name is None:
-            object_id_name = self.get_object_id_name(unpack_single_object_id=True, leave_out_object_id=True)
+            object_id_name = self.get_object_id_name(
+                unpack_single_object_id=True, leave_out_object_id=True
+            )
         df = self.fetch1_dataframe(object_id_name=object_id_name)
 
         # Plot mean and confidence bounds for mean
-        self._plot_results(ax, df.index, df.mean_cos_sim.values, df.mean_cos_sim_conf.values, **plot_params)
+        self._plot_results(
+            ax,
+            df.index,
+            df.mean_cos_sim.values,
+            df.mean_cos_sim_conf.values,
+            **plot_params,
+        )
 
 
 @schema
@@ -320,7 +475,7 @@ class FRDiffVecCosSimPptNnAveParams(FRDiffVecCosSimCovNnAveParamsBase):
 
     def _default_params(self):
         default_params = super()._default_params()
-        default_params["bin_width"] = .05
+        default_params["bin_width"] = 0.05
         return default_params
 
 
@@ -401,7 +556,7 @@ class FRDiffVecCosSimWANnAveParams(FRDiffVecCosSimCovNnAveParamsBase):
 
     def _default_params(self):
         default_params = super()._default_params()
-        default_params["bin_width"] = .25
+        default_params["bin_width"] = 0.25
         return default_params
 
 
@@ -465,9 +620,13 @@ class FRDiffVecCosSimWANnAve(FRDiffVecCosSimVarNnAveBase):
     def _make_bin_edges(bin_width, **kwargs):
         # Define time relative to well arrival bins
         covariate = kwargs.pop("covariate")
-        return get_peri_event_bin_edges([0, np.nanmax(covariate)], bin_width=bin_width)
+        return get_peri_event_bin_edges(
+            [0, np.nanmax(covariate)], bin_width=bin_width
+        )
 
-    def get_pre_post_quantites_single_axis(self, column_name, object_id_name=None):
+    def get_pre_post_quantites_single_axis(
+        self, column_name, object_id_name=None
+    ):
         # Get quantities across pre and post well arrival periods on a single axis
 
         # Function to reverse index order for reverse (negative) direction
@@ -478,8 +637,10 @@ class FRDiffVecCosSimWANnAve(FRDiffVecCosSimVarNnAveBase):
 
         # Get map from result type (before or after well arrival) to direction on plot: reverse direction for
         # "to well arrival" result
-        direction_map = {f"fr_diff_vec_cos_sim_{rel_text}_wa_nn_ave": direction for rel_text, direction in
-                         zip(["to", "from"], [-1, 1])}
+        direction_map = {
+            f"fr_diff_vec_cos_sim_{rel_text}_wa_nn_ave": direction
+            for rel_text, direction in zip(["to", "from"], [-1, 1])
+        }
         # restrict to passed object_id_name if passed
         if object_id_name is not None:
             direction_map = {k: direction_map[k] for k in [object_id_name]}
@@ -495,22 +656,37 @@ class FRDiffVecCosSimWANnAve(FRDiffVecCosSimVarNnAveBase):
                 return direction
             return 1
 
-        return np.concatenate([
-            _order_index(getattr(
-                self.fetch1_dataframe(object_id_name), column_name).values, direction) *
-            _get_mult_factor(column_name, direction)
-            for object_id_name, direction in direction_map.items()])
+        return np.concatenate(
+            [
+                _order_index(
+                    getattr(
+                        self.fetch1_dataframe(object_id_name), column_name
+                    ).values,
+                    direction,
+                )
+                * _get_mult_factor(column_name, direction)
+                for object_id_name, direction in direction_map.items()
+            ]
+        )
 
     # Override parent class method so can plot results from pre and post well arrival together
     def plot_results(self, ax=None, object_id_name=None, **plot_params):
         # Plot mean and confidence bounds for mean
-        x_vals = self.get_pre_post_quantites_single_axis("index", object_id_name)
-        plot_y = self.get_pre_post_quantites_single_axis("mean_cos_sim", object_id_name)
-        conf_bounds = self.get_pre_post_quantites_single_axis("mean_cos_sim_conf", object_id_name)
+        x_vals = self.get_pre_post_quantites_single_axis(
+            "index", object_id_name
+        )
+        plot_y = self.get_pre_post_quantites_single_axis(
+            "mean_cos_sim", object_id_name
+        )
+        conf_bounds = self.get_pre_post_quantites_single_axis(
+            "mean_cos_sim_conf", object_id_name
+        )
         self._plot_results(ax, x_vals, plot_y, conf_bounds, **plot_params)
 
 
-def average_value_in_trials_in_bins(x1, x2, x1_bin_edges, trial_intervals, x2_name="x2", tolerate_nan=True):
+def average_value_in_trials_in_bins(
+    x1, x2, x1_bin_edges, trial_intervals, x2_name="x2", tolerate_nan=True
+):
     """
     Get average value of a variable x2 (e.g. cosine similarity) in bins of a different variable x1 (e.g. fraction
     path traversed).
@@ -526,9 +702,13 @@ def average_value_in_trials_in_bins(x1, x2, x1_bin_edges, trial_intervals, x2_na
 
     # Check inputs
     if not isinstance(x1, pd.Series):
-        raise Exception(f"indexed_data must be a pandas Series but is {type(x1)}")
+        raise Exception(
+            f"indexed_data must be a pandas Series but is {type(x1)}"
+        )
     if len(x1) != len(x2):
-        raise Exception(f"x1 and x2 must be same length, but have lengths {len(x1)} and {len(x2)}")
+        raise Exception(
+            f"x1 and x2 must be same length, but have lengths {len(x1)} and {len(x2)}"
+        )
 
     # Get functions to average and find confidence intervals depending on whether tolerating nan
     average_function = np.mean  # default
@@ -543,7 +723,9 @@ def average_value_in_trials_in_bins(x1, x2, x1_bin_edges, trial_intervals, x2_na
     bin_nums = np.arange(1, len(x1_bin_edges))
 
     # Identify x1 samples in each bin
-    x1_digitzed = pd.Series(np.digitize(x1.values, x1_bin_edges), index=x1.index)
+    x1_digitzed = pd.Series(
+        np.digitize(x1.values, x1_bin_edges), index=x1.index
+    )
 
     # Loop through x1 bins
     summary_list = []
@@ -556,7 +738,9 @@ def average_value_in_trials_in_bins(x1, x2, x1_bin_edges, trial_intervals, x2_na
         bin_summary_list = []
         for trial_interval in trial_intervals:
 
-            trial_bool = event_times_in_intervals_bool(valid_times, [trial_interval])
+            trial_bool = event_times_in_intervals_bool(
+                valid_times, [trial_interval]
+            )
 
             # Get number of samples in x1 bin for this trial
             trial_len = np.sum(trial_bool)
@@ -569,16 +753,37 @@ def average_value_in_trials_in_bins(x1, x2, x1_bin_edges, trial_intervals, x2_na
 
         # Get mean x2 across average values in trials, and confidence bounds for this average
         x2_trial_ave = average_function(x2_trials)
-        x2_trial_ave_conf = average_confidence_interval(x2_trials, exclude_nan=tolerate_nan)
+        x2_trial_ave_conf = average_confidence_interval(
+            x2_trials, exclude_nan=tolerate_nan
+        )
 
         # Store
         summary_list.append(
-            (bin_num, x1_bin_centers[bin_num - 1], x1_bin_edge_tuples[bin_num - 1], x2_trial_ave, x2_trial_ave_conf,
-             x2_trials, len(trial_lens), trial_lens))  # -1 idx because bin number of 1 corresponds to first bin center
+            (
+                bin_num,
+                x1_bin_centers[bin_num - 1],
+                x1_bin_edge_tuples[bin_num - 1],
+                x2_trial_ave,
+                x2_trial_ave_conf,
+                x2_trials,
+                len(trial_lens),
+                trial_lens,
+            )
+        )  # -1 idx because bin number of 1 corresponds to first bin center
 
     return df_from_data_list(
-        summary_list, ["bin_num", "bin_center", "bin_edges", f"mean_{x2_name}", f"mean_{x2_name}_conf",
-                       f"trials_{x2_name}", "num_trials", "trial_lens"])
+        summary_list,
+        [
+            "bin_num",
+            "bin_center",
+            "bin_edges",
+            f"mean_{x2_name}",
+            f"mean_{x2_name}_conf",
+            f"trials_{x2_name}",
+            "num_trials",
+            "trial_lens",
+        ],
+    )
 
 
 """
@@ -661,13 +866,18 @@ class FRDiffVecCosSimCovNnAveSummParamsBase(PopulationAnalysisParamsBase):
 
     def _boot_set_names(self):
         # Boot set names to populate table with. Use different set depending on child class.
-        return self._valid_default_boot_set_names() + self._valid_brain_region_diff_boot_set_names()
+        return (
+            self._valid_default_boot_set_names()
+            + self._valid_brain_region_diff_boot_set_names()
+        )
 
     def _default_params(self):
 
         params = []
         for boot_set_name in self._boot_set_names():
-            for brain_region_units_cohort_type in self._default_brain_region_units_cohort_types():
+            for (
+                brain_region_units_cohort_type
+            ) in self._default_brain_region_units_cohort_types():
                 params.append([boot_set_name, brain_region_units_cohort_type])
 
         # Return parameters
@@ -683,44 +893,64 @@ class FRDiffVecCosSimCovNnAveSummSelBase(PopulationAnalysisSelBase):
         params_table = self._get_params_table()()
 
         recording_set_names_boot_set_names = [
-
-             # Rat cohort
-             (RecordingSet().lookup_rat_cohort_set_name(), boot_set_name)
-             for boot_set_name in self._default_cohort_boot_set_names()] + [
-
-             # Non rat cohort
-             (recording_set_name, boot_set_name) for recording_set_name in
-             RecordingSet().get_recording_set_names(
-                 key_filter, ["Haight_rotation", "first_day_learning_single_epoch"])
-             for boot_set_name in self._default_noncohort_boot_set_names()]
+            # Rat cohort
+            (RecordingSet().lookup_rat_cohort_set_name(), boot_set_name)
+            for boot_set_name in self._default_cohort_boot_set_names()
+        ] + [
+            # Non rat cohort
+            (recording_set_name, boot_set_name)
+            for recording_set_name in RecordingSet().get_recording_set_names(
+                key_filter,
+                ["Haight_rotation", "first_day_learning_single_epoch"],
+            )
+            for boot_set_name in self._default_noncohort_boot_set_names()
+        ]
 
         param_name_map = dict()
-        for recording_set_name, boot_set_name in recording_set_names_boot_set_names:
-            for brain_region_units_cohort_type in brain_region_units_cohort_types:
-                param_name_map_key = self._format_param_name_map_key(recording_set_name, brain_region_units_cohort_type)
+        for (
+            recording_set_name,
+            boot_set_name,
+        ) in recording_set_names_boot_set_names:
+            for (
+                brain_region_units_cohort_type
+            ) in brain_region_units_cohort_types:
+                param_name_map_key = self._format_param_name_map_key(
+                    recording_set_name, brain_region_units_cohort_type
+                )
                 if param_name_map_key not in param_name_map:
                     param_name_map[param_name_map_key] = []
-                param_names = (params_table & {
-                    "boot_set_name": boot_set_name,
-                    "brain_region_units_cohort_type": brain_region_units_cohort_type}).fetch(
-                    params_table.meta_param_name())
+                param_names = (
+                    params_table
+                    & {
+                        "boot_set_name": boot_set_name,
+                        "brain_region_units_cohort_type": brain_region_units_cohort_type,
+                    }
+                ).fetch(params_table.meta_param_name())
                 param_name_map[param_name_map_key] += list(param_names)
 
         return param_name_map
 
     @staticmethod
-    def _format_param_name_map_key(recording_set_name, brain_region_units_cohort_type):
+    def _format_param_name_map_key(
+        recording_set_name, brain_region_units_cohort_type
+    ):
         return (recording_set_name, brain_region_units_cohort_type)
 
     def _get_param_name_map_key(self, key, brain_region_units_cohort_type):
         # Make key to param name map given a set of parameters
-        return self._format_param_name_map_key(key["recording_set_name"], brain_region_units_cohort_type)
+        return self._format_param_name_map_key(
+            key["recording_set_name"], brain_region_units_cohort_type
+        )
 
     def _default_noncohort_boot_set_names(self):
-        return super()._default_noncohort_boot_set_names() + ["brain_region_diff"]
+        return super()._default_noncohort_boot_set_names() + [
+            "brain_region_diff"
+        ]
 
     def _default_cohort_boot_set_names(self):
-        return super()._default_cohort_boot_set_names() + ["brain_region_diff_rat_cohort"]
+        return super()._default_cohort_boot_set_names() + [
+            "brain_region_diff_rat_cohort"
+        ]
 
 
 class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
@@ -738,7 +968,9 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
 
         # Get data across conditions into one place so can do bootstrap resample
         data_list = []
-        for upstream_key in (self._get_selection_table() & key).fetch1("upstream_keys"):
+        for upstream_key in (self._get_selection_table() & key).fetch1(
+            "upstream_keys"
+        ):
             # Get data for this table entry
             x_vals, mean_cos_sim_vals = self._get_upstream_data(upstream_key)
 
@@ -746,16 +978,37 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
             nwb_file_name = upstream_key["nwb_file_name"]
             subject_id = get_subject_id(nwb_file_name)
             for x_val, val in zip(x_vals, mean_cos_sim_vals):
-                epochs_description = (EpochsDescription & upstream_key).fetch1("epochs_description")
+                epochs_description = (EpochsDescription & upstream_key).fetch1(
+                    "epochs_description"
+                )
                 data_list.append(
-                    (upstream_key["brain_region"], subject_id, nwb_file_name, epochs_description,
-                     x_val, val, upstream_key["brain_region_units_param_name"],
-                     get_nwb_file_name_epochs_description(nwb_file_name, epochs_description)))
+                    (
+                        upstream_key["brain_region"],
+                        subject_id,
+                        nwb_file_name,
+                        epochs_description,
+                        x_val,
+                        val,
+                        upstream_key["brain_region_units_param_name"],
+                        get_nwb_file_name_epochs_description(
+                            nwb_file_name, epochs_description
+                        ),
+                    )
+                )
 
         metric_df = df_from_data_list(
-            data_list, [
-                "brain_region", "subject_id", "nwb_file_name", "epochs_description", self._get_vals_index_name(key=key),
-                "val", "brain_region_units_param_name", "nwb_file_name_epochs_description"])
+            data_list,
+            [
+                "brain_region",
+                "subject_id",
+                "nwb_file_name",
+                "epochs_description",
+                self._get_vals_index_name(key=key),
+                "val",
+                "brain_region_units_param_name",
+                "nwb_file_name_epochs_description",
+            ],
+        )
 
         # Restrict to non-nan samples
         valid_bool = np.invert(np.isnan(metric_df.val))
@@ -766,52 +1019,84 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
         # Hierarchical bootstrap and sample mean
 
         # ...Define bootstrap params as indicated
-        params_table_subset = (self._get_params_table()() & key)
+        params_table_subset = self._get_params_table()() & key
         bootstrap_params = params_table_subset.get_boot_params()
         boot_set_name = params_table_subset.fetch1("boot_set_name")
 
         # average values
         if boot_set_name in ["default", "default_rat_cohort"]:
             # ...Define columns at which to resample during bootstrap, in order
-            resample_levels = ["nwb_file_name_epochs_description", "brain_region_units_param_name"]
+            resample_levels = [
+                "nwb_file_name_epochs_description",
+                "brain_region_units_param_name",
+            ]
             # ...Define columns whose values to keep constant (no resampling across these)
             ave_group_column_names = ["x_val", "brain_region"]
             # ...Alter params based on whether rat cohort
-            resample_levels, ave_group_column_names = self._alter_boot_params_rat_cohort(
-                boot_set_name, resample_levels, ave_group_column_names)
+            resample_levels, ave_group_column_names = (
+                self._alter_boot_params_rat_cohort(
+                    boot_set_name, resample_levels, ave_group_column_names
+                )
+            )
 
         # average difference values across brain regions
-        elif boot_set_name in ["brain_region_diff", "brain_region_diff_rat_cohort"]:
+        elif boot_set_name in [
+            "brain_region_diff",
+            "brain_region_diff_rat_cohort",
+        ]:
 
             # First redefine metric_df to reflect difference between val for different brain regions
             target_column_name = "brain_region"
             # ...Define pairs of brain regions
             target_column_pairs = get_val_pairs(
-                np.unique(metric_df[target_column_name]), self._get_brain_region_order_for_pairs())
+                np.unique(metric_df[target_column_name]),
+                self._get_brain_region_order_for_pairs(),
+            )
             # ...Define function for computing metric on brain region pairs
             metric_pair_fn = self.metric_pair_diff
             # ...Get df with paired metric
-            metric_df = self.get_paired_metric_df(metric_df, target_column_name, target_column_pairs, metric_pair_fn)
+            metric_df = self.get_paired_metric_df(
+                metric_df,
+                target_column_name,
+                target_column_pairs,
+                metric_pair_fn,
+            )
             # Define parameters for bootstrap
             # ...Define columns at which to resample during bootstrap, in order
-            resample_levels = ["nwb_file_name_epochs_description", "brain_region_units_param_name"]
+            resample_levels = [
+                "nwb_file_name_epochs_description",
+                "brain_region_units_param_name",
+            ]
             # ...Define columns whose values to keep constant (no resampling across these)
             ave_group_column_names = [
-                "x_val", self._get_joint_column_name(target_column_name), "brain_region_1",
-                "brain_region_2"]
+                "x_val",
+                self._get_joint_column_name(target_column_name),
+                "brain_region_1",
+                "brain_region_2",
+            ]
             # ...Alter params based on whether rat cohort
-            resample_levels, ave_group_column_names = self._alter_boot_params_rat_cohort(
-                boot_set_name, resample_levels, ave_group_column_names)
+            resample_levels, ave_group_column_names = (
+                self._alter_boot_params_rat_cohort(
+                    boot_set_name, resample_levels, ave_group_column_names
+                )
+            )
 
         # Raise exception if boot set name not accounted for in code
         else:
-            raise Exception(f"Have not written code for boot_set_name {boot_set_name}")
+            raise Exception(
+                f"Have not written code for boot_set_name {boot_set_name}"
+            )
 
         # Perform bootstrap
         boot_results = hierarchical_bootstrap(
-            metric_df, resample_levels, "val", ave_group_column_names,
-            num_bootstrap_samples_=bootstrap_params.num_bootstrap_samples, average_fn_=bootstrap_params.average_fn,
-            alphas=bootstrap_params.alphas)
+            metric_df,
+            resample_levels,
+            "val",
+            ave_group_column_names,
+            num_bootstrap_samples_=bootstrap_params.num_bootstrap_samples,
+            average_fn_=bootstrap_params.average_fn,
+            alphas=bootstrap_params.alphas,
+        )
 
         # Store dfs with results together to save out below
         # ...df with metric values
@@ -826,7 +1111,9 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
         insert_analysis_table_entry(self, list(results_dict.values()), key)
 
         # Insert into parts tables
-        for upstream_key in (self._get_selection_table() & key).fetch1("upstream_keys"):
+        for upstream_key in (self._get_selection_table() & key).fetch1(
+            "upstream_keys"
+        ):
             self.Upstream.insert1({**key, **upstream_key})
 
     def _get_val_text(self):
@@ -835,9 +1122,12 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
     def _get_val_lims(self, **kwargs):
         # Get a set range for value, e.g. for use in plotting value on same range across plots
         boot_set_name = self.get_upstream_param("boot_set_name")
-        if boot_set_name in self._get_params_table()._valid_brain_region_diff_boot_set_names():
-            return [-.5, .3]
-        return [0, .8]
+        if (
+            boot_set_name
+            in self._get_params_table()._valid_brain_region_diff_boot_set_names()
+        ):
+            return [-0.5, 0.3]
+        return [0, 0.8]
 
     # Override parent class method so can add params specific to nn fr vec tables
     def get_default_table_entry_params(self):
@@ -846,8 +1136,7 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
         # Firing rate difference vector param name
         fr_diff_vec_param_name = "1"
 
-        params.update(
-            {"fr_diff_vec_param_name": fr_diff_vec_param_name})
+        params.update({"fr_diff_vec_param_name": fr_diff_vec_param_name})
 
         # Return default params
         return params
@@ -884,7 +1173,9 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
             key = add_defaults(key, default_params, add_nonexistent_keys=True)
             # ...Add summary table param name
             params_table = table._get_params_table()()
-            param_name = params_table.lookup_param_name(key, args_as_dict=True, tolerate_irrelevant_args=True)
+            param_name = params_table.lookup_param_name(
+                key, args_as_dict=True, tolerate_irrelevant_args=True
+            )
             key.update({params_table.meta_param_name(): param_name})
 
             # Loop through recording set names
@@ -901,10 +1192,14 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
 
     def _get_multiplot_fig_name(self, brain_region_vals, keys, plot_name=""):
 
-        fig_name = super()._get_multiplot_fig_name(brain_region_vals, keys, plot_name)
+        fig_name = super()._get_multiplot_fig_name(
+            brain_region_vals, keys, plot_name
+        )
 
         # Add text to denote firing rate difference vector param name
-        fr_diff_vec_param_name = return_shared_key_value(keys, "fr_diff_vec_param_name")
+        fr_diff_vec_param_name = return_shared_key_value(
+            keys, "fr_diff_vec_param_name"
+        )
         fig_name += f"_diff{fr_diff_vec_param_name}"
 
         return fig_name
@@ -980,14 +1275,18 @@ class FRDiffVecCosSimWANnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
     def _get_upstream_data(self, upstream_key):
         table_subset = self._upstream_table() & upstream_key
         x_vals = table_subset.get_pre_post_quantites_single_axis("index")
-        mean_cos_sim_vals = table_subset.get_pre_post_quantites_single_axis("mean_cos_sim")
+        mean_cos_sim_vals = table_subset.get_pre_post_quantites_single_axis(
+            "mean_cos_sim"
+        )
         return x_vals, mean_cos_sim_vals
 
     def _additional_restrict_metric_df(self, metric_df, key):
         # Restrict x vals for tractability in bootstrap
-        params_table_subset = (self._get_params_table()() & key)
+        params_table_subset = self._get_params_table()() & key
         x_range = params_table_subset.fetch1("x_range")
-        valid_bool = np.logical_and(metric_df["x_val"] > x_range[0], metric_df["x_val"] < x_range[1])
+        valid_bool = np.logical_and(
+            metric_df["x_val"] > x_range[0], metric_df["x_val"] < x_range[1]
+        )
         # Apply restrictions
         return metric_df[valid_bool]
 
@@ -998,7 +1297,7 @@ class FRDiffVecCosSimWANnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
         return [0, 2]
 
     def _get_xticks(self):
-        return [.5, 1, 1.5]
+        return [0.5, 1, 1.5]
 
     # Override parent class method so can add params specific to this table
     def get_default_table_entry_params(self):
@@ -1084,7 +1383,7 @@ class FRDiffVecCosSimPptNnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
         return [0, 1]
 
     def _get_xticks(self):
-        return [0, .5, 1]
+        return [0, 0.5, 1]
 
     def extend_plot_results(self, **kwargs):
 
@@ -1095,13 +1394,25 @@ class FRDiffVecCosSimPptNnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
 
 
 def populate_jguidera_firing_rate_difference_vector_similarity_ave(
-        key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_firing_rate_difference_vector_similarity_ave"
     upstream_schema_populate_fn_list = [
-        populate_jguidera_firing_rate_difference_vector_similarity, populate_jguidera_ppt_interp,
-        populate_jguidera_firing_rate_vector_euclidean_distance]
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+        populate_jguidera_firing_rate_difference_vector_similarity,
+        populate_jguidera_ppt_interp,
+        populate_jguidera_firing_rate_vector_euclidean_distance,
+    ]
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_firing_rate_difference_vector_similarity_ave():

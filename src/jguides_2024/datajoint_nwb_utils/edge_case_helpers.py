@@ -17,7 +17,7 @@ def identify_trodes_camera_pause_at_epoch_start(camera_times, epoch_start_time):
         raise Exception(f"camera_times must be 1D array")
 
     # *** HARD CODED VALUES ***
-    timestamps_diff_threshold = .3
+    timestamps_diff_threshold = 0.3
     early_recording_cutoff = 5
     # *************************
 
@@ -27,11 +27,12 @@ def identify_trodes_camera_pause_at_epoch_start(camera_times, epoch_start_time):
     # Find large jumps in camera timestamps
     # append False to return vector length of camera_times
     large_camera_time_diff = np.asarray(
-        list(np.diff(camera_times) > timestamps_diff_threshold) + [False])
+        list(np.diff(camera_times) > timestamps_diff_threshold) + [False]
+    )
 
     # Find where elapsed time less than a threshold ("early recording", where jump happens)
-    early_recording = np.cumsum(camera_times - epoch_start_time) < early_recording_cutoff  # seconds
+    early_recording = (
+        np.cumsum(camera_times - epoch_start_time) < early_recording_cutoff
+    )  # seconds
 
     return np.logical_and(large_camera_time_diff, early_recording)
-
-

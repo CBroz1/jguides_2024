@@ -5,17 +5,33 @@ import numpy as np
 import pandas as pd
 
 # Import custom datajoint tables
-analysis_dir = '/home/jguidera/Src/jguides_2024'
+analysis_dir = "/home/jguidera/Src/jguides_2024"
 os.chdir(analysis_dir)
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_thesis_nwb_file_names, format_brain_region, \
-    get_subject_id_shorthand, get_subject_id
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import format_nwb_file_name
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionColor, BrainRegionCohort
+from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+    get_thesis_nwb_file_names,
+    format_brain_region,
+    get_subject_id_shorthand,
+    get_subject_id,
+)
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    format_nwb_file_name,
+)
+from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
+    FRVec,
+)
+from src.jguides_2024.metadata.jguidera_brain_region import (
+    BrainRegionColor,
+    BrainRegionCohort,
+)
 from src.jguides_2024.metadata.jguidera_epoch import RunEpoch
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
+from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolSel,
+)
 from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams
-from src.jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns
+from src.jguides_2024.utils.df_helpers import (
+    df_from_data_list,
+    df_filter_columns,
+)
 from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
 from src.jguides_2024.utils.plot_helpers import format_ax, save_figure
 from src.jguides_2024.utils.stats_helpers import random_sample
@@ -28,16 +44,22 @@ zscore_fr = False
 curation_set_name = "hpc_runs_ctx_runs_sleeps"
 brain_region_cohort_name = "all_targeted"
 res_epoch_spikes_sm_param_name = "0.1"
-min_epoch_mean_firing_rate = .1
-cumulative_variance_explained_threshold = .8
+min_epoch_mean_firing_rate = 0.1
+cumulative_variance_explained_threshold = 0.8
 
 # Hard code
-res_time_bins_pool_param_name = ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms")
+res_time_bins_pool_param_name = (
+    ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms")
+)
 
 # Define key for querying tables
-key = {"zscore_fr": zscore_fr, "res_epoch_spikes_sm_param_name": res_epoch_spikes_sm_param_name,
-      "res_time_bins_pool_param_name": res_time_bins_pool_param_name, "curation_set_name": curation_set_name,
-      "brain_region_cohort_name":brain_region_cohort_name}
+key = {
+    "zscore_fr": zscore_fr,
+    "res_epoch_spikes_sm_param_name": res_epoch_spikes_sm_param_name,
+    "res_time_bins_pool_param_name": res_time_bins_pool_param_name,
+    "curation_set_name": curation_set_name,
+    "brain_region_cohort_name": brain_region_cohort_name,
+}
 
 
 # Plot first two PCs of PCA of firing rate vectors from each brain region
@@ -49,8 +71,11 @@ save_fig = False
 
 # Define key for querying table
 key.update({"nwb_file_name": nwb_file_name, "epoch": epoch})
-key["brain_region_units_param_name"] = BrainRegionUnitsParams().lookup_single_epoch_param_name(
-    nwb_file_name, epoch, min_epoch_mean_firing_rate=min_epoch_mean_firing_rate)
+key[
+    "brain_region_units_param_name"
+] = BrainRegionUnitsParams().lookup_single_epoch_param_name(
+    nwb_file_name, epoch, min_epoch_mean_firing_rate=min_epoch_mean_firing_rate
+)
 
 # Define brain regions
 brain_regions = ["mPFC_targeted", "OFC_targeted", "CA1_targeted"]
@@ -67,8 +92,11 @@ for idx, (brain_region, ax) in enumerate(zip(brain_regions, axes)):
     if len(FRVec & key) == 0:
         raise Exception(f"No entry found in FRVec for {key}")
     df_concat, time_vector = (FRVec & key).firing_rate_across_sort_groups()
-    spikes_df = pd.DataFrame(np.vstack(df_concat["firing_rate"]).T, columns=df_concat.index, index=time_vector).dropna(
-        axis=1)
+    spikes_df = pd.DataFrame(
+        np.vstack(df_concat["firing_rate"]).T,
+        columns=df_concat.index,
+        index=time_vector,
+    ).dropna(axis=1)
 
     # Get PCA container
     pca_container = PCAContainer(all_features_df=spikes_df)
@@ -77,7 +105,9 @@ for idx, (brain_region, ax) in enumerate(zip(brain_regions, axes)):
     color = BrainRegionColor().get_brain_region_color(brain_region)
 
     # Plot
-    pca_container.plot_pca_output_2D(fig_ax_list=[fig, ax], color=color, alpha=.2)
+    pca_container.plot_pca_output_2D(
+        fig_ax_list=[fig, ax], color=color, alpha=0.2
+    )
 
     # Format axis
     xlabel, ylabel = "", ""
@@ -88,8 +118,10 @@ for idx, (brain_region, ax) in enumerate(zip(brain_regions, axes)):
 
     # Print number of PCs and fraction of variance captured by first 2 PCs
     var_expl = np.cumsum(pca_container.pca_obj.explained_variance_ratio_)[1]
-    print(f"{brain_region} total PCs: {np.shape(pca_container.input_array)[1]}. "
-          f"Variance explained by first 2 PCs: {var_expl}")
+    print(
+        f"{brain_region} total PCs: {np.shape(pca_container.input_array)[1]}. "
+        f"Variance explained by first 2 PCs: {var_expl}"
+    )
 
 # Save figure
 file_name_save = f"pca_{format_nwb_file_name(nwb_file_name)}_ep{epoch}"
@@ -110,8 +142,13 @@ for nwb_file_name in nwb_file_names:
         key.update({"epoch": epoch})
 
         # Get brain regions
-        key["brain_region_units_param_name"] = BrainRegionUnitsParams().lookup_single_epoch_param_name(
-            nwb_file_name, epoch, min_epoch_mean_firing_rate=min_epoch_mean_firing_rate)
+        key[
+            "brain_region_units_param_name"
+        ] = BrainRegionUnitsParams().lookup_single_epoch_param_name(
+            nwb_file_name,
+            epoch,
+            min_epoch_mean_firing_rate=min_epoch_mean_firing_rate,
+        )
         brain_regions = (BrainRegionCohort & key).fetch1("brain_regions")
 
         # Find cumulative variance explained and where it exceeds predefined threshold across brain regions
@@ -122,35 +159,65 @@ for nwb_file_name in nwb_file_names:
             # Get firing rate data
             if len(FRVec & key) == 0:
                 raise Exception(f"No entry found in FRVec for {key}")
-            df_concat, time_vector = (FRVec & key).firing_rate_across_sort_groups()
-            spikes_df = pd.DataFrame(np.vstack(df_concat["firing_rate"]).T, columns=df_concat.index,
-                                     index=time_vector).dropna(axis=1)
+            df_concat, time_vector = (
+                FRVec & key
+            ).firing_rate_across_sort_groups()
+            spikes_df = pd.DataFrame(
+                np.vstack(df_concat["firing_rate"]).T,
+                columns=df_concat.index,
+                index=time_vector,
+            ).dropna(axis=1)
 
             # Get PCA container
             pca_container = PCAContainer(all_features_df=spikes_df)
 
             # Get cumulative variance explained
-            cumulative_variance_explained = np.cumsum(pca_container.pca_obj.explained_variance_ratio_)
+            cumulative_variance_explained = np.cumsum(
+                pca_container.pca_obj.explained_variance_ratio_
+            )
 
             # Get where cumulative variance explained threshold reached or exceeded, and the cumulative variance
             # explained at this point
             # ...component number
             component_num = pca_container.get_first_component_above_explained_variance_ratio(
-                cumulative_variance_explained_threshold)
+                cumulative_variance_explained_threshold
+            )
             # ...store total number of components
             num_components = pca_container.pca_obj.n_components
             # ...express number of components as fraction of components
             fraction_components = component_num / num_components
-            above_thresh_cum_expl_var_ratio = pca_container.get_cumulative_explained_variance_ratio()[component_num]
-            data_list.append((nwb_file_name, epoch, brain_region, cumulative_variance_explained, component_num,
-                              num_components, fraction_components,
-                              above_thresh_cum_expl_var_ratio))
+            above_thresh_cum_expl_var_ratio = (
+                pca_container.get_cumulative_explained_variance_ratio()[
+                    component_num
+                ]
+            )
+            data_list.append(
+                (
+                    nwb_file_name,
+                    epoch,
+                    brain_region,
+                    cumulative_variance_explained,
+                    component_num,
+                    num_components,
+                    fraction_components,
+                    above_thresh_cum_expl_var_ratio,
+                )
+            )
 
 # Store in dataframe
-cum_var_exp_df = df_from_data_list(data_list,
-                                   ["nwb_file_name", "epoch", "brain_region", "cumulative_variance_explained",
-                                    "component_num", "num_components",
-                                    "fraction_components", "above_thresh_cum_expl_var_ratio"])
+cum_var_exp_df = df_from_data_list(
+    data_list,
+    [
+        "nwb_file_name",
+        "epoch",
+        "brain_region",
+        "cumulative_variance_explained",
+        "component_num",
+        "num_components",
+        "fraction_components",
+        "above_thresh_cum_expl_var_ratio",
+    ],
+)
 
 
 # Hierarchical bootstrap
@@ -165,8 +232,15 @@ average_fn = np.mean
 print("\nGetting bootstrap_dfs...")
 
 bootstrap_dfs = hierarchical_bootstrap(
-    cum_var_exp_df, resample_levels, resample_quantity, ave_group_column_names, ave_diff_group_column_names,
-    ave_diff_column_name, num_bootstrap_samples, average_fn)
+    cum_var_exp_df,
+    resample_levels,
+    resample_quantity,
+    ave_group_column_names,
+    ave_diff_group_column_names,
+    ave_diff_column_name,
+    num_bootstrap_samples,
+    average_fn,
+)
 
 
 # Get number of principal components required to explain at least 80% variance in each brain region / epoch,
@@ -185,8 +259,13 @@ for nwb_file_name in nwb_file_names:
         key.update({"epoch": epoch})
         print(f"on epoch {epoch}...")
         # Get brain regions
-        key["brain_region_units_param_name"] = BrainRegionUnitsParams().lookup_single_epoch_param_name(
-            nwb_file_name, epoch, min_epoch_mean_firing_rate=min_epoch_mean_firing_rate)
+        key[
+            "brain_region_units_param_name"
+        ] = BrainRegionUnitsParams().lookup_single_epoch_param_name(
+            nwb_file_name,
+            epoch,
+            min_epoch_mean_firing_rate=min_epoch_mean_firing_rate,
+        )
         brain_regions = (BrainRegionCohort & key).fetch1("brain_regions")
 
         # Find cumulative variance explained and where it exceeds predefined threshold across brain regions
@@ -195,26 +274,58 @@ for nwb_file_name in nwb_file_names:
             print(f"on {brain_region}...")
             # Get firing rate data
             if len(FRVec & key) == 0:
-                print(f"Warning! no entry found in FRVec for {key}. Continuing...")
+                print(
+                    f"Warning! no entry found in FRVec for {key}. Continuing..."
+                )
                 continue
-            df_concat, time_vector = (FRVec & key).firing_rate_across_sort_groups()
+            df_concat, time_vector = (
+                FRVec & key
+            ).firing_rate_across_sort_groups()
             spikes_df = pd.DataFrame(
-                np.vstack(df_concat["firing_rate"]).T, columns=df_concat.index, index=time_vector).dropna(axis=1)
+                np.vstack(df_concat["firing_rate"]).T,
+                columns=df_concat.index,
+                index=time_vector,
+            ).dropna(axis=1)
             # Take random sample
             for n in np.arange(min_units, len(spikes_df.columns) + 1):
-                sample_column_names = random_sample(spikes_df.columns, n, replace=False)
+                sample_column_names = random_sample(
+                    spikes_df.columns, n, replace=False
+                )
                 # Get PCA container
-                pca_container = PCAContainer(all_features_df=spikes_df[sample_column_names])
+                pca_container = PCAContainer(
+                    all_features_df=spikes_df[sample_column_names]
+                )
                 # Get cumulative variance explained
-                cumulative_variance_explained = np.cumsum(pca_container.pca_obj.explained_variance_ratio_)
+                cumulative_variance_explained = np.cumsum(
+                    pca_container.pca_obj.explained_variance_ratio_
+                )
                 # Get where cumulative variance explained threshold reached or exceeded, and the
                 # cumulative variance explained at this point
                 component_num = pca_container.get_first_component_above_explained_variance_ratio(
-                    cumulative_variance_explained_threshold)  # component number
-                num_components = pca_container.pca_obj.n_components  # store total number of components
-                data_list.append((nwb_file_name, epoch, brain_region, component_num, num_components))
-cum_var_exp_subsample_df = df_from_data_list(data_list, [
-    "nwb_file_name", "epoch", "brain_region", "component_num", "num_components"])
+                    cumulative_variance_explained_threshold
+                )  # component number
+                num_components = (
+                    pca_container.pca_obj.n_components
+                )  # store total number of components
+                data_list.append(
+                    (
+                        nwb_file_name,
+                        epoch,
+                        brain_region,
+                        component_num,
+                        num_components,
+                    )
+                )
+cum_var_exp_subsample_df = df_from_data_list(
+    data_list,
+    [
+        "nwb_file_name",
+        "epoch",
+        "brain_region",
+        "component_num",
+        "num_components",
+    ],
+)
 
 
 # Example cumulative explained variance ratio plot
@@ -245,13 +356,20 @@ brain_regions = ["mPFC_targeted", "OFC_targeted", "CA1_targeted"]
 # Initialize main figure
 main_fig = plt.figure(figsize=(fig_width, fig_height), constrained_layout=True)
 # Initialize global figures
-left_right_subfigs = main_fig.subfigures(1, 2, width_ratios=[1, 1.5], wspace=.1)
+left_right_subfigs = main_fig.subfigures(
+    1, 2, width_ratios=[1, 1.5], wspace=0.1
+)
 
 # Plot example cumulative explained variance ratio
 
 # Get df subset
-cum_var_exp_df_subset = df_filter_columns(cum_var_exp_df, {
-    "nwb_file_name": ex_cum_exp_var_ratio_nwb_file_name, "epoch": ex_cum_exp_var_ratio_epoch}).set_index("brain_region")
+cum_var_exp_df_subset = df_filter_columns(
+    cum_var_exp_df,
+    {
+        "nwb_file_name": ex_cum_exp_var_ratio_nwb_file_name,
+        "epoch": ex_cum_exp_var_ratio_epoch,
+    },
+).set_index("brain_region")
 
 # Initialize counter for plots
 plot_counter = 0
@@ -259,15 +377,25 @@ plot_counter = 0
 # Loop through brain regions and plot
 for brain_region_idx, brain_region in enumerate(brain_regions):
     df_subset = cum_var_exp_df_subset.loc[brain_region]
-    ax = left_right_subfigs[0].add_subplot(len(brain_regions), 1, brain_region_idx + 1)
+    ax = left_right_subfigs[0].add_subplot(
+        len(brain_regions), 1, brain_region_idx + 1
+    )
     plot_counter += 1
     # Plot variance explained as a function of number of components
     plot_x = np.arange(1, len(df_subset.cumulative_variance_explained) + 1)
-    ax.plot(plot_x, df_subset.cumulative_variance_explained,
-            color=BrainRegionColor().get_brain_region_color(brain_region))
+    ax.plot(
+        plot_x,
+        df_subset.cumulative_variance_explained,
+        color=BrainRegionColor().get_brain_region_color(brain_region),
+    )
     # Mark where cumulative variance explained threshold reached or exceeded
     ax.plot([df_subset.component_num] * 2, ylim, color="black")
-    ax.plot([plot_x[0], plot_x[-1]], [df_subset.above_thresh_cum_expl_var_ratio] * 2, color="black", linestyle="--")
+    ax.plot(
+        [plot_x[0], plot_x[-1]],
+        [df_subset.above_thresh_cum_expl_var_ratio] * 2,
+        color="black",
+        linestyle="--",
+    )
 
     # Format axis
     yticks = [0, 0.2, 0.4, 0.6, 0.8, 1]
@@ -277,28 +405,52 @@ for brain_region_idx, brain_region in enumerate(brain_regions):
     if brain_region_idx == 0:
         xlabel = "Number PCs"
         ylabel = "Cumulative\nvariance explained"
-    format_ax(ax=ax, xlabel=xlabel, ylabel=ylabel, ylim=ylim, xlim=[np.min(plot_x), np.max(plot_x)], xticks=xticks,
-              yticks=yticks,
-              yticklabels=yticklabels, spine_width=spine_width, tick_width=tick_width, spines_off_list=[],
-              fontsize=fontsize1,
-              ticklabels_fontsize=fontsize2)
+    format_ax(
+        ax=ax,
+        xlabel=xlabel,
+        ylabel=ylabel,
+        ylim=ylim,
+        xlim=[np.min(plot_x), np.max(plot_x)],
+        xticks=xticks,
+        yticks=yticks,
+        yticklabels=yticklabels,
+        spine_width=spine_width,
+        tick_width=tick_width,
+        spines_off_list=[],
+        fontsize=fontsize1,
+        ticklabels_fontsize=fontsize2,
+    )
 
     # Plot cumulative variance explained as a function of fraction of components
     ax2 = ax.twiny()
-    fraction_components = np.arange(1, len(df_subset.cumulative_variance_explained) + 1) / len(
-        df_subset.cumulative_variance_explained)
+    fraction_components = np.arange(
+        1, len(df_subset.cumulative_variance_explained) + 1
+    ) / len(df_subset.cumulative_variance_explained)
     plot_x = fraction_components
     color = BrainRegionColor().get_brain_region_color(brain_region)
-    ax2.plot(plot_x, df_subset.cumulative_variance_explained, color=color, zorder=10,
-             linewidth=2)
+    ax2.plot(
+        plot_x,
+        df_subset.cumulative_variance_explained,
+        color=color,
+        zorder=10,
+        linewidth=2,
+    )
     xlabel = None
     # title
     title = format_brain_region(brain_region)
     if brain_region_idx == 0:
         xlabel = "Fraction PCs"
-    format_ax(ax=ax2, xlabel=xlabel, xlim=[np.min(plot_x), np.max(plot_x)], ylim=ylim, spines_off_list=[],
-              spine_width=spine_width,
-              tick_width=tick_width, fontsize=fontsize1, ticklabels_fontsize=fontsize3)
+    format_ax(
+        ax=ax2,
+        xlabel=xlabel,
+        xlim=[np.min(plot_x), np.max(plot_x)],
+        ylim=ylim,
+        spines_off_list=[],
+        spine_width=spine_width,
+        tick_width=tick_width,
+        fontsize=fontsize1,
+        ticklabels_fontsize=fontsize3,
+    )
     ax2.set_title(title, fontsize=fontsize0, color=color)
 
 # Make map from number of brain regions available for rat and which column
@@ -319,12 +471,19 @@ for idx, (nwb_file_name, epoch) in enumerate(examples):
 
     # Define number of brain regions for this subject
     num_brain_regions = len(
-        np.unique(df_filter_columns(cum_var_exp_subsample_df, {"nwb_file_name": nwb_file_name}).brain_region))
+        np.unique(
+            df_filter_columns(
+                cum_var_exp_subsample_df, {"nwb_file_name": nwb_file_name}
+            ).brain_region
+        )
+    )
 
     # Loop through brain regions
     for brain_region_idx, brain_region in enumerate(brain_regions):
-        df_subset = df_filter_columns(cum_var_exp_subsample_df,
-                                      {"brain_region": brain_region, "nwb_file_name": nwb_file_name})
+        df_subset = df_filter_columns(
+            cum_var_exp_subsample_df,
+            {"brain_region": brain_region, "nwb_file_name": nwb_file_name},
+        )
 
         # Continue if brain region not available
         if len(df_subset) == 0:
@@ -336,7 +495,13 @@ for idx, (nwb_file_name, epoch) in enumerate(examples):
         ax = axes[idx, plot_counter]  # get axis
         color = BrainRegionColor().get_brain_region_color(brain_region)
         for _, df_row in df_subset.iterrows():
-            ax.plot(df_row.num_components, df_row.component_num, ".", color=color, alpha=.6)
+            ax.plot(
+                df_row.num_components,
+                df_row.component_num,
+                ".",
+                color=color,
+                alpha=0.6,
+            )
 
         # Format axis
         ax.set_xlim([0, np.nanmax(df_subset.num_components) * 1.1])
@@ -350,6 +515,8 @@ for idx, (nwb_file_name, epoch) in enumerate(examples):
         plot_counter += 1
 
 # Save figure
-nwb_file_names_text = "_".join([format_nwb_file_name(x) for x in nwb_file_names])
+nwb_file_names_text = "_".join(
+    [format_nwb_file_name(x) for x in nwb_file_names]
+)
 file_name_save = f"pca_summary_single_contingency_{nwb_file_names_text}"
 save_figure(main_fig, file_name_save, save_fig=save_fig)

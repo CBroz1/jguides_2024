@@ -1,7 +1,9 @@
 import numpy as np
 from spyglass.common import TaskEpoch, IntervalList
 
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
+from src.jguides_2024.utils.point_process_helpers import (
+    event_times_in_intervals_bool,
+)
 
 
 def nwbf_session_id_to_file_name(nwbf):
@@ -16,14 +18,16 @@ def get_nwb_file(nwb_file_name):
 
     import pynwb
     from spyglass.common import Nwbfile
-    return pynwb.NWBHDF5IO(Nwbfile().get_abs_path(nwb_file_name),'r').read()
+
+    return pynwb.NWBHDF5IO(Nwbfile().get_abs_path(nwb_file_name), "r").read()
 
 
 def check_nwb_file_in_session_table(nwb_file_name):
     """Raise error if nwb file not in Session table"""
 
     from spyglass.common import Session
-    if len((Session() & {'nwb_file_name': nwb_file_name})) == 0:
+
+    if len((Session() & {"nwb_file_name": nwb_file_name})) == 0:
         raise Exception("nwb file not in Session table")
 
 
@@ -44,11 +48,20 @@ def subject_id_date_from_nwbf_name(nwb_file_name):
 def get_epoch_valid_times(nwb_file_name, epoch):
 
     interval_list_name = (
-            TaskEpoch & {"nwb_file_name": nwb_file_name, "epoch": epoch}).fetch1(
-        "interval_list_name")  # get interval list name for epoch
+        TaskEpoch & {"nwb_file_name": nwb_file_name, "epoch": epoch}
+    ).fetch1(
+        "interval_list_name"
+    )  # get interval list name for epoch
 
-    return (IntervalList() & {"nwb_file_name": nwb_file_name, "interval_list_name": interval_list_name}).fetch1(
-        "valid_times")  # get epoch valid times
+    return (
+        IntervalList()
+        & {
+            "nwb_file_name": nwb_file_name,
+            "interval_list_name": interval_list_name,
+        }
+    ).fetch1(
+        "valid_times"
+    )  # get epoch valid times
 
 
 def get_epoch_time_interval(nwb_file_name, epoch):

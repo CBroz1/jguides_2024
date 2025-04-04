@@ -8,14 +8,26 @@ from collections.abc import Iterable
 import numpy as np
 
 from src.jguides_2024.utils.check_well_defined import failed_check
-from src.jguides_2024.utils.list_helpers import check_return_single_element, check_single_element
-from src.jguides_2024.utils.set_helpers import check_membership, check_set_equality
-from src.jguides_2024.utils.vector_helpers import unpack_single_element, check_all_unique, check_vectors_equal
+from src.jguides_2024.utils.list_helpers import (
+    check_return_single_element,
+    check_single_element,
+)
+from src.jguides_2024.utils.set_helpers import (
+    check_membership,
+    check_set_equality,
+)
+from src.jguides_2024.utils.vector_helpers import (
+    unpack_single_element,
+    check_all_unique,
+    check_vectors_equal,
+)
 
 
 def invert_dict(dictionary, unpack_single_elements=False):
-    inverted_dict = {new_k: [k for k,v in dictionary.items() if v == new_k]
-                       for new_k in set(dictionary.values())}
+    inverted_dict = {
+        new_k: [k for k, v in dictionary.items() if v == new_k]
+        for new_k in set(dictionary.values())
+    }
     # Unpack single elements (requires all value lists have length one)
     if unpack_single_elements:
         return {k: unpack_single_element(v) for k, v in inverted_dict.items()}
@@ -23,16 +35,39 @@ def invert_dict(dictionary, unpack_single_elements=False):
 
 
 def pairs_keys_same_value(dictionary):
-    return list(itertools.chain.from_iterable([list(itertools.combinations([k for k,
-                                             v in dictionary.items() if v == target_v], r=2))
-                                             for target_v in set(dictionary.values())]))
+    return list(
+        itertools.chain.from_iterable(
+            [
+                list(
+                    itertools.combinations(
+                        [k for k, v in dictionary.items() if v == target_v], r=2
+                    )
+                )
+                for target_v in set(dictionary.values())
+            ]
+        )
+    )
 
 
 def pairs_keys_different_value(dictionary):
-    from src.jguides_2024.utils.list_helpers import remove_duplicate_combinations
-    return remove_duplicate_combinations(list(itertools.chain.from_iterable([[(k, target_k) for k,
-                                             v in dictionary.items() if v != target_v]
-                                             for target_k, target_v in dictionary.items()])))
+    from src.jguides_2024.utils.list_helpers import (
+        remove_duplicate_combinations,
+    )
+
+    return remove_duplicate_combinations(
+        list(
+            itertools.chain.from_iterable(
+                [
+                    [
+                        (k, target_k)
+                        for k, v in dictionary.items()
+                        if v != target_v
+                    ]
+                    for target_k, target_v in dictionary.items()
+                ]
+            )
+        )
+    )
 
 
 def merge_dicts(dict_list):
@@ -101,19 +136,28 @@ def dict_comprehension_repeated_keys(keys, values, sort_values=False):
 
 
 def dict_subset(dictionary, key_subset):
-    check_membership(key_subset, dictionary.keys(), "passed keys", "available keys")
+    check_membership(
+        key_subset, dictionary.keys(), "passed keys", "available keys"
+    )
     return {k: dictionary[k] for k in key_subset}
 
 
 def dict_drop_keys(dictionary, drop_keys):
-    check_membership(drop_keys, dictionary.keys(), "passed keys to drop", "available keys to drop")
+    check_membership(
+        drop_keys,
+        dictionary.keys(),
+        "passed keys to drop",
+        "available keys to drop",
+    )
     return {k: v for k, v in dictionary.items() if k not in drop_keys}
 
 
 def dict_list(value_lists, key_names):
     # Return a list with dictionaries
     # Each entry in value_lists should be a list with value for the key name with corresponding index in key_names
-    return [{k: v for k, v in zip(key_names, x)} for x in list(zip(*value_lists))]
+    return [
+        {k: v for k, v in zip(key_names, x)} for x in list(zip(*value_lists))
+    ]
 
 
 def unpack_dict(dictionary):
@@ -132,7 +176,14 @@ def unpack_dicts(dictionaries):
     :param dictionaries: list of dictionaries
     :return: list with concatenated keys across dictionaries, list with concatenated values across dictionaries
     """
-    return list(map(np.concatenate, list(zip(*[unpack_dict(dictionary) for dictionary in dictionaries]))))
+    return list(
+        map(
+            np.concatenate,
+            list(
+                zip(*[unpack_dict(dictionary) for dictionary in dictionaries])
+            ),
+        )
+    )
 
 
 def sort_dict_by_keys(dictionary):
@@ -161,7 +212,10 @@ def get_set_of_values_for_set_of_keys(dicts, mark_omit=True):
     return_values = []
     for dict_idx, dict_ in enumerate(dicts):
         for key, value in dict_.items():
-            if value not in [other_dict[key] if key in other_dict else None for other_dict in dicts[:dict_idx]]:
+            if value not in [
+                other_dict[key] if key in other_dict else None
+                for other_dict in dicts[:dict_idx]
+            ]:
                 return_values.append(value)
             else:
                 if mark_omit:
@@ -173,15 +227,19 @@ def get_set_of_values_for_set_of_keys(dicts, mark_omit=True):
 def check_shared_key_value(dicts, key, tolerate_error=False):
     # Check that dictionary have same value at a key
     return check_single_element(
-        [x[key] for x in dicts], tolerate_error=tolerate_error,
-        error_message=f"dictionaries do not match at key '{key}'")
+        [x[key] for x in dicts],
+        tolerate_error=tolerate_error,
+        error_message=f"dictionaries do not match at key '{key}'",
+    )
 
 
 def return_shared_key_value(dicts, key, tolerate_error=False):
     # Check that dictionaries have same value at a key, then return that value
     return check_return_single_element(
-        [x[key] for x in dicts], tolerate_error=tolerate_error,
-        error_message=f"dictionaries do not match at key '{key}'").single_element
+        [x[key] for x in dicts],
+        tolerate_error=tolerate_error,
+        error_message=f"dictionaries do not match at key '{key}'",
+    ).single_element
 
 
 def check_same_values_at_shared_keys(dicts, tolerate_error=False):
@@ -193,7 +251,13 @@ def check_same_values_at_shared_keys(dicts, tolerate_error=False):
     return bool(passed_check)
 
 
-def add_defaults(dictionary, defaults, add_nonexistent_keys=False, replace_none=True, require_match=False):
+def add_defaults(
+    dictionary,
+    defaults,
+    add_nonexistent_keys=False,
+    replace_none=True,
+    require_match=False,
+):
     # If indicated, require that keys in dictionary that are also in defaults have same value as in defaults
     if require_match:
         check_same_values_at_shared_keys([defaults, dictionary])
@@ -228,21 +292,42 @@ def replace_vals(dictionary, replace_dictionary):
 def restrict_dictionary_list(dictionary_list, restriction_dict=None):
     if restriction_dict is None:
         return dictionary_list
-    return [x for x in dictionary_list if all([restriction_dict[k] == v for k, v in x.items() if k in
-                                               restriction_dict])]
+    return [
+        x
+        for x in dictionary_list
+        if all(
+            [
+                restriction_dict[k] == v
+                for k, v in x.items()
+                if k in restriction_dict
+            ]
+        )
+    ]
 
 
-def check_dict_equality(dictionaries, tolerate_nonequal_nan=False, tolerate_error=False, issue_warning=True):
+def check_dict_equality(
+    dictionaries,
+    tolerate_nonequal_nan=False,
+    tolerate_error=False,
+    issue_warning=True,
+):
     d1 = dictionaries[0]
     passed_check = True  # initialize
     for idx, d2 in enumerate(dictionaries[1:]):
         # Check that same keys
         passed_check *= check_set_equality(
-            d1.keys(), d2.keys(), f"dictionary 0 in passed list", f"dictionary {idx + 1} in passed list",
-            tolerate_error, issue_warning)
+            d1.keys(),
+            d2.keys(),
+            f"dictionary 0 in passed list",
+            f"dictionary {idx + 1} in passed list",
+            tolerate_error,
+            issue_warning,
+        )
         # Check that at each key, same values (package d2[k] == v in iterable so can cover case
         # where v is iterable, and when v is not iterable)
-        matching_vals_bool = [np.asarray([d2[k] == v]).all() for k, v in d1.items()]
+        matching_vals_bool = [
+            np.asarray([d2[k] == v]).all() for k, v in d1.items()
+        ]
         # tolerate non-equal np.nan if indicated (np.nan not always equal)
         if tolerate_nonequal_nan:
             for idx in np.where(np.invert(matching_vals_bool))[0]:
@@ -250,8 +335,11 @@ def check_dict_equality(dictionaries, tolerate_nonequal_nan=False, tolerate_erro
                     matching_vals_bool[idx] = True
         if not all(matching_vals_bool):
             passed_check *= False
-            failed_check(tolerate_error, f"dictionaries 0 and {idx + 1} do not have matching values for keys",
-                         issue_warning)
+            failed_check(
+                tolerate_error,
+                f"dictionaries 0 and {idx + 1} do not have matching values for keys",
+                issue_warning,
+            )
     return passed_check
 
 
@@ -263,12 +351,20 @@ def check_return_single_dict(dictionaries):
 def check_equality(x_list):
     if all([isinstance(x, dict) for x in x_list]):
         check_dict_equality(x_list)
-    elif all([isinstance(x, str) for x in x_list]):  # important to come before sequence check since string is sequence
+    elif all(
+        [isinstance(x, str) for x in x_list]
+    ):  # important to come before sequence check since string is sequence
         check_single_element(x_list)
-    elif all([isinstance(x, collections.abc.Sequence) for x in x_list]):  # meant to cover arrays (or lists)
-        check_vectors_equal(np.asarray(x_list))  # convert to array since check fails on lists
+    elif all(
+        [isinstance(x, collections.abc.Sequence) for x in x_list]
+    ):  # meant to cover arrays (or lists)
+        check_vectors_equal(
+            np.asarray(x_list)
+        )  # convert to array since check fails on lists
     else:
-        raise Exception(f"Only cases covered in check_equality are all elements of type: dictionary, sequence, or string")
+        raise Exception(
+            f"Only cases covered in check_equality are all elements of type: dictionary, sequence, or string"
+        )
 
 
 def make_keys(primary_features, all_features):

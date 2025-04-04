@@ -8,7 +8,7 @@ def cd_make_if_nonexistent(directory):
     """
 
     if not os.path.exists(directory):
-        print(f'Making directory: {directory}')
+        print(f"Making directory: {directory}")
         os.mkdir(directory)
-    print(f'Changing to directory: {directory}')
+    print(f"Changing to directory: {directory}")
     os.chdir(directory)

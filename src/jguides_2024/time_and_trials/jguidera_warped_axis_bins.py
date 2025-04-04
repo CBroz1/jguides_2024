@@ -1,9 +1,14 @@
 import datajoint as dj
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
-    populate_insert
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    SecKeyParamsBase,
+    ComputedBase,
+)
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    get_schema_table_names_from_file,
+    populate_insert,
+)
 from src.jguides_2024.utils.vector_helpers import vector_midpoints
 
 schema = dj.schema("jguidera_warped_axis_bins")
@@ -21,11 +26,15 @@ class WarpedAxisBinsParams(SecKeyParamsBase):
     """
 
     def _default_params(self):
-        return [(0, 1, .05)]
+        return [(0, 1, 0.05)]
 
     def fetch1_params(self):
         # Return params as float
-        return {k: float(v) for k, v in self.fetch1().items() if k not in self.primary_key}
+        return {
+            k: float(v)
+            for k, v in self.fetch1().items()
+            if k not in self.primary_key
+        }
 
 
 @schema
@@ -41,9 +50,14 @@ class WarpedAxisBins(ComputedBase):
     def make(self, key):
         params = (WarpedAxisBinsParams & key).fetch1_params()
         bin_width = params["warped_axis_bin_width"]
-        bin_edges = np.arange(params["warped_axis_start"], params["warped_axis_end"] + bin_width, bin_width)
-        key.update({"bin_edges": bin_edges,
-                    "bin_centers": vector_midpoints(bin_edges)})
+        bin_edges = np.arange(
+            params["warped_axis_start"],
+            params["warped_axis_end"] + bin_width,
+            bin_width,
+        )
+        key.update(
+            {"bin_edges": bin_edges, "bin_centers": vector_midpoints(bin_edges)}
+        )
         self.insert1(key)
 
 
@@ -56,4 +70,3 @@ def populate_jguidera_warped_axis_bins(key=None, tolerate_error=False):
 
 def drop_jguidera_warped_axis_bins():
     schema.drop()
-

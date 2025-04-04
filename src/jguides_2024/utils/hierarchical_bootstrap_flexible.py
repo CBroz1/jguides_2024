@@ -20,7 +20,6 @@ this could slow things down (have not rigorously tested)
 appeared to be the case)
 """
 
-
 import itertools
 import multiprocessing as mp
 from collections import namedtuple
@@ -28,10 +27,18 @@ from collections import namedtuple
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.utils.df_helpers import df_pop, df_filter_columns, df_from_data_list, unique_df_column_sets
+from src.jguides_2024.utils.df_helpers import (
+    df_pop,
+    df_filter_columns,
+    df_from_data_list,
+    unique_df_column_sets,
+)
 from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
 from src.jguides_2024.utils.parallelization_helpers import show_error
-from src.jguides_2024.utils.stats_helpers import recursive_resample, return_confidence_interval
+from src.jguides_2024.utils.stats_helpers import (
+    recursive_resample,
+    return_confidence_interval,
+)
 from src.jguides_2024.utils.vector_helpers import unpack_single_element
 
 
@@ -42,16 +49,31 @@ def append_result(x):
 def _boot():
     # Get average value, using single bootstrap sample
     data_list = []
-    for column_set in ave_group_column_sets:  # get a separate bootstrap sample for each set of conditions
+    for (
+        column_set
+    ) in (
+        ave_group_column_sets
+    ):  # get a separate bootstrap sample for each set of conditions
         df_subset = df_filter_columns(df, column_set)
         # Get bootstrap sample
-        resample_df = recursive_resample(df_subset, resample_levels, resample_quantity)
+        resample_df = recursive_resample(
+            df_subset, resample_levels, resample_quantity
+        )
         boot_sample_map = average_fn(
-            **{"resample_df": resample_df, "resample_quantity": resample_quantity, "column_set": column_set})
+            **{
+                "resample_df": resample_df,
+                "resample_quantity": resample_quantity,
+                "column_set": column_set,
+            }
+        )
         for quantity_name, quantity in boot_sample_map.items():
-            data_list.append(tuple(list(column_set.values()) + [quantity_name, quantity]))
+            data_list.append(
+                tuple(list(column_set.values()) + [quantity_name, quantity])
+            )
     column_names = ave_group_column_names + ["ave_name", "boot_ave"]
-    boot_ave_df = df_from_data_list(data_list, column_names, empty_df_has_cols=True)
+    boot_ave_df = df_from_data_list(
+        data_list, column_names, empty_df_has_cols=True
+    )
 
     # Get average differences for pairs, using bootstrap sample
     boot_ave_diff_df = None
@@ -61,24 +83,64 @@ def _boot():
             for column_set in ave_diff_group_column_sets:
                 df_subset = df_filter_columns(boot_ave_df, column_set)
                 for ave_name in df_subset.ave_name:
-                    data_list.append(tuple(list(column_set.values()) + list(x_pair) + [
-                        ave_name, unpack_single_element(np.diff(
-                        [df_pop(df_subset, {ave_diff_column_name: x, "ave_name": ave_name}, "boot_ave",
-                                verbose=True) for x in x_pair]))]))
+                    data_list.append(
+                        tuple(
+                            list(column_set.values())
+                            + list(x_pair)
+                            + [
+                                ave_name,
+                                unpack_single_element(
+                                    np.diff(
+                                        [
+                                            df_pop(
+                                                df_subset,
+                                                {
+                                                    ave_diff_column_name: x,
+                                                    "ave_name": ave_name,
+                                                },
+                                                "boot_ave",
+                                                verbose=True,
+                                            )
+                                            for x in x_pair
+                                        ]
+                                    )
+                                ),
+                            ]
+                        )
+                    )
         boot_ave_diff_df = df_from_data_list(
-            data_list, ave_diff_group_column_names + ave_diff_pair_column_names + ["ave_name", "boot_ave_diff"])
+            data_list,
+            ave_diff_group_column_names
+            + ave_diff_pair_column_names
+            + ["ave_name", "boot_ave_diff"],
+        )
 
     # Return dfs
     return boot_ave_df, boot_ave_diff_df
 
 
 def get_conf_df(df, column_names, quantity, alphas):
-    conf_df = df_from_data_list([tuple([df_key[k] for k in column_names] + [alpha] + list(return_confidence_interval(
-                                df_filter_columns(df, df_key)[quantity].values, alpha)))
-    for df_key in unique_df_column_sets(df, column_names, as_dict=True) for alpha in alphas], column_names + [
-        "alpha", "lower_conf", "upper_conf"], empty_df_has_cols=True)
+    conf_df = df_from_data_list(
+        [
+            tuple(
+                [df_key[k] for k in column_names]
+                + [alpha]
+                + list(
+                    return_confidence_interval(
+                        df_filter_columns(df, df_key)[quantity].values, alpha
+                    )
+                )
+            )
+            for df_key in unique_df_column_sets(df, column_names, as_dict=True)
+            for alpha in alphas
+        ],
+        column_names + ["alpha", "lower_conf", "upper_conf"],
+        empty_df_has_cols=True,
+    )
     # Add column with significance
-    conf_df["significant"] = [x*y > 0 for x, y in zip(conf_df.lower_conf, conf_df.upper_conf)]
+    conf_df["significant"] = [
+        x * y > 0 for x, y in zip(conf_df.lower_conf, conf_df.upper_conf)
+    ]
     return conf_df
 
 
@@ -89,9 +151,17 @@ def default_ave(**kwargs):
 
 
 def hierarchical_bootstrap(
-        df_, resample_levels_, resample_quantity_, ave_group_column_names_, ave_diff_group_column_names_=None,
-        ave_diff_column_name_=None, num_bootstrap_samples_=1000, average_fn_=None, alphas=(.05, .01, .001, .0001),
-        debug_mode=False):
+    df_,
+    resample_levels_,
+    resample_quantity_,
+    ave_group_column_names_,
+    ave_diff_group_column_names_=None,
+    ave_diff_column_name_=None,
+    num_bootstrap_samples_=1000,
+    average_fn_=None,
+    alphas=(0.05, 0.01, 0.001, 0.0001),
+    debug_mode=False,
+):
     """
     Bootstrap data with hierarchical structure
 
@@ -112,15 +182,23 @@ def hierarchical_bootstrap(
     """
 
     # Check inputs
-    if np.sum([x is None for x in [ave_diff_group_column_names_, ave_diff_column_name_]]) == 1:
-        raise Exception(f"Either ave_diff_group_column_names_ and ave_diff_column_name_ must both be None, or must "
-                        f"both not be None")
+    if (
+        np.sum(
+            [
+                x is None
+                for x in [ave_diff_group_column_names_, ave_diff_column_name_]
+            ]
+        )
+        == 1
+    ):
+        raise Exception(
+            f"Either ave_diff_group_column_names_ and ave_diff_column_name_ must both be None, or must "
+            f"both not be None"
+        )
 
     # Note that declaring variables as global allows us to not pass to function in for loop, and this
     # saves time when iterating over many items in the for loop
-    global df, resample_levels, resample_quantity, ave_group_column_names, ave_diff_group_column_names, \
-        ave_diff_column_name, num_bootstrap_samples, average_fn, ave_group_column_sets, ave_diff_group_column_sets, \
-        x_pairs, results, ave_diff_pair_column_names
+    global df, resample_levels, resample_quantity, ave_group_column_names, ave_diff_group_column_names, ave_diff_column_name, num_bootstrap_samples, average_fn, ave_group_column_sets, ave_diff_group_column_sets, x_pairs, results, ave_diff_pair_column_names
     df = df_
     resample_levels = resample_levels_
     resample_quantity = resample_quantity_
@@ -134,19 +212,29 @@ def hierarchical_bootstrap(
         average_fn = default_ave
 
     # Get column sets for groups for bootstrapped average
-    ave_group_column_sets = unique_df_column_sets(df, ave_group_column_names, as_dict=True)
+    ave_group_column_sets = unique_df_column_sets(
+        df, ave_group_column_names, as_dict=True
+    )
 
     # Define variables for bootstrapped average difference
     if ave_diff_column_name is not None:
         # Get column sets for groups for bootstrapped average difference
-        ave_diff_group_column_sets = unique_df_column_sets(df, ave_diff_group_column_names, as_dict=True)
+        ave_diff_group_column_sets = unique_df_column_sets(
+            df, ave_diff_group_column_names, as_dict=True
+        )
         # Define pairs for which to find bootstrapped average difference
-        x_pairs = list(itertools.combinations(np.unique(df[ave_diff_column_name]), r=2))
+        x_pairs = list(
+            itertools.combinations(np.unique(df[ave_diff_column_name]), r=2)
+        )
         # ...raise error if no pairs found
         if len(x_pairs) == 0:
-            raise Exception(f"No pairs found for which to find bootstrapped average difference")
+            raise Exception(
+                f"No pairs found for which to find bootstrapped average difference"
+            )
         # Define name of column with pairs
-        ave_diff_pair_column_names = [f"{ave_diff_column_name}_{x}" for x in [1, 2]]
+        ave_diff_pair_column_names = [
+            f"{ave_diff_column_name}_{x}" for x in [1, 2]
+        ]
 
     # Get bootstrap distributions
     # run without multiprocessing if want to debug
@@ -160,7 +248,9 @@ def hierarchical_bootstrap(
     results = []
     for idx in range(0, num_bootstrap_samples):
         print_iteration_progress(idx, num_bootstrap_samples, 100)
-        pool.apply_async(_boot, args=(), callback=append_result, error_callback=show_error)
+        pool.apply_async(
+            _boot, args=(), callback=append_result, error_callback=show_error
+        )
     pool.close()
     pool.join()  # waits until all processes done before running next line
 
@@ -175,28 +265,52 @@ def hierarchical_bootstrap(
 
     # Get confidence intervals from bootstrap distribution for average
     ave_conf_df_columns = ave_group_column_names + ["ave_name"]
-    ave_conf_df = get_conf_df(boot_ave_dfs_concat, ave_conf_df_columns, "boot_ave", alphas)
+    ave_conf_df = get_conf_df(
+        boot_ave_dfs_concat, ave_conf_df_columns, "boot_ave", alphas
+    )
 
     # Determine p value category for average difference
     ave_diff_conf_df = None  # initialize
     if ave_diff_column_name is not None:
-        ave_diff_conf_df_columns = ave_diff_group_column_names + ave_diff_pair_column_names + ["ave_name"]
+        ave_diff_conf_df_columns = (
+            ave_diff_group_column_names
+            + ave_diff_pair_column_names
+            + ["ave_name"]
+        )
         ave_diff_conf_df = get_conf_df(
-            boot_ave_diff_dfs_concat, ave_diff_conf_df_columns, "boot_ave_diff", alphas)
+            boot_ave_diff_dfs_concat,
+            ave_diff_conf_df_columns,
+            "boot_ave_diff",
+            alphas,
+        )
 
     # Get average values (no bootstrap)
     data_list = []
     for column_set in ave_group_column_sets:
         ave_map = average_fn(
-            **{"resample_df": df_filter_columns(df, column_set), "resample_quantity": resample_quantity,
-               "column_set": column_set})
+            **{
+                "resample_df": df_filter_columns(df, column_set),
+                "resample_quantity": resample_quantity,
+                "column_set": column_set,
+            }
+        )
         for ave_name, quantity in ave_map.items():
-            data_list.append(tuple(list(column_set.values()) + [ave_name, quantity]))
+            data_list.append(
+                tuple(list(column_set.values()) + [ave_name, quantity])
+            )
     ave_df = df_from_data_list(
-        data_list, ave_group_column_names + ["ave_name", f"ave_{resample_quantity}"], empty_df_has_cols=True)
+        data_list,
+        ave_group_column_names + ["ave_name", f"ave_{resample_quantity}"],
+        empty_df_has_cols=True,
+    )
     # Add averages to df with confidence bounds on average
     ave_conf_df = pd.merge(ave_df, ave_conf_df)
 
-    return namedtuple("boot_dfs", "boot_ave_df boot_ave_diff_df ave_conf_df ave_diff_conf_df")(
-        boot_ave_dfs_concat, boot_ave_diff_dfs_concat, ave_conf_df, ave_diff_conf_df)
-
+    return namedtuple(
+        "boot_dfs", "boot_ave_df boot_ave_diff_df ave_conf_df ave_diff_conf_df"
+    )(
+        boot_ave_dfs_concat,
+        boot_ave_diff_dfs_concat,
+        ave_conf_df,
+        ave_diff_conf_df,
+    )

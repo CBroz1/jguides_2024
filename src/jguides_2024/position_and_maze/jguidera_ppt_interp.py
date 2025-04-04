@@ -2,17 +2,33 @@ import datajoint as dj
 import numpy as np
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, CovariateRCB, \
-    CovariateDigParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
-    get_key_filter, delete_
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
+    SelBase,
+    CovariateRCB,
+    CovariateDigParamsBase,
+)
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    insert_analysis_table_entry,
+    get_key_filter,
+    delete_,
+)
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.glm.jguidera_basis_function import RaisedCosineBasis, RaisedCosineBasisParams
+from src.jguides_2024.glm.jguidera_basis_function import (
+    RaisedCosineBasis,
+    RaisedCosineBasisParams,
+)
 from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.time_and_trials.jguidera_ppt_trials import populate_jguidera_ppt_trials
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel, \
-    ResTimeBinsPool
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import populate_jguidera_res_time_bins_pool
+from src.jguides_2024.time_and_trials.jguidera_ppt_trials import (
+    populate_jguidera_ppt_trials,
+)
+from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolSel,
+    ResTimeBinsPool,
+)
+from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    populate_jguidera_res_time_bins_pool,
+)
 from src.jguides_2024.utils.basis_function_helpers import sample_basis_functions
 from src.jguides_2024.utils.check_well_defined import check_one_none
 from src.jguides_2024.utils.dict_helpers import add_defaults
@@ -44,12 +60,19 @@ class PptInterpSel(SelBase):
         key_filter = get_key_filter(kwargs)
 
         # Get res_time_bins_pool_param_name
-        for shorthand_param_name in ["epoch_100ms",  # for embedding
-                                      "path_100ms",  # for ppt colored embedding
-                                      "path_20ms",  # for GLM analysis
-                                              ]:
-            res_time_bins_pool_param_name = ResTimeBinsPoolSel().lookup_param_name_from_shorthand(shorthand_param_name)
-            key_filter.update({"res_time_bins_pool_param_name": res_time_bins_pool_param_name})
+        for shorthand_param_name in [
+            "epoch_100ms",  # for embedding
+            "path_100ms",  # for ppt colored embedding
+            "path_20ms",  # for GLM analysis
+        ]:
+            res_time_bins_pool_param_name = (
+                ResTimeBinsPoolSel().lookup_param_name_from_shorthand(
+                    shorthand_param_name
+                )
+            )
+            key_filter.update(
+                {"res_time_bins_pool_param_name": res_time_bins_pool_param_name}
+            )
 
             # Insert through potential keys with the above res_time_bins_pool_param_name
             for key in self._get_potential_keys(key_filter):
@@ -78,10 +101,22 @@ class PptInterp(ComputedBase):
         key.update({"ppt_range": (Ppt & key).fetch1("ppt_range")})
         # Insert into table
         insert_analysis_table_entry(
-            self, nwb_objects=[ppt_interp_df], key=key, reset_index=True, replace_none_col_names=["path_name"])
+            self,
+            nwb_objects=[ppt_interp_df],
+            key=key,
+            reset_index=True,
+            replace_none_col_names=["path_name"],
+        )
 
-    def fetch1_dataframe(self, object_id_name=None, restore_empty_nwb_object=True, df_index_name="time"):
-        return super().fetch1_dataframe(object_id_name, restore_empty_nwb_object, df_index_name)
+    def fetch1_dataframe(
+        self,
+        object_id_name=None,
+        restore_empty_nwb_object=True,
+        df_index_name="time",
+    ):
+        return super().fetch1_dataframe(
+            object_id_name, restore_empty_nwb_object, df_index_name
+        )
 
     def fetch1_ppt(self):
         return self.fetch1_dataframe().ppt
@@ -99,13 +134,19 @@ class PptInterp(ComputedBase):
 
         # Digitize ppt
         ppt_interp_df["digitized_ppt"] = digitize_indexed_variable(
-            indexed_variable=ppt_interp_df["ppt"], bin_edges=bin_edges, verbose=verbose)
+            indexed_variable=ppt_interp_df["ppt"],
+            bin_edges=bin_edges,
+            verbose=verbose,
+        )
 
         return ppt_interp_df
 
     def delete_(self, key=None, safemode=True):
         # Delete downstream entries first
-        from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import FRDiffVecCosSimPptNnAve
+        from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
+            FRDiffVecCosSimPptNnAve,
+        )
+
         delete_(self, [FRDiffVecCosSimPptNnAve], key, safemode)
 
 
@@ -121,10 +162,11 @@ class PptDigParams(CovariateDigParamsBase):
     def _default_params(self):
         return [
             # for GLM analysis
-            [.05],
+            [0.05],
             # for ppt aligned firing rate vector analysis
-            [.015], [.1],
-                ]
+            [0.015],
+            [0.1],
+        ]
 
     def make_bin_edges(self, bin_width, **kwargs):
         # Path fraction bin edges to be used to digitize path fraction
@@ -160,8 +202,15 @@ class PptDig(ComputedBase):
         ppt_dig_df = ppt_dig_df.reset_index()
         insert_analysis_table_entry(self, [ppt_dig_df], key)
 
-    def fetch1_dataframe(self, object_id_name=None, restore_empty_nwb_object=True, df_index_name="time"):
-        return super().fetch1_dataframe(object_id_name, restore_empty_nwb_object, df_index_name)
+    def fetch1_dataframe(
+        self,
+        object_id_name=None,
+        restore_empty_nwb_object=True,
+        df_index_name="time",
+    ):
+        return super().fetch1_dataframe(
+            object_id_name, restore_empty_nwb_object, df_index_name
+        )
 
 
 @schema
@@ -179,7 +228,8 @@ class PptRCBSel(SelBase):
         if x1 != x2:
             raise Exception(
                 f"bin_width in RaisedCosineBasisParams must match ppt_bin_width in PptDigParams. "
-                f"These are respectively {x1} and {x2}")
+                f"These are respectively {x1} and {x2}"
+            )
         super().insert1(key, **kwargs)
 
     # Override parent class method to ensure bin width matches across raised cosine basis and fraction path traversed,
@@ -188,10 +238,23 @@ class PptRCBSel(SelBase):
         if key_filter is None:
             key_filter = dict()
         # GLM analysis (path)
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params
+        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+            get_glm_default_params,
+        )
+
         default_params = get_glm_default_params(
-            ["ppt_dig_param_name", "path_res_time_bins_pool_param_name", "path_raised_cosine_basis_param_name"])
-        key_filter = add_defaults(key_filter, default_params, add_nonexistent_keys=True, require_match=True)
+            [
+                "ppt_dig_param_name",
+                "path_res_time_bins_pool_param_name",
+                "path_raised_cosine_basis_param_name",
+            ]
+        )
+        key_filter = add_defaults(
+            key_filter,
+            default_params,
+            add_nonexistent_keys=True,
+            require_match=True,
+        )
         keys = []
         for k1 in (RaisedCosineBasis & key_filter).fetch("KEY"):
             bin_width = (RaisedCosineBasisParams & k1).fetch1("bin_width")
@@ -217,26 +280,51 @@ class PptRCB(CovariateRCB):
     def make(self, key):
         ppt_dig = (PptDig & key).fetch1_dataframe().digitized_ppt
         basis_functions = (RaisedCosineBasis & key).fetch1_basis_functions()
-        ppt_rcb_df = sample_basis_functions(ppt_dig, basis_functions, tolerate_outside_basis_domain=True)
+        ppt_rcb_df = sample_basis_functions(
+            ppt_dig, basis_functions, tolerate_outside_basis_domain=True
+        )
         insert_analysis_table_entry(self, [ppt_rcb_df], key, reset_index=True)
 
     def delete_(self, key, safemode=False):
-        from src.jguides_2024.glm.jguidera_measurements_interp_pool import XInterpPool
+        from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+            XInterpPool,
+        )
+
         delete_(self, [XInterpPool], key, safemode)
 
 
 def populate_jguidera_ppt_interp(
-        key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_ppt_interp"
-    upstream_schema_populate_fn_list = [populate_jguidera_res_time_bins_pool, populate_jguidera_ppt_trials]
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+    upstream_schema_populate_fn_list = [
+        populate_jguidera_res_time_bins_pool,
+        populate_jguidera_ppt_trials,
+    ]
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_ppt_interp():
-    from src.jguides_2024.glm.jguidera_measurements_interp_pool import drop_jguidera_measurements_interp_pool
-    from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import drop_jguidera_path_firing_rate_vector
-    from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import drop_jguidera_firing_rate_difference_vector_similarity_ave
+    from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+        drop_jguidera_measurements_interp_pool,
+    )
+    from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
+        drop_jguidera_path_firing_rate_vector,
+    )
+    from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
+        drop_jguidera_firing_rate_difference_vector_similarity_ave,
+    )
+
     drop_jguidera_measurements_interp_pool()
     drop_jguidera_path_firing_rate_vector()
     drop_jguidera_firing_rate_difference_vector_similarity_ave()

@@ -13,6 +13,6 @@ def print_attr_sizes(obj, print_threshold=None):
 
     print(f"The following object attributes exceed {print_threshold} MB:")
     for attr in dir(obj):
-        attr_size = sys.getsizeof(getattr(obj, attr))/(10**6)  # mb
+        attr_size = sys.getsizeof(getattr(obj, attr)) / (10**6)  # mb
         if attr_size >= print_threshold:
             print(f"{attr} is {attr_size} MB")

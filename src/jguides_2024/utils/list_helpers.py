@@ -11,7 +11,9 @@ def check_single_element(x):
     """
     unique_elements = np.unique(list(x))
     if len(unique_elements) != 1:
-        raise Exception(f"Should have found one unique element in list but found {len(unique_elements)}")
+        raise Exception(
+            f"Should have found one unique element in list but found {len(unique_elements)}"
+        )
 
 
 def check_single_element(x, tolerate_error=False, error_message=None):
@@ -40,25 +42,39 @@ def check_return_single_element(x, tolerate_error=False, error_message=None):
     # Return both whether passed check and single element (if passed check), because if just returned single element
     # (or some other variable z (e.g. None) if multiple elements), could not distinguish [z] from [x1, x2, ...]
 
-    return namedtuple("SingleElement", "passed_check single_element")(passed_check, single_element)
+    return namedtuple("SingleElement", "passed_check single_element")(
+        passed_check, single_element
+    )
 
 
 def check_lists_same_length(lists, lists_description="Lists"):
     var_lengths = np.unique(list(map(len, lists)))
     if len(var_lengths) != 1:
-        raise Exception(f"{lists_description} must all have same length, but set of lengths is: {var_lengths}")
+        raise Exception(
+            f"{lists_description} must all have same length, but set of lengths is: {var_lengths}"
+        )
 
 
 def duplicate_inside_elements(x, num_duplicates=2):
-    return ([x[0]]
-            + list(itertools.chain.from_iterable([[x_i]*num_duplicates
-                                                  for idx, x_i in enumerate(x)
-                                                  if idx not in [0, len(x) - 1]]))
-            + [x[-1]])
+    return (
+        [x[0]]
+        + list(
+            itertools.chain.from_iterable(
+                [
+                    [x_i] * num_duplicates
+                    for idx, x_i in enumerate(x)
+                    if idx not in [0, len(x) - 1]
+                ]
+            )
+        )
+        + [x[-1]]
+    )
 
 
 def duplicate_elements(x, num_duplicates=2):
-    return list(itertools.chain.from_iterable([[x_i]*num_duplicates for x_i in x]))
+    return list(
+        itertools.chain.from_iterable([[x_i] * num_duplicates for x_i in x])
+    )
 
 
 def remove_duplicate_combinations(x):
@@ -84,7 +100,9 @@ def unzip_adjacent_elements(x):
 def append_multiple_lists(variables, lists):
     # Check inputs
     if len(variables) != len(lists):
-        raise Exception(f"number of lists to be appended must be same as number of variables")
+        raise Exception(
+            f"number of lists to be appended must be same as number of variables"
+        )
     appended_lists = []
     for variable, list_ in zip(variables, lists):
         list_.append(variable)
@@ -101,7 +119,9 @@ def check_alternating_elements(x, element_1, element_2):
     x2_idxs = np.where(x == element_2)[0]  # where array has second element
     # Check that x contains only elements 1 and 2
     if len(x1_idxs) + len(x2_idxs) != len(x):
-        raise Exception(f"passed x contains elements other than {element_1} and {element_2}")
+        raise Exception(
+            f"passed x contains elements other than {element_1} and {element_2}"
+        )
     # Return if one element in x
     if len(x) == 1:
         return
@@ -109,12 +129,23 @@ def check_alternating_elements(x, element_1, element_2):
     # To do so, must index into idxs lists above. Use shortest length across these lists to avoid
     # indexing error.
     end_idx = np.min(list(map(len, [x1_idxs, x2_idxs])))
-    if abs(check_return_single_element(x1_idxs[:end_idx] - x2_idxs[:end_idx]).single_element) != 1:
-        raise Exception(f"List does not contain alternating {element_1} and {element_2}")
+    if (
+        abs(
+            check_return_single_element(
+                x1_idxs[:end_idx] - x2_idxs[:end_idx]
+            ).single_element
+        )
+        != 1
+    ):
+        raise Exception(
+            f"List does not contain alternating {element_1} and {element_2}"
+        )
     # Check that last idx not same as second to last (escapes check above)
     if len(x) > 1:
         if x[-1] == x[-2]:
-            raise Exception(f"List does not contain alternating {element_1} and {element_2}")
+            raise Exception(
+                f"List does not contain alternating {element_1} and {element_2}"
+            )
 
 
 def element_frequency(x, elements=None):
@@ -126,4 +157,3 @@ def element_frequency(x, elements=None):
 def check_in_list(x, list_, x_name="x"):
     if x not in list_:
         raise Exception(f"{x_name} should be in {list_} but is {x}")
-
