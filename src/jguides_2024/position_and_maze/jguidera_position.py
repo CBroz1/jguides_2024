@@ -108,7 +108,7 @@ def get_fractional_edge_position(
         >= 0
     ):  # check that non-nan fractional edge positions are nonnegative
         raise Exception(
-            f"Non-nan fractional edge position_and_maze values should all be nonnegative"
+            "Non-nan fractional edge position_and_maze values should all be nonnegative"
         )
     return fractional_edge_position
 
@@ -484,8 +484,8 @@ class IntervalLinearizedPositionRescaled(ComputedBase):
             track_segment_ids[valid_pos_bool] == edge_idxs[valid_pos_bool]
         ):
             raise Exception(
-                f"Edges corresponding to linear position_and_maze identified using edge_linear_position "
-                f"AnnotatedTrackGraph do not match those using track_segment_id"
+                "Edges corresponding to linear position_and_maze identified using edge_linear_position "
+                "AnnotatedTrackGraph do not match those using track_segment_id"
             )
 
         # Also check that edges in specific track graph and universal track graph match
@@ -496,7 +496,7 @@ class IntervalLinearizedPositionRescaled(ComputedBase):
             )
         ):
             raise Exception(
-                f"Edge names in track graph do not match those in universal track graph"
+                "Edge names in track graph do not match those in universal track graph"
             )
 
         # Now find fractional distance along edge for each linear position_and_maze sample

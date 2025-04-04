@@ -38,7 +38,7 @@ class KFoldTrainTestSplitParams(SecKeyParamsBase):
         # Require random_state to be -1 if use_random_state is 0 (False)
         if not key["use_random_state"] and key["random_state"] != -1:
             raise Exception(
-                f"random_state must be -1 if use_random_state is 0 (False)"
+                "random_state must be -1 if use_random_state is 0 (False)"
             )
         super().insert1(key, **kwargs)
 

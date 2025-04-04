@@ -246,7 +246,7 @@ bootstrap_dfs = hierarchical_bootstrap(
 # subsampling units, proceeding from a minimum size in increments of one up to size of recorded population
 min_units = 5  # smallest number of units to subsample
 
-print(f"Getting cum_var_exp_subsample_df...")
+print("Getting cum_var_exp_subsample_df...")
 
 data_list = []
 # Loop through nwb file names

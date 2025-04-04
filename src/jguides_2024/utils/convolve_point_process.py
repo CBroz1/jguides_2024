@@ -25,8 +25,8 @@ def convolve_point_process(event_times, kernel_sd, fs=None, sample_times=None):
 
     if sample_times is None and fs is None:
         raise Exception(
-            f"Either times at which to sample convolved point process or rate at which to sample"
-            f"convolved point process must be passed."
+            "Either times at which to sample convolved point process or rate at which to sample"
+            "convolved point process must be passed."
         )
 
     t1 = time.process_time()  # time process
@@ -74,7 +74,7 @@ def convolve_point_process_efficient(
 
     # If fewer than two time bins, cannot compute sampling rate, and therefore cannot convolve
     if len(time_bins) < 2:
-        raise Exception(f"Need at least two time bins to convolve")
+        raise Exception("Need at least two time bins to convolve")
 
     # Define sampling rate
     time_bin_diff = np.diff(time_bins)
@@ -82,7 +82,7 @@ def convolve_point_process_efficient(
         abs(np.unique(time_bin_diff) - np.mean(time_bin_diff)) > error_tolerance
     ):  # check that sampling rate fairly constant
         raise Exception(
-            f"Sample time differences deviate from average more than error tolerance"
+            "Sample time differences deviate from average more than error tolerance"
         )
     fs = np.mean(time_bin_diff)
 

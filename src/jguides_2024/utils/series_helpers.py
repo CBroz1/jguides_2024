@@ -4,9 +4,9 @@ import pandas as pd
 
 def check_series(x, require_index_name=False):
     if not isinstance(x, pd.Series):
-        raise Exception(f"vector must be a series")
+        raise Exception("vector must be a series")
     if require_index_name and x.index.name is None:
-        raise Exception(f"series index must have a name")
+        raise Exception("series index must have a name")
 
 
 def series_between_bool(series, valid_intervals):

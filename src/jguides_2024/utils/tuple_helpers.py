@@ -38,7 +38,7 @@ def unzip_as_list(list_tuples):
 def reverse_pair(pair):
     # Check that pair passed
     if len(pair) != 2:
-        raise Exception(f"pair must have exactly two elements")
+        raise Exception("pair must have exactly two elements")
     return (pair[1], pair[0])
 
 
@@ -49,5 +49,5 @@ def add_reversed_pairs(pairs):
     # allow this)
     unique_element_reversed_pairs = [x for x in reversed_pairs if x[0] != x[1]]
     if any([x in pairs for x in unique_element_reversed_pairs]):
-        raise Exception(f"at least one reversed pair already in passed pairs")
+        raise Exception("at least one reversed pair already in passed pairs")
     return list(pairs) + reversed_pairs

@@ -21,7 +21,7 @@ line-length = 80
 indent-width = 4
 
 [tool.ruff.format]
-quote_style = "double"
+quote-style = "double"
 
 [tool.ruff.lint]
 ignore = ["F401", "E402", "E501"]

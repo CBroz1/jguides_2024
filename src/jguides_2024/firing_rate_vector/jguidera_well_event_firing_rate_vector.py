@@ -140,7 +140,7 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
         # With about 9000 entries in keys, takes a minute or so to run
 
         if verbose:
-            print(f"getting potential keys for TimeRelWAFRVecSel...")
+            print("getting potential keys for TimeRelWAFRVecSel...")
 
         # Define key filter if not passed
         if key_filter is None:
@@ -257,7 +257,7 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
 
                     # No unit subset (use make_keys function):
                     if verbose:
-                        print(f"on no unit subset cases...")
+                        print("on no unit subset cases...")
                     brain_region_units_param_name = (
                         BrainRegionUnitsParams().lookup_single_epoch_param_name(
                             nwb_file_name, epoch, min_epoch_mean_firing_rate
@@ -285,7 +285,7 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
 
                     # Unit subset (do not use make_keys function):
                     if verbose:
-                        print(f"on unit subset cases...")
+                        print("on unit subset cases...")
                     for unit_subset_iteration in unit_subset_iterations:
                         unit_params_2.update(
                             {"unit_subset_iteration": unit_subset_iteration}

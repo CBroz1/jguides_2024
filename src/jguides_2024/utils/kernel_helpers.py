@@ -29,7 +29,7 @@ class ExponentialKernel:
 
     def _check_inputs(self):
         if self.kernel_parameters["kernel_offset"] < 0:
-            raise Exception(f"kernel_offset must be nonnegative")
+            raise Exception("kernel_offset must be nonnegative")
 
     def _get_kernel(self):
         params = self.kernel_parameters

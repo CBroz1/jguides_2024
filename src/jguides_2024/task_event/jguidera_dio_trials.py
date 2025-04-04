@@ -138,7 +138,7 @@ class DioWellTrials(ComputedBase):
             departure_well_names
             == arrival_well_names[: len(departure_well_names)]
         ):
-            raise Exception(f"Departure and arrival well names not aligned")
+            raise Exception("Departure and arrival well names not aligned")
         # Check that there is exactly one departure time between each arrival time
         if (
             unpack_single_element(
@@ -156,7 +156,7 @@ class DioWellTrials(ComputedBase):
             well_durations[np.isfinite(well_durations)] > 0
         ):  # check that departures after arrivals
             raise Exception(
-                f"All departure times should come after arrival times but this is not the case"
+                "All departure times should come after arrival times but this is not the case"
             )
 
         # Get trial performance and reward outcomes and restrict to entries corresponding to trials
@@ -167,7 +167,7 @@ class DioWellTrials(ComputedBase):
             == performance_entry["current_wells"][: len(arrival_well_names)]
         ):
             raise Exception(
-                f"Sequence of well visits from dios not matched in alternation task performance (statescript)"
+                "Sequence of well visits from dios not matched in alternation task performance (statescript)"
             )
         performance_outcomes, reward_outcomes = (
             performance_entry["performance_outcomes"][
@@ -260,7 +260,7 @@ class DioWellTrials(ComputedBase):
             == performance_table_reward_idxs[: len(dio_reward_idxs)]
         ):
             raise Exception(
-                f"Dio pump event trials do not match rewarded trials in AlternationTaskPerformance table"
+                "Dio pump event trials do not match rewarded trials in AlternationTaskPerformance table"
             )
 
         # Check that correct trials have a corresponding dio pump time, with exception of last correct trial,
@@ -275,8 +275,8 @@ class DioWellTrials(ComputedBase):
         )
         if not all([j in dio_reward_idxs for j in correct_trial_idxs[:-1]]):
             raise Exception(
-                f"A dio pump event was not detected during at least one trial labeled as correct in "
-                f"AlternationTaskPerformance table"
+                "A dio pump event was not detected during at least one trial labeled as correct in "
+                "AlternationTaskPerformance table"
             )
 
         # Define epoch trial numbers
@@ -394,7 +394,7 @@ class DioWellTrials(ComputedBase):
             valid_bool = leave_bool
         else:
             raise Exception(
-                f"stay_leave_trial_type must be stay_trial or leave_trial"
+                "stay_leave_trial_type must be stay_trial or leave_trial"
             )
 
         # Return as dictionary where keys are epoch trial numbers if indicated
@@ -655,7 +655,7 @@ class DioWellTrials(ComputedBase):
         # Restrict to "stay" or "leave" trials at well
         if "stay_trial" in restrictions and "leave_trial" in restrictions:
             raise Exception(
-                f"Only one of stay_trial and leave_trial can be in restrictions"
+                "Only one of stay_trial and leave_trial can be in restrictions"
             )
 
         elif "stay_trial" in restrictions or "leave_trial" in restrictions:
@@ -757,7 +757,7 @@ class DioWellTrials(ComputedBase):
         trial_times = self.epoch_trial_times()
         if len(trial_nums) != len(trial_times):
             raise Exception(
-                f"different number of trial numbers and trial times"
+                "different number of trial numbers and trial times"
             )
 
         # Find the index of the trial interval in which each time falls
@@ -920,7 +920,7 @@ class DioWellDDTrials(WellEventTrialsBaseExt):
             == dd_trials_df.trial_end_times.values[:-1]
         ):
             raise Exception(
-                f"current code assumes trial n start time same as trial n - 1 end time, and this was not the case"
+                "current code assumes trial n start time same as trial n - 1 end time, and this was not the case"
             )
 
         # Get dd trial idxs corresponding to each external time sample
@@ -1418,8 +1418,8 @@ class DioWellArrivalTrialsSub(WellEventTrialsBase):
                 np.concatenate((shared_bool_1[:-1], shared_bool_2[:-1]))
             ):
                 raise Exception(
-                    f"Expect only the last trial can differ between arrival/departure trials table and arrival trials "
-                    f"table, but this wasnt the case"
+                    "Expect only the last trial can differ between arrival/departure trials table and arrival trials "
+                    "table, but this wasnt the case"
                 )
             # Account for different last trial across tables
             # 1) rat at well when epoch ended --> last trial is stay trial --> add a True to valid_bool to reflect

@@ -43,7 +43,7 @@ def check_set_equality(
     if not passed_check and issue_warning:
         # note that error would have already been raised if tolerate_error = False, so no need to include in condition
         # above
-        warnings.warn(f"Sets not equal")
+        warnings.warn("Sets not equal")
 
     # If want to tolerate error, return result of check
     return passed_check

@@ -112,7 +112,7 @@ def plot_basis_functions(
     )
     if len(basis_function_names) != np.shape(basis_functions)[1]:
         raise Exception(
-            f"basis_function_names must be same length as basis_functions"
+            "basis_function_names must be same length as basis_functions"
         )
     for idx, (x, bf_name) in enumerate(
         zip(basis_functions.T, basis_function_names)
@@ -182,7 +182,7 @@ class RaisedCosineBasis:
     def _check_inputs(self):
         if len(self.domain) != 2:
             raise Exception(
-                f"domain for basis functions must have exactly two members"
+                "domain for basis functions must have exactly two members"
             )
 
     def _get_basis_bin_edges(self):
@@ -250,7 +250,7 @@ class SampledRaisedCosineBasis:
             self.measurements.between(domain[0], domain[1], inclusive="left")
         ):  # inclusive left to match np.digitize behavior
             raise Exception(
-                f"All measurements must be in the half-open set: [domain[0], domain[1])"
+                "All measurements must be in the half-open set: [domain[0], domain[1])"
             )
 
     def _get_basis(
@@ -296,7 +296,7 @@ class RelativeMeasureBasis:
 
     def _check_inputs(self):
         if not all([isinstance(x, int) for x in self.basis_bin_lags]):
-            raise Exception(f"All elements of basis_bin_lags must be integers")
+            raise Exception("All elements of basis_bin_lags must be integers")
 
     def _get_basis_functions(self):
         return pd.DataFrame(

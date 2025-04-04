@@ -120,7 +120,7 @@ def populate_IntervalPositionInfo(
 def populate_position_tables_wrapper(keys=None, tolerate_error=False):
     # Check keys not dict (to signal to user if a key was accidentally passed)
     if isinstance(keys, dict):
-        raise Exception(f"keys should be a list of dictionaries, not a dict")
+        raise Exception("keys should be a list of dictionaries, not a dict")
 
     # Check whether to get default keys (if keys is None or [None])
     get_default_keys = False  # default

@@ -135,7 +135,7 @@ def calculate_occupancy_uneven_sampling_rate(
     measurement_durations[-1] = dt_2[-1]
     measurement_durations[1:-1] = dt_1[1:] + dt_2[:-1]
     if any(np.isnan(measurement_durations)):
-        raise Exception(f"nans in measurement durations")
+        raise Exception("nans in measurement durations")
     # Bin measurements
     measurements_bin = (
         np.digitize(measurements, bins=bin_edges) - 1
@@ -143,7 +143,7 @@ def calculate_occupancy_uneven_sampling_rate(
     if any(measurements_bin < 0) or any(
         measurements_bin > len(bin_edges) - 1
     ):  # check that measurements within bins
-        raise Exception(f"At least some measurements fell outside bin_edges")
+        raise Exception("At least some measurements fell outside bin_edges")
     # Sum durations for each bin
     bins = np.arange(0, len(bin_edges) - 1)
     occupancy = np.asarray(
@@ -227,7 +227,7 @@ def make_rate_map_trodes_epoch(
     if bin_edges is None and bin_width is None:
         raise Exception("bin_width or bin_edges must be passed")
     if bin_edges is not None and bin_width is not None:
-        raise Exception(f"Only bin_edges or bin_width can be passed, not both")
+        raise Exception("Only bin_edges or bin_width can be passed, not both")
     # Define bin edges if not passed
     if bin_edges is None:
         bin_edges = np.asarray(
@@ -267,7 +267,7 @@ def make_1D_rate_map_measurement_bouts(
         map(len, measurement_bouts_t)
     ):
         raise Exception(
-            f"Each bout of measurements must have same number of samples as corresponding time bout"
+            "Each bout of measurements must have same number of samples as corresponding time bout"
         )
 
     # Find event times within bouts and interpolate measurement at these times
@@ -402,15 +402,15 @@ def smooth_mask_rate_map(
     """
 
     if nan_treatment not in ["interpolate", "zero"]:
-        raise Exception(f"nan_treatment must be either interpolate or zero")
+        raise Exception("nan_treatment must be either interpolate or zero")
     if (
         nan_treatment == "interpolate" and bin_edges is None
     ):  # check that bin edges passed if interpolating over nans
-        raise Exception(f"bin_edges must be defined if interpolating over nans")
+        raise Exception("bin_edges must be defined if interpolating over nans")
     if (
         np.sum(np.isinf(event_rate)) > 0
     ):  # check that no infinite values in rate map
-        raise Exception(f"Infinite values in rate map")
+        raise Exception("Infinite values in rate map")
     if sigma is None:  # define sigma is not passed
         sigma = tuple([1] * len(np.shape(event_rate)))
 

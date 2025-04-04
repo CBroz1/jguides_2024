@@ -19,7 +19,7 @@ def make_bin_edges(x, bin_width, match_min_max="min", bins_encompass_x=True):
     """
 
     if match_min_max not in ["min", "max"]:
-        raise Exception(f"match_min_max must be either min or max")
+        raise Exception("match_min_max must be either min or max")
     # Make bin edges that encompass x
     if match_min_max == "min":
         bin_edges = np.arange(np.min(x), np.max(x) + bin_width, bin_width)
@@ -45,7 +45,7 @@ def flatten_bin_edge_tuples(bin_edge_tuples):
     # Confirm that bins are contiguous
     bin_starts, bin_ends = list(map(np.asarray, list(zip(*bin_edge_tuples))))
     if not all(bin_starts[1:] == bin_ends[:-1]):
-        raise Exception(f"bins not contiguous")
+        raise Exception("bins not contiguous")
     return np.concatenate((bin_starts, bin_ends[-1:]))
 
 
@@ -59,9 +59,9 @@ def get_peri_event_bin_edges(peri_event_period, bin_width, event_time=0):
     # Check inputs well defined
     check_monotonic_increasing(peri_event_period)
     if len(peri_event_period) != 2:
-        raise Exception(f"peri_event_period must have exactly two elements")
+        raise Exception("peri_event_period must have exactly two elements")
     if np.diff(peri_event_period)[0] == 0:
-        raise Exception(f"peri_event_period cant have same start and endpoint")
+        raise Exception("peri_event_period cant have same start and endpoint")
     # Relative period AFTER event
     if (
         peri_event_period[0] > 0
@@ -87,5 +87,5 @@ def get_peri_event_bin_edges(peri_event_period, bin_width, event_time=0):
         )
     # Check relative bin edges make sense
     if np.max(abs(np.diff(relative_bin_edges) - bin_width)) > 0.001:
-        raise Exception(f"bin_width not respected by relative_bin_edges")
+        raise Exception("bin_width not respected by relative_bin_edges")
     return event_time + relative_bin_edges

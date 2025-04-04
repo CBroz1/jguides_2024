@@ -213,7 +213,7 @@ class LivermoreD2:
         # check electrode order type valid
         if electrode_order != "dorsal_to_ventral":
             raise Exception(
-                f"Code currently only supports dorsal_to_ventral electrode_order"
+                "Code currently only supports dorsal_to_ventral electrode_order"
             )
         # check ranges valid
         for k, v in {

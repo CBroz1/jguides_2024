@@ -139,7 +139,7 @@ class FRVecEucDist(ComputedBase):
 
         # Check inputs
         if mask_duration < 0:
-            raise Exception(f"mask_duration must be nonnegative")
+            raise Exception("mask_duration must be nonnegative")
 
         # Get time per index in array
         time_bin_width = (
@@ -193,7 +193,7 @@ class FRVecEucDist(ComputedBase):
         # ...Check that specified final number of samples to exclude is non-negative
         for restrictions in [state_restrictions, nn_restrictions]:
             if restrictions["exclude_final_n_samples"] < 0:
-                raise Exception(f"exclude_final_n_samples must be nonnegative")
+                raise Exception("exclude_final_n_samples must be nonnegative")
         # ...Check that nn restrictions are valid
         check_membership(
             nn_restrictions, ["mask_duration", "exclude_final_n_samples"]

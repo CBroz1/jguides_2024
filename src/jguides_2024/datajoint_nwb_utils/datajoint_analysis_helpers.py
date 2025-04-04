@@ -84,7 +84,7 @@ def get_trial_info_by_condition(
         and "dio_well_arrival_trials_param_name" not in key
     ):
         raise Exception(
-            f"If group_trials_by is well_arrival, dio_well_arrival_trials_param_name must be in key"
+            "If group_trials_by is well_arrival, dio_well_arrival_trials_param_name must be in key"
         )
 
     # Get trials information from table
@@ -102,7 +102,7 @@ def get_trial_info_by_condition(
             ]
         ):
             raise Exception(
-                f"restrict_conditions_map was passed, but not all keys in the map are in trial_df"
+                "restrict_conditions_map was passed, but not all keys in the map are in trial_df"
             )
         # Now restrict
         trial_df = df_filter_columns_isin(trial_df, restrict_conditions_map)

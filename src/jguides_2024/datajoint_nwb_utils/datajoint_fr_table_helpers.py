@@ -94,7 +94,7 @@ def _get_info_for_well_trial_table_fr_df(
 
     # Get bin params and make bins relative to event start time
     bin_width = float(
-        (firing_rate_map_params_table & key).fetch1(f"time_bin_width")
+        (firing_rate_map_params_table & key).fetch1("time_bin_width")
     )
     trials_bin_edges, trials_bin_centers, bin_edges, bin_centers = (
         get_well_trials_bin_edges(
@@ -216,8 +216,8 @@ def make_well_trial_table_fr_df(
         {
             "unit_id": unit_ids,
             "rate_map": rate_maps,
-            f"time_bin_centers": [bin_centers] * len(unit_ids),
-            f"time_bin_edges": [bin_edges] * len(unit_ids),
+            "time_bin_centers": [bin_centers] * len(unit_ids),
+            "time_bin_edges": [bin_edges] * len(unit_ids),
             "num_trials": [len(trial_intervals)] * len(unit_ids),
         }
     )

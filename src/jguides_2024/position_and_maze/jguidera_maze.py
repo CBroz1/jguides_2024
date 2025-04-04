@@ -166,7 +166,7 @@ class ForkMazeRewardWellPathPairSel(SelBase):
     def insert1(self, key, **kwargs):
         if key["universal_track_graph_name"] != "fork_maze_universal":
             raise Exception(
-                f"universal_track_graph_name must be fork_maze_universal"
+                "universal_track_graph_name must be fork_maze_universal"
             )
         super().insert1(key, **kwargs)
 
@@ -239,7 +239,7 @@ class MazeElementColorBase(dj.Manual):
 
     @staticmethod
     def _maze_element_name():
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     def get_color_map(self, universal_track_graph_name="fork_maze_universal"):
         names, colors = (
@@ -1028,11 +1028,11 @@ def return_directional_edges(path_names_, path_edge_names_list_):
         np.asarray([len(k) for j in path_edge_names_list_ for k in j]) == 2
     ):
         raise Exception(
-            f"Path edge names list must be a list of path edges, each of which is a length two array-like"
+            "Path edge names list must be a list of path edges, each of which is a length two array-like"
         )
     if not np.shape(np.asarray(path_names_))[1] == 2:
         raise Exception(
-            f"Path names must be a 2D array-like, where second dimension (nodes) are in columns"
+            "Path names must be a 2D array-like, where second dimension (nodes) are in columns"
         )
 
     # Convert to array
@@ -1354,7 +1354,7 @@ def populate_track_graph_tables_fork_maze():
         for s in x:
             if "right" in s and "left" in s:
                 raise Exception(
-                    f"Both left and right found in string; code not built to account for this"
+                    "Both left and right found in string; code not built to account for this"
                 )
             if "right" in s:
                 new_list.append(s.replace("right", "left"))
@@ -1485,8 +1485,8 @@ class MazePathWell:
             ]
         ):
             raise Exception(
-                f"Performance outcomes do not have expected form (begin with correct, "
-                f"incorrect or neutral followed by underscore)"
+                "Performance outcomes do not have expected form (begin with correct, "
+                "incorrect or neutral followed by underscore)"
             )
         correct_outcome_idxs = [
             idx
@@ -1525,7 +1525,7 @@ class MazePathWell:
         # Check inputs
         if rewarded_wells and (nwb_file_name is None or epoch is None):
             raise Exception(
-                f"If rewarded_wells is True, must passed both nwb_file_name and epoch"
+                "If rewarded_wells is True, must passed both nwb_file_name and epoch"
             )
         # check valid well order
         check_membership([well_order], ["left_right", None])
@@ -1545,7 +1545,7 @@ class MazePathWell:
         if well_order == "left_right":
             ordered_well_names = np.concatenate(
                 [
-                    ["left_well", f"{home}_well", f"right_well"]
+                    ["left_well", f"{home}_well", "right_well"]
                     for home in ["center", "handle"]
                 ]
             )

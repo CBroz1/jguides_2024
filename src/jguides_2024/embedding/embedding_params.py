@@ -523,7 +523,7 @@ class EmbeddingParams:
         # Raise error if multiple corresponding embedding params for passed key
         if num_matching_entries > 1:
             raise Exception(
-                f"Multiple matching entries in embedding params for passed key"
+                "Multiple matching entries in embedding params for passed key"
             )
 
         return self.embedding_params[valid_bool]
@@ -539,7 +539,7 @@ class EmbeddingParams:
 
         # Make sure all necessary inputs passed for params to be updated
         if "zoom" in param_names and ax is None:
-            raise Exception(f"Must pass ax to apply zoom params")
+            raise Exception("Must pass ax to apply zoom params")
 
         if verbose:
             print(f"Applying params for {key}...")

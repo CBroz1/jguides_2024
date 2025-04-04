@@ -357,13 +357,13 @@ def get_fig_axes(
     # Check inputs not under or overspecified
     if np.sum([x is None for x in [num_rows, num_columns, num_subplots]]) != 1:
         raise Exception(
-            f"Exactly two of num_rows, num_columns, num_subplots must be passed"
+            "Exactly two of num_rows, num_columns, num_subplots must be passed"
         )
     if figsize is not None and (
         subplot_width is not None or subplot_height is not None
     ):
         raise Exception(
-            f"If figsize is passed, subplot_width and subplot_height should be None"
+            "If figsize is passed, subplot_width and subplot_height should be None"
         )
 
     # Define missing parameters
@@ -449,7 +449,7 @@ def get_ax_for_layout(axes, plot_num, layout="left_right"):
             )  # find row/column for current plot
         return axes[row, col]  # get axis for current plot
     else:
-        raise Exception(f"axes do not conform to expected cases")
+        raise Exception("axes do not conform to expected cases")
 
 
 def plot_distribution_confidence_interval(x, bins=None, alpha=0.05, ax=None):
@@ -881,9 +881,9 @@ def plot_violin_or_box(
     # Check inputs
     if comparison_pairs is not None:
         if len(comparison_pairs) < 2:
-            raise Exception(f"Need at least two items in comparison_pairs")
+            raise Exception("Need at least two items in comparison_pairs")
     if save_fig and file_name_save is None:
-        raise Exception(f"file_name_save must be passed if save_fig is True")
+        raise Exception("file_name_save must be passed if save_fig is True")
     check_membership([plot_type], ["box", "violin"])  # check plot_type valid
 
     # Unpack figure / axis if passed, otherwise initialize

@@ -258,7 +258,7 @@ class EDStorageParams(dj.Manual):
             {
                 "storage_param_name": "nimbus",
                 "storage_params": {
-                    "path_results": f"/nimbus/jguidera/decoding/"
+                    "path_results": "/nimbus/jguidera/decoding/"
                 },
             }
         ]
@@ -524,7 +524,7 @@ class EdenoDecodeSel(SelBase):
 
                             # Add keys
                             if verbose:
-                                print(f"Adding key...")
+                                print("Adding key...")
                             keys.append(copy.deepcopy(insert_key))
 
         return keys
@@ -764,8 +764,8 @@ class EdenoDecode(ComputedBase):
 
         if "clusterless" not in kwargs:
             raise Exception(
-                f"The boolean variable clusterless indicating whether or not to use clusterless "
-                f"decoding must be passed in kwargs"
+                "The boolean variable clusterless indicating whether or not to use clusterless "
+                "decoding must be passed in kwargs"
             )
 
         # Define inputs to class based on whether using clusterless decoder or not
@@ -794,7 +794,7 @@ class EdenoDecode(ComputedBase):
             key_subset.update({"upstream_obj": self.upstream_obj})
 
         if kwargs["clusterless"]:
-            raise Exception(f"Need to implement unit marks object")
+            raise Exception("Need to implement unit marks object")
         else:
             spikes_obj = SortedSpikesIndicatorData(
                 **key_subset
@@ -936,14 +936,14 @@ class EdenoDecode(ComputedBase):
 
         # Check inputs
         if use_gpu and gpu_id is None:
-            raise Exception(f"gpu_id must not be None if use_gpu is True")
+            raise Exception("gpu_id must not be None if use_gpu is True")
 
         # Fit classifier using GPU
         if use_gpu:
             with cp.cuda.Device(gpu_id):
-                print(f"fitting...")
+                print("fitting...")
                 classifier.fit(position, train_spikes, **fit_params)
-                print(f"predicting...")
+                print("predicting...")
                 results = classifier.predict(
                     spikes=test_spikes, time=test_spikes.index, **predict_params
                 )
@@ -1006,12 +1006,12 @@ class EdenoDecode(ComputedBase):
         # ...Check that track_graph_idx passed if decode variable is not position_and_maze
         if decode_variable != "pos" and "track_graph_idx" not in kwargs:
             raise Exception(
-                f"track_graph_idx must be passed if decode_variable is not pos"
+                "track_graph_idx must be passed if decode_variable is not pos"
             )
         # ...Check that only_two_junction_paths passed if decoding ppt
         if decode_variable == "ppt" and "only_two_junction_paths" not in kwargs:
             raise Exception(
-                f"only_two_junction_paths must be passed if decode_variable is ppt"
+                "only_two_junction_paths must be passed if decode_variable is ppt"
             )
 
         # Get inputs if not passed
@@ -1485,7 +1485,7 @@ class EdenoDecode(ComputedBase):
         # Take subset of spikes and position_and_maze data where the two have matching indices
         if merge_key["clusterless"]:
             # TODO: write code to find matching indices in clusterless case
-            raise Exception(f"Must write this code")
+            raise Exception("Must write this code")
         else:
             for x in ["train_epoch", "test_epoch"]:
                 pos_map[x]["position_df"], spikes_map[x] = match_two_dfs(
@@ -1691,7 +1691,7 @@ class EdenoDecode(ComputedBase):
                 merge_key["use_gpu"],
             )
             # Store classifier
-            store_params[f"classifier"] = classifier
+            store_params["classifier"] = classifier
 
         else:
             raise Exception(
@@ -2100,7 +2100,7 @@ class EdenoDecode(ComputedBase):
                     )
                 ):
                     raise Exception(
-                        f"at least one of bin_edges, bin_centers, x_vals not uniform across table entries"
+                        "at least one of bin_edges, bin_centers, x_vals not uniform across table entries"
                     )
 
             # Store quantities so can compare to those on next iteration

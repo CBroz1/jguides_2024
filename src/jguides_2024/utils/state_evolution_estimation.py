@@ -90,7 +90,7 @@ class AverageVectorDuringLabeledProgression:
             elif len(unique_labels) > 1:
                 return "mixed"
             else:
-                raise Exception(f"At least one label should have been passed")
+                raise Exception("At least one label should have been passed")
 
         spans_slice_idxs = find_spans_increasing_list(
             self.x.index, self.new_bout_thresh, slice_idxs=True
@@ -139,11 +139,11 @@ class AverageVectorDuringLabeledProgression:
     @staticmethod
     def get_x_pair_int(x_pair):
         if len(x_pair) != 2:
-            raise Exception(f"x_pair_int must have length two")
+            raise Exception("x_pair_int must have length two")
         if x_pair[1] - x_pair[0] != 1:
             raise Exception(
-                f"x_pair_int only applies to difference vectors. For these, x_pair should have components "
-                f"one apart, e.g. (3, 4), or be (-1, 1)"
+                "x_pair_int only applies to difference vectors. For these, x_pair should have components "
+                "one apart, e.g. (3, 4), or be (-1, 1)"
             )
         return x_pair[0]
 
@@ -304,7 +304,7 @@ class AverageVectorDuringLabeledProgression:
         self, vec_df, idxs_name, mask_duration, verbose=True
     ):
         if verbose:
-            print(f"applying closeness mask...")
+            print("applying closeness mask...")
         valid_bool = np.zeros(
             [len(vec_df)] * 2
         )  # entries correspond to bout pairs
@@ -318,7 +318,7 @@ class AverageVectorDuringLabeledProgression:
                 )
         # ...Check that all array components got a mask value
         if np.sum(np.isnan(valid_bool)) > 0:
-            raise Exception(f"Not all values got masked")
+            raise Exception("Not all values got masked")
         if verbose:
             plot_heatmap(valid_bool, **{"title": "closeness_mask"})
         return valid_bool
@@ -328,14 +328,14 @@ class AverageVectorDuringLabeledProgression:
         # Check inputs
         # ...Check x consists of consecutive integers
         if not all([int(x_i) == x_i for x_i in x]):
-            raise Exception(f"all elements in x must be integers")
+            raise Exception("all elements in x must be integers")
         # Require x consists of consecutive integers
         if not all(np.diff(x) == 1):
-            raise Exception(f"x must consist of consecutive integers")
+            raise Exception("x must consist of consecutive integers")
         # ...Check x and bin_centers same length
         if len(x) != len(bin_centers):
             raise Exception(
-                f"x and bin_centers must be same length since these are meant to correspond to each other"
+                "x and bin_centers must be same length since these are meant to correspond to each other"
             )
 
         # Make the following maps:

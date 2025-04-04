@@ -262,7 +262,7 @@ class PoolSelBase(SelBase):
 
     @staticmethod
     def _get_valid_source_table_names():
-        raise Exception(f"Must overwrite in child class")
+        raise Exception("Must overwrite in child class")
 
     # Extend parent class method so can add to list of bad keys those that share the same int_id
     def _get_bad_keys(self):
@@ -566,8 +566,8 @@ class PoolCohortParamsBase(SecKeyParamsBase):
                 )
             if num_passed_check == 0:
                 raise Exception(
-                    f"iterables that make up cohort param name not unique; may result in different "
-                    f"cohort entries containing identical information"
+                    "iterables that make up cohort param name not unique; may result in different "
+                    "cohort entries containing identical information"
                 )
 
         super().insert1(key, skip_duplicates=True)
@@ -674,7 +674,7 @@ class PoolCohortParamsBase(SecKeyParamsBase):
         #  param name iterable.
         if len(self._get_param_name_iterables()) > 1:
             raise Exception(
-                f"Code currently not equipped to work with more than one param name iterable"
+                "Code currently not equipped to work with more than one param name iterable"
             )
 
         secondary_key_subset_map = dict()
@@ -703,7 +703,7 @@ class PoolCohortParamsBase(SecKeyParamsBase):
         )
 
     def lookup_param_name_from_shorthand(self, shorthand_param_name):
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
 
 class PoolCohortBase(CohortBase):
@@ -766,7 +766,7 @@ class EpsCohortParamsBase(SecKeyParamsBase):
 
     @staticmethod
     def _upstream_table():
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     def insert1(self, key, **kwargs):
 

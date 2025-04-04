@@ -343,7 +343,7 @@ def detect_artifacts_across_sort_groups(
     # Check inputs well defined
     if zscore_thresh is None and amplitude_thresh is None:
         raise Exception(
-            f"Either z score or amplitude threshold must be defined"
+            "Either z score or amplitude threshold must be defined"
         )
 
     # Load traces and timestamps
@@ -530,8 +530,8 @@ class ArtifactDetectionAcrossSortGroupsSelection(SelBase):
         # Define ssr cohort entries
         if len([x is None for x in [nwb_file_name, sort_interval_name]]) == 1:
             raise Exception(
-                f"Currently, both nwb_file_name and sort_interval must either both be specified, or "
-                f"neither must be specified"
+                "Currently, both nwb_file_name and sort_interval must either both be specified, or "
+                "neither must be specified"
             )
         if nwb_file_name is not None and sort_interval_name is not None:
             spike_sorting_recording_cohort_param_name = (

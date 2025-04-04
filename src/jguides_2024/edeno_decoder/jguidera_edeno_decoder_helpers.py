@@ -81,7 +81,7 @@ class StackedEdgeTrackGraph(dj.Manual):
             nwb_file_name is None or epoch is None
         ):
             raise Exception(
-                f"Must pass nwb_file_name and epoch if decode_variable is pos"
+                "Must pass nwb_file_name and epoch if decode_variable is pos"
             )
         if (
             decode_variable == "purpt"
@@ -89,7 +89,7 @@ class StackedEdgeTrackGraph(dj.Manual):
             and num_segments is None
         ):
             raise Exception(
-                f"Must pass nwb_file_name and epoch, OR num_segments, if decode_variable is purpt"
+                "Must pass nwb_file_name and epoch, OR num_segments, if decode_variable is purpt"
             )
 
         # Use environment as track graph name for linear position_and_maze

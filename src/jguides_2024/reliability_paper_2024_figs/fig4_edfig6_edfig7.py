@@ -130,7 +130,7 @@ def nn_plot(
             "1^0.05^mask_duration_10^potentially_rewarded_trial_stay_trial"
         )
     else:
-        raise Exception(f"plot_type not recognized")
+        raise Exception("plot_type not recognized")
 
     # Update params
     table_names = ["FRDiffVecCosSimPptNnAveSumm", "FRDiffVecCosSimWANnAveSumm"]

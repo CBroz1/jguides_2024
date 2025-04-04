@@ -547,7 +547,7 @@ class EdenoDecodeErrSummSel(SelBase):
 
                         if verbose:
                             print(
-                                f"Upstream table populated for current key..."
+                                "Upstream table populated for current key..."
                             )
 
                         # Add in summary table param name
@@ -560,7 +560,7 @@ class EdenoDecodeErrSummSel(SelBase):
                                 }
                             ).fetch("edeno_decode_err_summ_param_name"):
                                 if verbose:
-                                    print(f"Adding keys...")
+                                    print("Adding keys...")
                                 # Add summary table param name to key
                                 key.update(
                                     {
@@ -619,7 +619,7 @@ class EdenoDecodeErrSumm(PathWellPopSummBase):
         vals_index_name = EdenoDecodeErr()._get_vals_index_name()
 
         # Find mean error in uniform position_and_maze bins during potentially rewarded trials across the entire epoch
-        print(f"Getting metric_df...")
+        print("Getting metric_df...")
         if (
             bin_params["averaging_method"] == "epoch_average"
             and bin_params["binning_method"] == "uniform"
@@ -773,7 +773,7 @@ class EdenoDecodeErrSumm(PathWellPopSummBase):
                 f"boot_set_name {boot_set_name} not accounted for in code"
             )
 
-        print(f"Getting bootstrap results...")
+        print("Getting bootstrap results...")
 
         boot_results = hierarchical_bootstrap(
             metric_df,

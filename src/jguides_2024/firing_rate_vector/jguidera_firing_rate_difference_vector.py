@@ -42,7 +42,7 @@ class FRDiffVecParams(SecKeyParamsBase):
 
         # Check diff n valid
         if key["diff_n"] < 1:
-            raise Exception(f"diff_n must be greater than zero")
+            raise Exception("diff_n must be greater than zero")
 
         super().insert1(key, **kwargs)
 

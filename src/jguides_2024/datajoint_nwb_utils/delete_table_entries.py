@@ -42,7 +42,7 @@ def delete_curation_table_entries(key, safemode=True):
     # Check inputs
     if "nwb_file_name" not in key:
         raise Exception(
-            f"nwb_file_name must be passed in key in order to delete entries from SpikeSortingRecordingCohortParams"
+            "nwb_file_name must be passed in key in order to delete entries from SpikeSortingRecordingCohortParams"
         )
     (EpochSpikeTimes & key).delete_(key=key, safemode=safemode)
     (Curation & key).delete(safemode=safemode)

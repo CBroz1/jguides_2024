@@ -111,7 +111,7 @@ class EpochSpikeTimes(ComputedBase):
             premaze_duration = 0
             if "no premaze" in key["sort_interval_name"]:
                 if len(PremazeDurations & key) > 1:
-                    raise Exception(f"More than one premaze duration found")
+                    raise Exception("More than one premaze duration found")
                 if len(PremazeDurations & key) == 1:
                     premaze_duration = (PremazeDurations & key).fetch1(
                         "premaze_duration"
@@ -340,7 +340,7 @@ def convert_df_index_unit_name(unit_id_df, sort_group_id, unit_ids=None):
     df = copy.deepcopy(unit_id_df)
     # Check that unit_id is index
     if df.index.name != "unit_id":
-        raise Exception(f"df index must be unit_id")
+        raise Exception("df index must be unit_id")
     # Take subset of unit ids if passed
     if unit_ids is None:
         unit_ids = df.index

@@ -218,7 +218,7 @@ class FRVecEmbSel(AcrossFRVecTypeTableSelBase):
 
         # Insert into upstream tables with non-specific key
         if verbose:
-            print(f"Inserting into tables upstream of FRVecEmb ...")
+            print("Inserting into tables upstream of FRVecEmb ...")
         EpochCohortParams().insert_from_epochs(nwb_file_name, epochs)
         ResTimeBinsPoolCohortParams().insert_entry(
             nwb_file_name,
@@ -298,7 +298,7 @@ class FRVecEmbSel(AcrossFRVecTypeTableSelBase):
             # ...raise error if more entries than expected
             if any(num_entries_fr_vec > 1):
                 raise Exception(
-                    f"multiple entries found in FRVec; key underspecified"
+                    "multiple entries found in FRVec; key underspecified"
                 )
 
             # ...print out if fewer entries than needed to insert into FRVecEmbSel

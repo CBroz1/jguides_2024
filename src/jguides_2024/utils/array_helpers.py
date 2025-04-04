@@ -33,7 +33,7 @@ def min_positive_val_arr(arr, axis=0):
 def stack_adjacent_columns(arr, stack_num_columns):
     # stack_num_columns: number of adjacent columns to stack
     if len(np.shape(arr)) != 2:
-        raise Exception(f"Must pass 2D array")
+        raise Exception("Must pass 2D array")
     num_groups, remainder = divmod(np.shape(arr)[1], stack_num_columns)
     if remainder != 0:
         raise Exception(
@@ -56,7 +56,7 @@ def average_adjacent_columns(
 ):
     # average_num_columns: number of adjacent columns to average
     if len(np.shape(arr)) != 2:
-        raise Exception(f"Must pass 2D array")
+        raise Exception("Must pass 2D array")
     num_groups, remainder = divmod(np.shape(arr)[1], average_num_columns)
     if remainder != 0:
         raise Exception(
@@ -105,7 +105,7 @@ def cartesian_product(x1, x2):
 def check_arrays_equal(arrays):
     ref_arr = arrays[0]
     if not all([(arr == ref_arr).all() for arr in arrays[1:]]):
-        raise Exception(f"arrays not all equal")
+        raise Exception("arrays not all equal")
 
 
 def on_off_diagonal_ratio(arr):
@@ -116,7 +116,7 @@ def on_off_diagonal_ratio(arr):
     arr_copy = copy.deepcopy(arr)
     arr_copy[np.isnan(arr_copy)] = 0
     if not (arr_copy.transpose() == arr_copy).all():
-        raise Exception(f"Passed array must be symmetric (tolerating nans)")
+        raise Exception("Passed array must be symmetric (tolerating nans)")
 
     # Find metric along diagonal in each row
     diagonal_val = np.diagonal(arr)

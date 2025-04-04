@@ -243,7 +243,7 @@ class Ppt(ComputedBase):
 
                 if len(path_fraction_map_entry) > 1:
                     raise Exception(
-                        f"More than one entry found in path_fraction_map for given position/edge"
+                        "More than one entry found in path_fraction_map for given position/edge"
                     )
 
                 elif (

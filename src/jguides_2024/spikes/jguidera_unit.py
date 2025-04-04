@@ -461,7 +461,7 @@ class BrainRegionUnitsParams(SecKeyParamsBase):
         if "unit_subset" in key:
             if not key["unit_subset"] and key["unit_subset_size"] is not None:
                 raise Exception(
-                    f"unit_subset_size must be None if no unit subset"
+                    "unit_subset_size must be None if no unit subset"
                 )
         # Check unit_subset_type valid
         check_membership(
@@ -481,7 +481,7 @@ class BrainRegionUnitsParams(SecKeyParamsBase):
                 ]
             ):
                 raise Exception(
-                    f"unit_subset_size and unit_subset_iteration must be None if unit_subset_type is all"
+                    "unit_subset_size and unit_subset_iteration must be None if unit_subset_type is all"
                 )
 
     @staticmethod
@@ -652,8 +652,8 @@ class BrainRegionUnitsParams(SecKeyParamsBase):
                 )  # insert runs
             else:
                 raise Exception(
-                    f"Need to write function for inserting epochs into EpochsDescription when "
-                    f"epochs not all runs"
+                    "Need to write function for inserting epochs into EpochsDescription when "
+                    "epochs not all runs"
                 )
         epochs_description = EpochsDescription().lookup_epochs_description(
             nwb_file_name, epochs

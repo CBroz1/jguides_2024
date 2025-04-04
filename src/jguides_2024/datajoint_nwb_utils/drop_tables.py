@@ -146,7 +146,7 @@ def drop_dgramling_lfp():
     try:
         get_virtual_module("dgramling_lfp").schema.drop()
     except:
-        print(f"could not drop dgramling lfp, likely because does not exist")
+        print("could not drop dgramling lfp, likely because does not exist")
 
 
 def drop_schema(stop_drop_after_schema=None):
