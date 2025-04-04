@@ -27,19 +27,19 @@ from collections import namedtuple
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.df_helpers import (
     df_filter_columns,
     df_from_data_list,
     df_pop,
     unique_df_column_sets,
 )
-from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
-from src.jguides_2024.utils.parallelization_helpers import show_error
-from src.jguides_2024.utils.stats_helpers import (
+from jguides_2024.utils.for_loop_helpers import print_iteration_progress
+from jguides_2024.utils.parallelization_helpers import show_error
+from jguides_2024.utils.stats_helpers import (
     recursive_resample,
     return_confidence_interval,
 )
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 
 def append_result(x):

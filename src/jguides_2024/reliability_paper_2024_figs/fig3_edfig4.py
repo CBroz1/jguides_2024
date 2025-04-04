@@ -5,42 +5,42 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import custom datajoint tables
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_reliability_paper_nwb_file_names,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
 )
-from src.jguides_2024.glm.analysis_glm import GLMContainer
-from src.jguides_2024.glm.jguidera_el_net import ElNet, ElNetParams
-from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+from jguides_2024.glm.analysis_glm import GLMContainer
+from jguides_2024.glm.jguidera_el_net import ElNet, ElNetParams
+from jguides_2024.glm.jguidera_measurements_interp_pool import (
     XInterpPoolCohortParams,
 )
-from src.jguides_2024.metadata.jguidera_epoch import (
+from jguides_2024.metadata.jguidera_epoch import (
     EpochCohort,
     EpochsDescription,
     EpochsDescriptions,
     RecordingSet,
 )
-from src.jguides_2024.time_and_trials.jguidera_condition_trials import (
+from jguides_2024.time_and_trials.jguidera_condition_trials import (
     ConditionTrialsParams,
 )
-from src.jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
+from jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
     TrainTestSplitPoolSel,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohortParams,
     ResTimeBinsPoolSel,
 )
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.df_helpers import (
     df_filter1_columns,
     df_filter_columns,
     df_from_data_list,
     df_pop,
 )
-from src.jguides_2024.utils.plot_helpers import save_figure
-from src.jguides_2024.utils.save_load_helpers import pickle_file, unpickle_file
-from src.jguides_2024.utils.string_helpers import format_bool
+from jguides_2024.utils.plot_helpers import save_figure
+from jguides_2024.utils.save_load_helpers import pickle_file, unpickle_file
+from jguides_2024.utils.string_helpers import format_bool
 
 analysis_dir = "/home/jguidera/Src/jguides_2024"
 

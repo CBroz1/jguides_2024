@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
     EpsCohortParamsBase,
     PoolBase,
     PoolCohortBase,
@@ -13,45 +13,45 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
     PoolCohortParamsBase,
     PoolSelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     CohortBase,
     ComputedBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     delete_,
     insert1_print,
     insert_analysis_table_entry,
     unique_table_column_sets,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_delay_interval,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.glm.jguidera_basis_function import RaisedCosineBasisParams
-from src.jguides_2024.position_and_maze.jguidera_ppt import PptParams
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.glm.jguidera_basis_function import RaisedCosineBasisParams
+from jguides_2024.position_and_maze.jguidera_ppt import PptParams
+from jguides_2024.position_and_maze.jguidera_ppt_interp import (
     PptDigParams,
     PptRCB,
     populate_jguidera_ppt_interp,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPool,
     ResTimeBinsPoolCohort,
     ResTimeBinsPoolCohortParams,
     ResTimeBinsPoolSel,
 )
-from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
+from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
     TimeRelWADigParams,
     TimeRelWADigSingleAxisParams,
     TimeRelWARCB,
     populate_jguidera_time_relative_to_well_event,
 )
-from src.jguides_2024.utils.dict_helpers import (
+from jguides_2024.utils.dict_helpers import (
     add_defaults,
     check_return_single_dict,
 )
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     unpack_single_element,
 )
@@ -175,7 +175,7 @@ class XInterpPoolSel(PoolSelBase):
         shorthand_params_name = "ppt"
         source_table_name = "PptRCB"
         ppt_param_name = PptParams().get_default_param_name()
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_glm_default_param,
         )
 
@@ -564,7 +564,7 @@ class XInterpPoolCohortEpsCohort(CohortBase):
         return check_return_single_dict(covariate_group_maps)
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.glm.jguidera_el_net import ElNetSel
+        from jguides_2024.glm.jguidera_el_net import ElNetSel
 
         delete_(self, [ElNetSel], key, safemode)
 
@@ -591,7 +591,7 @@ def populate_jguidera_measurements_interp_pool(
 
 
 def drop_jguidera_measurements_interp_pool():
-    from src.jguides_2024.glm.jguidera_el_net import drop_jguidera_el_net
+    from jguides_2024.glm.jguidera_el_net import drop_jguidera_el_net
 
     drop_jguidera_el_net()
     schema.drop()

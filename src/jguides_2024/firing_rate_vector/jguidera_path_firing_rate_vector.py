@@ -5,7 +5,7 @@ import datajoint as dj
 import numpy as np
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
     CovariateAveFRVecParamsBase,
     CovariateAveFRVecSummBase,
     CovariateFRVecAveSelBase,
@@ -19,51 +19,51 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector
     CovariateFRVecTrialAveBase,
     PathFRVecSummBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     SecKeyParamsBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     delete_,
     drop_,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_jguidera_nwbf_names,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
     FRVec,
     populate_jguidera_firing_rate_vector,
 )
-from src.jguides_2024.metadata.jguidera_brain_region import (
+from jguides_2024.metadata.jguidera_brain_region import (
     BrainRegionCohort,
     CurationSet,
 )
-from src.jguides_2024.metadata.jguidera_epoch import (
+from jguides_2024.metadata.jguidera_epoch import (
     EpochsDescription,
     RecordingSet,
     RunEpoch,
 )
-from src.jguides_2024.position_and_maze.jguidera_ppt import PptParams
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
+from jguides_2024.position_and_maze.jguidera_ppt import PptParams
+from jguides_2024.position_and_maze.jguidera_ppt_interp import (
     PptDig,
     PptDigParams,
     populate_jguidera_ppt_interp,
 )
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import (
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
     BrainRegionUnitsCohortType,
     BrainRegionUnitsParams,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDDTrials,
     DioWellTrials,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolSel,
 )
-from src.jguides_2024.utils.dict_helpers import make_keys
-from src.jguides_2024.utils.state_evolution_estimation import (
+from jguides_2024.utils.dict_helpers import make_keys
+from jguides_2024.utils.state_evolution_estimation import (
     AverageVectorDuringLabeledProgression,
 )
 

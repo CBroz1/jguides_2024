@@ -1,16 +1,16 @@
 import datajoint as dj
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_schema_table_names_from_file,
     insert_analysis_table_entry,
     populate_insert,
 )
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file
-from src.jguides_2024.datajoint_nwb_utils.unpack_nwbf import (
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file
+from jguides_2024.datajoint_nwb_utils.unpack_nwbf import (
     get_epoch_timestamps_nwbf,
 )
 

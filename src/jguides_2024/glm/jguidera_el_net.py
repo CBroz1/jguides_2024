@@ -6,15 +6,15 @@ import pandas as pd
 import spyglass as nd
 import statsmodels.api as sm
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_reliability_paper_nwb_file_names,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SecKeyParamsBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     _get_idx_column_name,
     delete_,
     fetch1_tolerate_no_entry,
@@ -25,44 +25,44 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     restore_df_row_idx,
     unique_table_column_sets,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.glm.glm_helpers import ElasticNetContainer
-from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.glm.glm_helpers import ElasticNetContainer
+from jguides_2024.glm.jguidera_measurements_interp_pool import (
     XInterpPoolCohortEpsCohort,
     XInterpPoolCohortParams,
     populate_jguidera_measurements_interp_pool,
 )
-from src.jguides_2024.metadata.jguidera_brain_region import (
+from jguides_2024.metadata.jguidera_brain_region import (
     BrainRegionCohort,
     CurationSet,
 )
-from src.jguides_2024.metadata.jguidera_epoch import (
+from jguides_2024.metadata.jguidera_epoch import (
     EpochCohort,
     EpochsDescription,
 )
-from src.jguides_2024.spikes.jguidera_res_spikes import (
+from jguides_2024.spikes.jguidera_res_spikes import (
     ResEpochSpikeCounts,
     populate_jguidera_res_spikes,
 )
-from src.jguides_2024.spikes.jguidera_unit import (
+from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
     BrainRegionUnitsParams,
     EpsUnits,
 )
-from src.jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
+from jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
     TrainTestSplitPool,
     populate_jguidera_cross_validation_pool,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohortParams,
 )
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.df_helpers import (
     check_same_index,
     df_pop,
     zip_df_columns,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     unpack_single_element,
 )
@@ -345,7 +345,7 @@ class ElNet(ComputedBase):
         nwb_file_names=None,
     ):
 
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_glm_default_param,
         )
 

@@ -11,110 +11,110 @@ from development.jguidera_well_departure_firing_rate_map import (
     drop_jguidera_well_departure_firing_rate_map,
 )
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_virtual_module,
 )
-from src.jguides_2024.edeno_decoder.jguidera_edeno_decoder_helpers import (
+from jguides_2024.edeno_decoder.jguidera_edeno_decoder_helpers import (
     drop_jguidera_edeno_decoder_helpers,
 )
-from src.jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
+from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
     drop_jguidera_ppt_firing_rate_map,
 )
-from src.jguides_2024.firing_rate_map.jguidera_well_arrival_departure_firing_rate_map import (
+from jguides_2024.firing_rate_map.jguidera_well_arrival_departure_firing_rate_map import (
     drop_jguidera_well_arrival_departure_firing_rate_map,
 )
-from src.jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (
+from jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (
     drop_jguidera_well_arrival_firing_rate_map,
 )
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
     drop_jguidera_firing_rate_difference_vector,
 )
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
     drop_jguidera_firing_rate_difference_vector_similarity,
 )
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import (
     drop_jguidera_firing_rate_difference_vector_similarity_ave,
 )
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
     drop_jguidera_firing_rate_vector,
 )
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
     drop_jguidera_firing_rate_vector_euclidean_distance,
 )
-from src.jguides_2024.glm.jguidera_basis_function import (
+from jguides_2024.glm.jguidera_basis_function import (
     drop_jguidera_basis_function,
 )
-from src.jguides_2024.glm.jguidera_el_net import drop_jguidera_el_net
-from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+from jguides_2024.glm.jguidera_el_net import drop_jguidera_el_net
+from jguides_2024.glm.jguidera_measurements_interp_pool import (
     drop_jguidera_measurements_interp_pool,
 )
-from src.jguides_2024.metadata.jguidera_brain_region import (
+from jguides_2024.metadata.jguidera_brain_region import (
     drop_jguidera_brain_region,
 )
-from src.jguides_2024.metadata.jguidera_epoch import drop_jguidera_epoch
-from src.jguides_2024.position_and_maze.jguidera_maze import drop_jguidera_maze
-from src.jguides_2024.position_and_maze.jguidera_position import (
+from jguides_2024.metadata.jguidera_epoch import drop_jguidera_epoch
+from jguides_2024.position_and_maze.jguidera_maze import drop_jguidera_maze
+from jguides_2024.position_and_maze.jguidera_position import (
     drop_jguidera_position,
 )
-from src.jguides_2024.position_and_maze.jguidera_ppt import drop_jguidera_ppt
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
+from jguides_2024.position_and_maze.jguidera_ppt import drop_jguidera_ppt
+from jguides_2024.position_and_maze.jguidera_ppt_interp import (
     drop_jguidera_ppt_interp,
 )
-from src.jguides_2024.spikes.jguidera_res_spikes import drop_jguidera_res_spikes
-from src.jguides_2024.spikes.jguidera_spikes import drop_jguidera_spikes
-from src.jguides_2024.spikes.jguidera_unit import drop_jguidera_unit
-from src.jguides_2024.task_event.jguidera_dio_event import (
+from jguides_2024.spikes.jguidera_res_spikes import drop_jguidera_res_spikes
+from jguides_2024.spikes.jguidera_spikes import drop_jguidera_spikes
+from jguides_2024.spikes.jguidera_unit import drop_jguidera_unit
+from jguides_2024.task_event.jguidera_dio_event import (
     drop_jguidera_dio_event,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.task_event.jguidera_dio_trials import (
     drop_jguidera_dio_trials,
 )
-from src.jguides_2024.task_event.jguidera_statescript_event import (
+from jguides_2024.task_event.jguidera_statescript_event import (
     drop_jguidera_statescript_event,
 )
-from src.jguides_2024.task_event.jguidera_task_event import (
+from jguides_2024.task_event.jguidera_task_event import (
     drop_jguidera_task_event,
 )
-from src.jguides_2024.task_event.jguidera_task_performance import (
+from jguides_2024.task_event.jguidera_task_performance import (
     drop_jguidera_task_performance,
 )
-from src.jguides_2024.time_and_trials.jguidera_condition_trials import (
+from jguides_2024.time_and_trials.jguidera_condition_trials import (
     drop_jguidera_condition_trials,
 )
-from src.jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
+from jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
     drop_jguidera_cross_validation_pool,
 )
-from src.jguides_2024.time_and_trials.jguidera_interval import (
+from jguides_2024.time_and_trials.jguidera_interval import (
     drop_jguidera_interval,
 )
-from src.jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
+from jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
     drop_jguidera_kfold_cross_validation,
 )
-from src.jguides_2024.time_and_trials.jguidera_leave_one_out_condition_trials_cross_validation import (
+from jguides_2024.time_and_trials.jguidera_leave_one_out_condition_trials_cross_validation import (
     drop_jguidera_leave_one_out_condition_trials_cross_validation,
 )
-from src.jguides_2024.time_and_trials.jguidera_ppt_trials import (
+from jguides_2024.time_and_trials.jguidera_ppt_trials import (
     drop_jguidera_ppt_trials,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_set import (
+from jguides_2024.time_and_trials.jguidera_res_set import (
     drop_jguidera_res_set,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins import (
     drop_jguidera_res_time_bins,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     drop_jguidera_res_time_bins_pool,
 )
-from src.jguides_2024.time_and_trials.jguidera_time_bins import (
+from jguides_2024.time_and_trials.jguidera_time_bins import (
     drop_jguidera_time_bins,
 )
-from src.jguides_2024.time_and_trials.jguidera_trials_pool import (
+from jguides_2024.time_and_trials.jguidera_trials_pool import (
     drop_jguidera_trials_pool,
 )
-from src.jguides_2024.time_and_trials.jguidera_warped_axis_bins import (
+from jguides_2024.time_and_trials.jguidera_warped_axis_bins import (
     drop_jguidera_warped_axis_bins,
 )
-from src.jguides_2024.utils.for_loop_helpers import (
+from jguides_2024.utils.for_loop_helpers import (
     stoppable_function_loop,
     stoppable_function_outer_loop,
 )

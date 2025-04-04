@@ -9,12 +9,12 @@ import spyglass as nd
 from spyglass.common import IntervalList
 from spyglass.spikesorting import CuratedSpikeSorting, SortInterval
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     PartBase,
     SecKeyParamsBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     add_param_defaults,
     delete_,
     fetch_entries_as_dict,
@@ -28,18 +28,18 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
     populate_insert,
 )
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.metadata.jguidera_premaze_durations import (
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.metadata.jguidera_premaze_durations import (
     PremazeDurations,
 )
-from src.jguides_2024.time_and_trials.jguidera_interval import (
+from jguides_2024.time_and_trials.jguidera_interval import (
     EpochIntervalListName,
 )
-from src.jguides_2024.time_and_trials.jguidera_time_bins import (
+from jguides_2024.time_and_trials.jguidera_time_bins import (
     EpochTimeBins,
     EpochTimeBinsParams,
 )
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals,
 )
 
@@ -430,7 +430,7 @@ class EpochSpikeTimesRelabel(ComputedBase):
     def delete_(self, key, safemode=True):
         # Add curation_name if not present but params to define it are. Helps ensure only relevant entries for key
         # are deleted
-        from src.jguides_2024.spikes.jguidera_res_spikes import (
+        from jguides_2024.spikes.jguidera_res_spikes import (
             ResEpochSpikeCountsSel,
         )
 
@@ -457,7 +457,7 @@ class EpochMeanFiringRate(ComputedBase):
 
     def make(self, key):
 
-        from src.jguides_2024.utils.point_process_helpers import (
+        from jguides_2024.utils.point_process_helpers import (
             calculate_average_event_rate,
         )
 
@@ -511,7 +511,7 @@ class EpochMeanFiringRate(ComputedBase):
         # are deleted
 
         key = copy.deepcopy(key)
-        from src.jguides_2024.spikes.jguidera_unit import EpsUnits
+        from jguides_2024.spikes.jguidera_unit import EpsUnits
 
         for curation_name in get_table_curation_names_for_key(self, key):
             key.update({"curation_name": curation_name})

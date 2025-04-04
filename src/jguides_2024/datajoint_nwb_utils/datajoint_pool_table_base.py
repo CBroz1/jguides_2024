@@ -3,14 +3,14 @@ from collections import namedtuple
 
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     CohortBase,
     ComputedBase,
     ParamNameBase,
     SecKeyParamsBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     check_epochs_id,
     check_int_id,
     check_single_table_entry,
@@ -31,14 +31,14 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     table_name_from_table_type,
     valid_candidate_keys_bool,
 )
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.set_helpers import (
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.set_helpers import (
     check_membership,
     check_set_equality,
 )
-from src.jguides_2024.utils.string_helpers import strip_trailing_s
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.string_helpers import strip_trailing_s
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     unpack_single_element,
 )
@@ -789,7 +789,7 @@ class EpsCohortParamsBase(SecKeyParamsBase):
 
         # Add epochs_id to key
         # ...Ensure upstream table populated
-        from src.jguides_2024.metadata.jguidera_epoch import EpochCohortParams
+        from jguides_2024.metadata.jguidera_epoch import EpochCohortParams
 
         EpochCohortParams().insert_from_epochs(
             key["nwb_file_name"], key["epochs"]

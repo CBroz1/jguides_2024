@@ -6,15 +6,15 @@ import itertools
 import datajoint as dj
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_reliability_paper_nwb_file_names,
     get_subject_id,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SecKeyParamsBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     check_epochs_id,
     fetch_entries_as_dict,
     fetch_iterable_array,
@@ -25,18 +25,18 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert1_print,
     populate_insert,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import Contingency
-from src.jguides_2024.metadata.jguidera_metadata import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import Contingency
+from jguides_2024.metadata.jguidera_metadata import (
     JguideraNwbfile,
     TaskIdentification,
 )
-from src.jguides_2024.time_and_trials.jguidera_epoch_interval import (
+from jguides_2024.time_and_trials.jguidera_epoch_interval import (
     EpochInterval,
 )
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     unpack_single_element,
 )
@@ -148,7 +148,7 @@ class EpochCohort(ComputedBase):
         return key
 
     def drop(self):
-        from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits
+        from jguides_2024.spikes.jguidera_unit import BrainRegionUnits
 
         BrainRegionUnits().drop()
         super.drop()

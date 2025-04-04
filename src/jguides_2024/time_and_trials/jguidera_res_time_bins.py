@@ -2,25 +2,25 @@ import datajoint as dj
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     delete_,
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellADTrialsParams,
     DioWellArrivalTrialsParams,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_set import (
+from jguides_2024.time_and_trials.jguidera_res_set import (
     ResSet,
     ResSetParams,
     populate_jguidera_res_set,
 )
-from src.jguides_2024.time_and_trials.jguidera_time_bins import (
+from jguides_2024.time_and_trials.jguidera_time_bins import (
     DioWATrialsTimeBins,
     DioWATrialsTimeBinsParams,
     DioWellADTrialsTimeBins,
@@ -29,7 +29,7 @@ from src.jguides_2024.time_and_trials.jguidera_time_bins import (
     EpochTimeBinsParams,
     populate_jguidera_time_bins,
 )
-from src.jguides_2024.time_and_trials.jguidera_trials_pool import (
+from jguides_2024.time_and_trials.jguidera_trials_pool import (
     TrialsPoolCohortParams,
 )
 
@@ -92,7 +92,7 @@ class ResEpochTimeBins(ComputedBase):
         insert_res_time_bins_table(self, EpochTimeBins, key)
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+        from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
             ResTimeBinsPool,
         )
 
@@ -310,7 +310,7 @@ def populate_jguidera_res_time_bins(
 
 
 def drop_jguidera_res_time_bins():
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
         drop_jguidera_res_time_bins_pool,
     )
 

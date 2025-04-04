@@ -6,11 +6,11 @@ import numpy as np
 import pandas as pd
 from spyglass.common import IntervalList
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_reliability_paper_nwb_file_names,
     plot_horizontal_lines,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     EventTrialsParamsBase,
     SecKeyParamsBase,
@@ -18,63 +18,63 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     WellEventTrialsBase,
     WellEventTrialsBaseExt,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     delete_,
     fetch1_dataframe_from_table_entry,
     get_entry_secondary_key,
     get_table_column_names,
     insert1_print,
 )
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_delay_duration,
     get_delay_interval,
 )
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
     get_epoch_time_interval,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_epoch import RunEpoch
-from src.jguides_2024.position_and_maze.jguidera_maze import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_epoch import RunEpoch
+from jguides_2024.position_and_maze.jguidera_maze import (
     MazePathWell,
     RewardWellPath,
     RewardWellPathColor,
 )
-from src.jguides_2024.task_event.jguidera_dio_event import (
+from jguides_2024.task_event.jguidera_dio_event import (
     ProcessedDioEvents,
     populate_jguidera_dio_event,
 )
-from src.jguides_2024.task_event.jguidera_task_event import (
+from jguides_2024.task_event.jguidera_task_event import (
     PumpTimes,
     populate_jguidera_task_event,
 )
-from src.jguides_2024.task_event.jguidera_task_performance import (
+from jguides_2024.task_event.jguidera_task_performance import (
     AlternationTaskPerformance,
     populate_jguidera_task_performance,
 )
-from src.jguides_2024.time_and_trials.jguidera_epoch_interval import (
+from jguides_2024.time_and_trials.jguidera_epoch_interval import (
     EpochInterval,
 )
-from src.jguides_2024.time_and_trials.jguidera_interval import (
+from jguides_2024.time_and_trials.jguidera_interval import (
     EpochIntervalListName,
     intervals_within_epoch_bool,
 )
-from src.jguides_2024.utils.array_helpers import array_to_tuple_list
-from src.jguides_2024.utils.df_helpers import df_filter_columns_isin
-from src.jguides_2024.utils.dict_helpers import dict_comprehension
-from src.jguides_2024.utils.dtype_helpers import get_null_value
-from src.jguides_2024.utils.interval_helpers import (
+from jguides_2024.utils.array_helpers import array_to_tuple_list
+from jguides_2024.utils.df_helpers import df_filter_columns_isin
+from jguides_2024.utils.dict_helpers import dict_comprehension
+from jguides_2024.utils.dtype_helpers import get_null_value
+from jguides_2024.utils.interval_helpers import (
     check_interval_start_before_end,
 )
-from src.jguides_2024.utils.list_helpers import (
+from jguides_2024.utils.list_helpers import (
     check_lists_same_length,
     zip_adjacent_elements,
 )
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import (
     index_vectors,
     unpack_single_element,
 )
@@ -1235,7 +1235,7 @@ class DioWellArrivalTrialsParams(EventTrialsParamsBase):
         return self.lookup_param_name(get_delay_interval())
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.time_and_trials.jguidera_trials_pool import (
+        from jguides_2024.time_and_trials.jguidera_trials_pool import (
             TrialsPoolSel,
         )
 
@@ -1461,7 +1461,7 @@ class DioWellDepartureTrialsParams(EventTrialsParamsBase):
         return [[-2, 0], [-1, 1]]  # start time shift, end time shift
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.time_and_trials.jguidera_trials_pool import (
+        from jguides_2024.time_and_trials.jguidera_trials_pool import (
             TrialsPoolSel,
         )
 

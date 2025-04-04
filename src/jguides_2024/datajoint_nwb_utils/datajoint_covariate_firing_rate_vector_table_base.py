@@ -6,19 +6,19 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_subject_id,
     get_subject_id_shorthand,
     get_val_pairs,
     plot_horizontal_lines,
     plot_junction_fractions,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SecKeyParamsBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     delete_,
     fetch1_tolerate_no_entry,
     format_nwb_file_name,
@@ -30,41 +30,41 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
     unique_table_column_sets,
 )
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_nwb_file_name_epochs_description,
 )
-from src.jguides_2024.metadata.jguidera_brain_region import (
+from jguides_2024.metadata.jguidera_brain_region import (
     BrainRegionCohort,
     BrainRegionColor,
     CurationSet,
 )
-from src.jguides_2024.metadata.jguidera_epoch import (
+from jguides_2024.metadata.jguidera_epoch import (
     EpochsDescription,
     EpochsDescriptions,
     RecordingSet,
     RunEpoch,
 )
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell
-from src.jguides_2024.spikes.jguidera_unit import (
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
+from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnitsCohortType,
     BrainRegionUnitsFail,
     BrainRegionUnitsParams,
     EpsUnitsParams,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrials
-from src.jguides_2024.task_event.jguidera_task_performance import (
+from jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrials
+from jguides_2024.task_event.jguidera_task_performance import (
     strip_performance_outcomes,
 )
-from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
+from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
     TimeRelWADigSingleAxisParams,
 )
-from src.jguides_2024.utils.array_helpers import (
+from jguides_2024.utils.array_helpers import (
     array_to_tuple_list,
     on_off_diagonal_ratio,
 )
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.df_helpers import (
     df_filter1_columns_symmetric,
     df_filter_columns,
     df_from_data_list,
@@ -73,20 +73,20 @@ from src.jguides_2024.utils.df_helpers import (
     unique_df_column_sets,
     zip_df_columns,
 )
-from src.jguides_2024.utils.dict_helpers import (
+from jguides_2024.utils.dict_helpers import (
     add_defaults,
     check_return_single_dict,
     dict_comprehension,
     return_shared_key_value,
 )
-from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
-from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
-from src.jguides_2024.utils.list_helpers import (
+from jguides_2024.utils.for_loop_helpers import print_iteration_progress
+from jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
+from jguides_2024.utils.list_helpers import (
     check_return_single_element,
     zip_adjacent_elements,
 )
-from src.jguides_2024.utils.parse_matrix import parse_matrix
-from src.jguides_2024.utils.plot_helpers import (
+from jguides_2024.utils.parse_matrix import parse_matrix
+from jguides_2024.utils.plot_helpers import (
     format_ax,
     get_gridspec_ax_maps,
     get_plot_idx_map,
@@ -96,20 +96,20 @@ from src.jguides_2024.utils.plot_helpers import (
     plot_spanning_line,
     save_figure,
 )
-from src.jguides_2024.utils.save_load_helpers import save_json
-from src.jguides_2024.utils.set_helpers import (
+from jguides_2024.utils.save_load_helpers import save_json
+from jguides_2024.utils.set_helpers import (
     check_membership,
     check_set_equality,
 )
-from src.jguides_2024.utils.state_evolution_estimation import (
+from jguides_2024.utils.state_evolution_estimation import (
     AverageVectorDuringLabeledProgression,
 )
-from src.jguides_2024.utils.string_helpers import (
+from jguides_2024.utils.string_helpers import (
     format_bool,
     format_number,
     replace_chars,
 )
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     find_spans_increasing_list,
     min_max,
@@ -235,7 +235,7 @@ class CovariateFRVecSelBase(SelBase):
 
     @staticmethod
     def _key_filter():
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_fr_vec_default_params_map,
         )
 
@@ -4296,7 +4296,7 @@ class PathFRVecSummBase(CovariateFRVecAveSummBase):
 
         params = super().get_default_table_entry_params()
 
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_fr_vec_default_param,
         )
 
@@ -4352,7 +4352,7 @@ class TimeRelWAFRVecSummBase(CovariateFRVecAveSummBase):
 
         params = super().get_default_table_entry_params()
 
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_fr_vec_default_param,
         )
 

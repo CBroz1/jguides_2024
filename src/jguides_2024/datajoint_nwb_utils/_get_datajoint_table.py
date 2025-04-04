@@ -2,7 +2,7 @@ def _get_table(table_name):
     # Avoid circular import
     import os
 
-    from src.jguides_2024.edeno_decoder.jguidera_edeno_decoder_error import (
+    from jguides_2024.edeno_decoder.jguidera_edeno_decoder_error import (
         EdenoDecodeErr,
         EdenoDecodeErrParams,
         EdenoDecodeErrSel,
@@ -11,12 +11,12 @@ def _get_table(table_name):
         EdenoDecodeErrSummParams,
         EdenoDecodeErrSummSel,
     )
-    from src.jguides_2024.edeno_decoder.jguidera_edeno_decoder_helpers import (
+    from jguides_2024.edeno_decoder.jguidera_edeno_decoder_helpers import (
         EDPathGroups,
         StackedEdgeTrackGraph,
         TrackGraphSourceSortedSpikesClassifierParams,
     )
-    from src.jguides_2024.edeno_decoder.jguidera_edeno_decoder_run import (
+    from jguides_2024.edeno_decoder.jguidera_edeno_decoder_run import (
         EDAlgorithmParams,
         EDComputeParams,
         EDCrossValidationParams,
@@ -28,7 +28,7 @@ def _get_table(table_name):
         EdenoDecodeSel,
         EDStorageParams,
     )
-    from src.jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
+    from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
         CorrFrmapPptSm,
         FrmapPpt,
         FrmapPptSel,
@@ -40,7 +40,7 @@ def _get_table(table_name):
         STFrmapPupt,
         STFrmapPuptSm,
     )
-    from src.jguides_2024.firing_rate_map.jguidera_well_arrival_departure_firing_rate_map import (
+    from jguides_2024.firing_rate_map.jguidera_well_arrival_departure_firing_rate_map import (
         FrmapWADParams,
         FrmapWADSmParams,
         FrmapWADSmWT,
@@ -50,7 +50,7 @@ def _get_table(table_name):
         STFrmapWADSmWT,
         STFrmapWADSmWTSel,
     )
-    from src.jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (
+    from jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (
         FrmapUniqueWellArrival,
         FrmapUniqueWellArrivalSm,
         FrmapWellArrival,
@@ -61,16 +61,16 @@ def _get_table(table_name):
         STFrmapWellArrival,
         STFrmapWellArrivalSm,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
         FRDiffVec,
         FRDiffVecParams,
         FRDiffVecSel,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
         FRDiffVecCosSim,
         FRDiffVecCosSimSel,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import (
         FRDiffVecCosSimPptNnAve,
         FRDiffVecCosSimPptNnAveParams,
         FRDiffVecCosSimPptNnAveSel,
@@ -84,20 +84,20 @@ def _get_table(table_name):
         FRDiffVecCosSimWANnAveSummParams,
         FRDiffVecCosSimWANnAveSummSel,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
         FRVec,
         FRVecSel,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
         FRVecEmb,
         FRVecEmbParams,
         FRVecEmbSel,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
         FRVecEucDist,
         FRVecEucDistSel,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
+    from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
         PathAveFRVec,
         PathAveFRVecParams,
         PathAveFRVecSel,
@@ -114,7 +114,7 @@ def _get_table(table_name):
         PathFRVecSTAveSummParams,
         PathFRVecSTAveSummSel,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
+    from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
         TimeRelWAAveFRVec,
         TimeRelWAAveFRVecParams,
         TimeRelWAAveFRVecSel,
@@ -131,16 +131,16 @@ def _get_table(table_name):
         TimeRelWAFRVecSTAveSummParams,
         TimeRelWAFRVecSTAveSummSel,
     )
-    from src.jguides_2024.glm.jguidera_basis_function import (
+    from jguides_2024.glm.jguidera_basis_function import (
         RaisedCosineBasis,
         RaisedCosineBasisParams,
     )
-    from src.jguides_2024.glm.jguidera_el_net import (
+    from jguides_2024.glm.jguidera_el_net import (
         ElNet,
         ElNetParams,
         ElNetSel,
     )
-    from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+    from jguides_2024.glm.jguidera_measurements_interp_pool import (
         Intercept,
         InterceptSel,
         XInterpPool,
@@ -151,7 +151,7 @@ def _get_table(table_name):
         XInterpPoolCohortParams,
         XInterpPoolSel,
     )
-    from src.jguides_2024.metadata.jguidera_brain_region import (
+    from jguides_2024.metadata.jguidera_brain_region import (
         BrainRegionCohort,
         BrainRegionColor,
         BrainRegionSortGroup,
@@ -161,7 +161,7 @@ def _get_table(table_name):
         ElectrodeGroupTargetedLocation,
         SortGroupTargetedLocation,
     )
-    from src.jguides_2024.metadata.jguidera_epoch import (
+    from jguides_2024.metadata.jguidera_epoch import (
         DistinctRunEpochPair,
         EpochArtifactFree,
         EpochCohort,
@@ -177,16 +177,16 @@ def _get_table(table_name):
         TrainTestEpoch,
         TrainTestEpochSet,
     )
-    from src.jguides_2024.metadata.jguidera_histology import ValidShank
-    from src.jguides_2024.metadata.jguidera_metadata import (
+    from jguides_2024.metadata.jguidera_histology import ValidShank
+    from jguides_2024.metadata.jguidera_metadata import (
         JguideraNwbfile,
         JguideraNwbfileSel,
         TaskIdentification,
     )
-    from src.jguides_2024.metadata.jguidera_premaze_durations import (
+    from jguides_2024.metadata.jguidera_premaze_durations import (
         PremazeDurations,
     )
-    from src.jguides_2024.position_and_maze.jguidera_maze import (
+    from jguides_2024.position_and_maze.jguidera_maze import (
         AnnotatedTrackGraph,
         AnnotatedUniversalTrackGraph,
         EnvironmentColor,
@@ -209,21 +209,21 @@ def _get_table(table_name):
         UniversalTrackGraphPosBinEdges,
         UniversalTrackGraphPosBinEdgesParams,
     )
-    from src.jguides_2024.position_and_maze.jguidera_position import (
+    from jguides_2024.position_and_maze.jguidera_position import (
         IntervalLinearizedPositionRelabel,
         IntervalLinearizedPositionRelabelParams,
         IntervalLinearizedPositionRescaled,
         IntervalPositionInfoRelabel,
         IntervalPositionInfoRelabelParams,
     )
-    from src.jguides_2024.position_and_maze.jguidera_ppt import (
+    from jguides_2024.position_and_maze.jguidera_ppt import (
         Ppt,
         PptBinEdges,
         PptBinEdgesParams,
         PptParams,
         PptSel,
     )
-    from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
+    from jguides_2024.position_and_maze.jguidera_ppt_interp import (
         PptDig,
         PptDigParams,
         PptDigSel,
@@ -232,19 +232,19 @@ def _get_table(table_name):
         PptRCB,
         PptRCBSel,
     )
-    from src.jguides_2024.spike_sorting_curation.jguidera_artifact import (
+    from jguides_2024.spike_sorting_curation.jguidera_artifact import (
         ArtifactDetectionAcrossSortGroups,
         ArtifactDetectionAcrossSortGroupsParams,
         ArtifactDetectionAcrossSortGroupsSelection,
     )
-    from src.jguides_2024.spike_sorting_curation.jguidera_reference_electrode import (
+    from jguides_2024.spike_sorting_curation.jguidera_reference_electrode import (
         ReferenceElectrode,
     )
-    from src.jguides_2024.spike_sorting_curation.jguidera_spikesorting import (
+    from jguides_2024.spike_sorting_curation.jguidera_spikesorting import (
         SpikeSortingRecordingCohort,
         SpikeSortingRecordingCohortParams,
     )
-    from src.jguides_2024.spikes.jguidera_res_spikes import (
+    from jguides_2024.spikes.jguidera_res_spikes import (
         ResEpochSpikeCounts,
         ResEpochSpikeCountsSel,
         ResEpochSpikesSm,
@@ -255,13 +255,13 @@ def _get_table(table_name):
         ResEpochSpikeTimes,
         ResEpochSpikeTimesSel,
     )
-    from src.jguides_2024.spikes.jguidera_spikes import (
+    from jguides_2024.spikes.jguidera_spikes import (
         EpochMeanFiringRate,
         EpochSpikeTimes,
         EpochSpikeTimesRelabel,
         EpochSpikeTimesRelabelParams,
     )
-    from src.jguides_2024.spikes.jguidera_unit import (
+    from jguides_2024.spikes.jguidera_unit import (
         BrainRegionUnits,
         BrainRegionUnitsCohortType,
         BrainRegionUnitsFail,
@@ -271,12 +271,12 @@ def _get_table(table_name):
         EpsUnitsParams,
         EpsUnitsSel,
     )
-    from src.jguides_2024.task_event.jguidera_dio_event import (
+    from jguides_2024.task_event.jguidera_dio_event import (
         DioEvents,
         ProcessedDioEvents,
         PumpDiosComplete,
     )
-    from src.jguides_2024.task_event.jguidera_dio_trials import (
+    from jguides_2024.task_event.jguidera_dio_trials import (
         DioWellADTrials,
         DioWellADTrialsParams,
         DioWellArrivalTrials,
@@ -292,18 +292,18 @@ def _get_table(table_name):
         DioWellDepartureTrialsParams,
         DioWellTrials,
     )
-    from src.jguides_2024.task_event.jguidera_statescript_event import (
+    from jguides_2024.task_event.jguidera_statescript_event import (
         ProcessedStatescriptEvents,
         ProcessedStatescriptEventsDioMismatch,
         StatescriptEventInt,
         StatescriptEvents,
     )
-    from src.jguides_2024.task_event.jguidera_task_event import (
+    from jguides_2024.task_event.jguidera_task_event import (
         ContingencyEnvironmentColor,
         EventNamesMapDioStatescript,
         PumpTimes,
     )
-    from src.jguides_2024.task_event.jguidera_task_performance import (
+    from jguides_2024.task_event.jguidera_task_performance import (
         AlternationTaskPerformance,
         AlternationTaskPerformanceStatistics,
         AlternationTaskRule,
@@ -311,43 +311,43 @@ def _get_table(table_name):
         ContingencyActiveContingenciesMap,
         PerformanceOutcomeColors,
     )
-    from src.jguides_2024.task_event.jguidera_task_value import (
+    from jguides_2024.task_event.jguidera_task_value import (
         TimeExpecVal,
         TimeExpecValSel,
         TrialExpecVal,
         TrialExpecValParams,
         TrialExpecValSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_condition_trials import (
+    from jguides_2024.time_and_trials.jguidera_condition_trials import (
         ConditionTrials,
         ConditionTrialsParams,
         ConditionTrialsSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
+    from jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
         TrainTestSplitPool,
         TrainTestSplitPoolSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_epoch_interval import (
+    from jguides_2024.time_and_trials.jguidera_epoch_interval import (
         EpochInterval,
     )
-    from src.jguides_2024.time_and_trials.jguidera_interval import (
+    from jguides_2024.time_and_trials.jguidera_interval import (
         EpochIntervalListName,
     )
-    from src.jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
+    from jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
         KFoldTrainTestSplit,
         KFoldTrainTestSplitParams,
         KFoldTrainTestSplitSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_leave_one_out_condition_trials_cross_validation import (
+    from jguides_2024.time_and_trials.jguidera_leave_one_out_condition_trials_cross_validation import (
         LOOCTTrainTestSplit,
         LOOCTTrainTestSplitSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_ppt_trials import (
+    from jguides_2024.time_and_trials.jguidera_ppt_trials import (
         PptTrials,
         PptTrialsParams,
         PptTrialsSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_relative_time_at_well import (
+    from jguides_2024.time_and_trials.jguidera_relative_time_at_well import (
         RelTimeDelay,
         RelTimeDelaySel,
         RelTimeWell,
@@ -355,12 +355,12 @@ def _get_table(table_name):
         RelTimeWellPostDelaySel,
         RelTimeWellSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_res_set import (
+    from jguides_2024.time_and_trials.jguidera_res_set import (
         ResSet,
         ResSetParamName,
         ResSetParams,
     )
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins import (
+    from jguides_2024.time_and_trials.jguidera_res_time_bins import (
         ResDioWATrialsTimeBins,
         ResDioWATrialsTimeBinsSel,
         ResDioWellADTrialsTimeBins,
@@ -368,14 +368,14 @@ def _get_table(table_name):
         ResEpochTimeBins,
         ResEpochTimeBinsSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
         ResTimeBinsPool,
         ResTimeBinsPoolCohort,
         ResTimeBinsPoolCohortParamName,
         ResTimeBinsPoolCohortParams,
         ResTimeBinsPoolSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_time_bins import (
+    from jguides_2024.time_and_trials.jguidera_time_bins import (
         DioWATrialsSubTimeBins,
         DioWATrialsSubTimeBinsParams,
         DioWATrialsSubTimeBinsSel,
@@ -391,7 +391,7 @@ def _get_table(table_name):
         EpochTimeBins,
         EpochTimeBinsParams,
     )
-    from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
+    from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
         TimeRelWA,
         TimeRelWADig,
         TimeRelWADigParams,
@@ -403,10 +403,10 @@ def _get_table(table_name):
         TimeRelWARCBSel,
         TimeRelWASel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_timestamps import (
+    from jguides_2024.time_and_trials.jguidera_timestamps import (
         EpochTimestamps,
     )
-    from src.jguides_2024.time_and_trials.jguidera_trials_pool import (
+    from jguides_2024.time_and_trials.jguidera_trials_pool import (
         TrialsPool,
         TrialsPoolCohort,
         TrialsPoolCohortParamName,
@@ -415,7 +415,7 @@ def _get_table(table_name):
         TrialsPoolEpsCohortParams,
         TrialsPoolSel,
     )
-    from src.jguides_2024.time_and_trials.jguidera_warped_axis_bins import (
+    from jguides_2024.time_and_trials.jguidera_warped_axis_bins import (
         WarpedAxisBins,
         WarpedAxisBinsParams,
     )

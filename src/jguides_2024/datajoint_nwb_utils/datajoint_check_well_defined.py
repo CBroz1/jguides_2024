@@ -1,6 +1,6 @@
 """This module has functions to check whether data is well defined"""
 
-from src.jguides_2024.position_and_maze.jguidera_maze import (
+from jguides_2024.position_and_maze.jguidera_maze import (
     AnnotatedUniversalTrackGraph,
 )
 

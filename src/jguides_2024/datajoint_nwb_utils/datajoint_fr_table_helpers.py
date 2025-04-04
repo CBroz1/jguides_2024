@@ -3,26 +3,26 @@
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
 )
-from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
+from jguides_2024.utils.df_helpers import (
     copy_df_columns,
     df_filter_columns,
     get_empty_df,
 )
-from src.jguides_2024.utils.list_helpers import duplicate_elements
-from src.jguides_2024.utils.make_rate_map import (
+from jguides_2024.utils.list_helpers import duplicate_elements
+from jguides_2024.utils.make_rate_map import (
     make_rate_map_constant_fs,
     smooth_mask_rate_map,
 )
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals,
     get_event_times_relative_to_trial_start,
 )
-from src.jguides_2024.utils.string_helpers import strip_string
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.string_helpers import strip_string
+from jguides_2024.utils.vector_helpers import (
     convert_inf_to_nan,
     vector_midpoints,
 )

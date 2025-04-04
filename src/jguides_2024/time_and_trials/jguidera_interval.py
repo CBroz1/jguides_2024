@@ -4,16 +4,16 @@ import datajoint as dj
 import numpy as np
 from spyglass.common import IntervalList, TaskEpoch
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     special_fetch1,
 )
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
     get_epoch_time_interval,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 
 schema = dj.schema("jguidera_interval")  # define custom schema
 

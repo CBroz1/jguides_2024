@@ -7,16 +7,16 @@ from collections.abc import Iterable
 
 import numpy as np
 
-from src.jguides_2024.utils.check_well_defined import failed_check
-from src.jguides_2024.utils.list_helpers import (
+from jguides_2024.utils.check_well_defined import failed_check
+from jguides_2024.utils.list_helpers import (
     check_return_single_element,
     check_single_element,
 )
-from src.jguides_2024.utils.set_helpers import (
+from jguides_2024.utils.set_helpers import (
     check_membership,
     check_set_equality,
 )
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     check_vectors_equal,
     unpack_single_element,
@@ -50,7 +50,7 @@ def pairs_keys_same_value(dictionary):
 
 
 def pairs_keys_different_value(dictionary):
-    from src.jguides_2024.utils.list_helpers import (
+    from jguides_2024.utils.list_helpers import (
         remove_duplicate_combinations,
     )
 

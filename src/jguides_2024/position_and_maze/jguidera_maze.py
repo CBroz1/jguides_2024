@@ -7,12 +7,12 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from spyglass.common.common_position import TrackGraph
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SecKeyParamsBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     convert_path_name,
     convert_path_names,
     fetch1_dataframe_from_table_entry,
@@ -22,43 +22,43 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert1_print,
     populate_insert,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_environments,
 )
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.position_and_maze.make_fork_maze_track_graph import (
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.position_and_maze.make_fork_maze_track_graph import (
     make_fork_maze_track_graph,
     simulate_fork_maze,
 )
-from src.jguides_2024.task_event.jguidera_task_performance import (
+from jguides_2024.task_event.jguidera_task_performance import (
     AlternationTaskRule,
     AlternationTaskWellIdentities,
     ContingencyActiveContingenciesMap,
 )
-from src.jguides_2024.utils.array_helpers import array_to_tuple_list
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.array_helpers import array_to_tuple_list
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.df_helpers import (
     df_filter1_columns,
     df_filter_columns,
     df_pop,
 )
-from src.jguides_2024.utils.dict_helpers import (
+from jguides_2024.utils.dict_helpers import (
     pairs_keys_different_value,
     pairs_keys_same_value,
 )
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
-from src.jguides_2024.utils.make_bins import make_int_bin_edges
-from src.jguides_2024.utils.plot_helpers import plot_text_color
-from src.jguides_2024.utils.set_helpers import (
+from jguides_2024.utils.list_helpers import zip_adjacent_elements
+from jguides_2024.utils.make_bins import make_int_bin_edges
+from jguides_2024.utils.plot_helpers import plot_text_color
+from jguides_2024.utils.set_helpers import (
     check_membership,
     check_set_equality,
 )
-from src.jguides_2024.utils.string_helpers import (
+from jguides_2024.utils.string_helpers import (
     abbreviate_join_strings,
     get_even_odd_text,
 )
-from src.jguides_2024.utils.tuple_helpers import add_reversed_pairs
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.tuple_helpers import add_reversed_pairs
+from jguides_2024.utils.vector_helpers import (
     check_range_within,
     unique_in_order,
     unpack_single_element,
@@ -479,7 +479,7 @@ class UniversalTrackGraphAnnotations(dj.Manual):
 
 
 def _plot_track_graph(track_graph_parameters, ax):
-    from src.jguides_2024.position_and_maze.make_fork_maze_track_graph import (
+    from jguides_2024.position_and_maze.make_fork_maze_track_graph import (
         make_track_graph,
     )
 

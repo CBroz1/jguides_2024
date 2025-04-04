@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 
-from src.jguides_2024.utils.df_helpers import zscore_df_columns
-from src.jguides_2024.utils.plot_helpers import format_ax
+from jguides_2024.utils.df_helpers import zscore_df_columns
+from jguides_2024.utils.plot_helpers import format_ax
 
 
 class PCAContainer:

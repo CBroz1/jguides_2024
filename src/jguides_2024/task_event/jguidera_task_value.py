@@ -6,37 +6,37 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     CovDigmethBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDATrials,
     DioWellDATrialsParams,
     DioWellDDTrials,
     DioWellDDTrialsParams,
     DioWellTrials,
 )
-from src.jguides_2024.task_event.jguidera_task_performance import (
+from jguides_2024.task_event.jguidera_task_performance import (
     reward_outcomes_to_int,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPool,
     ResTimeBinsPoolSel,
 )
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.df_helpers import (
     df_filter_columns,
     df_from_data_list,
 )
-from src.jguides_2024.utils.kernel_helpers import Kernel
-from src.jguides_2024.utils.plot_helpers import get_fig_axes
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.kernel_helpers import Kernel
+from jguides_2024.utils.plot_helpers import get_fig_axes
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 nd
 DioWellTrials

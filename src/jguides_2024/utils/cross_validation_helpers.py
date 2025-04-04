@@ -5,18 +5,18 @@ from collections import namedtuple
 import numpy as np
 from sklearn.model_selection import KFold
 
-from src.jguides_2024.utils.df_helpers import df_from_data_list
-from src.jguides_2024.utils.dict_helpers import invert_dict
-from src.jguides_2024.utils.list_helpers import (
+from jguides_2024.utils.df_helpers import df_from_data_list
+from jguides_2024.utils.dict_helpers import invert_dict
+from jguides_2024.utils.list_helpers import (
     check_in_list,
     check_lists_same_length,
 )
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals_bool,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.string_helpers import abbreviate_camel_case
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.string_helpers import abbreviate_camel_case
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     repeat_elements_idxs,
     unpack_single_element,

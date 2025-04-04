@@ -2,35 +2,35 @@ import datajoint as dj
 import numpy as np
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     CovariateDigParamsBase,
     CovariateRCB,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     delete_,
     get_key_filter,
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.glm.jguidera_basis_function import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.glm.jguidera_basis_function import (
     RaisedCosineBasis,
     RaisedCosineBasisParams,
 )
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.time_and_trials.jguidera_ppt_trials import (
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt
+from jguides_2024.time_and_trials.jguidera_ppt_trials import (
     populate_jguidera_ppt_trials,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPool,
     ResTimeBinsPoolSel,
     populate_jguidera_res_time_bins_pool,
 )
-from src.jguides_2024.utils.basis_function_helpers import sample_basis_functions
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
+from jguides_2024.utils.basis_function_helpers import sample_basis_functions
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.digitize_helpers import digitize_indexed_variable
 
 # These imports are called with eval or used in table definitions (do not remove):
 ResTimeBinsPool
@@ -141,7 +141,7 @@ class PptInterp(ComputedBase):
 
     def delete_(self, key=None, safemode=True):
         # Delete downstream entries first
-        from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
+        from jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
             FRDiffVecCosSimPptNnAve,
         )
 
@@ -236,7 +236,7 @@ class PptRCBSel(SelBase):
         if key_filter is None:
             key_filter = dict()
         # GLM analysis (path)
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_glm_default_params,
         )
 
@@ -284,7 +284,7 @@ class PptRCB(CovariateRCB):
         insert_analysis_table_entry(self, [ppt_rcb_df], key, reset_index=True)
 
     def delete_(self, key, safemode=False):
-        from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+        from jguides_2024.glm.jguidera_measurements_interp_pool import (
             XInterpPool,
         )
 
@@ -313,14 +313,14 @@ def populate_jguidera_ppt_interp(
 
 
 def drop_jguidera_ppt_interp():
-    from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
+    from jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
         drop_jguidera_firing_rate_difference_vector_similarity_ave,
     )
 
-    from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
+    from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
         drop_jguidera_path_firing_rate_vector,
     )
-    from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+    from jguides_2024.glm.jguidera_measurements_interp_pool import (
         drop_jguidera_measurements_interp_pool,
     )
 

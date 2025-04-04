@@ -4,53 +4,53 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     format_epochs,
     get_sort_group_unit_id,
     plot_junction_fractions,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     abbreviate_path_name,
     format_nwb_file_name,
 )
-from src.jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
+from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
     FrmapPuptSm,
     STFrmapPuptSm,
 )
-from src.jguides_2024.firing_rate_map.jguidera_well_arrival_departure_firing_rate_map import (
+from jguides_2024.firing_rate_map.jguidera_well_arrival_departure_firing_rate_map import (
     FrmapWADSmWT,
 )
-from src.jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (
+from jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (
     FrmapUniqueWellArrivalSm,
     STFrmapWellArrivalSm,
 )
-from src.jguides_2024.metadata.jguidera_brain_region import (
+from jguides_2024.metadata.jguidera_brain_region import (
     BrainRegionCohort,
     BrainRegionColor,
     SortGroupTargetedLocation,
 )
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.position_and_maze.jguidera_maze import (
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.position_and_maze.jguidera_maze import (
     EnvironmentColor,
     MazePathWell,
     RewardWellPath,
 )
-from src.jguides_2024.spikes.jguidera_unit import (
+from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
     BrainRegionUnitsParams,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellArrivalTrialsParams,
 )
-from src.jguides_2024.task_event.jguidera_task_performance import (
+from jguides_2024.task_event.jguidera_task_performance import (
     PerformanceOutcomeColors,
 )
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.df_helpers import (
     df_filter_columns,
     df_from_data_list,
     zip_df_columns,
 )
-from src.jguides_2024.utils.plot_helpers import (
+from jguides_2024.utils.plot_helpers import (
     format_ax,
     get_gridspec_ax_maps,
     plot_ave_conf,
@@ -58,9 +58,9 @@ from src.jguides_2024.utils.plot_helpers import (
     plot_spanning_line,
     save_figure,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.stats_helpers import average_confidence_interval
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.stats_helpers import average_confidence_interval
+from jguides_2024.utils.vector_helpers import (
     expand_interval,
     unpack_single_vector,
 )

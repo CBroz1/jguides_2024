@@ -3,14 +3,14 @@
 import datajoint as dj
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import (
     get_bin_centers_name,
     insert_firing_rate_map_unique_well_table,
     insert_single_trial_firing_rate_map_smoothed_well_table,
     make_well_single_trial_table_fr_df,
     make_well_trial_table_fr_df,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     FrmapBase,
     FrmapSmBase,
@@ -18,13 +18,13 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     TemporalFrmapParamsBase,
     TemporalFrmapSmParamsBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_schema_table_names_from_file,
     insert_analysis_table_entry,
     populate_insert,
 )
-from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellArrivalTrials,
     DioWellArrivalTrialsParams,
 )

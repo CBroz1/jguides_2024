@@ -89,7 +89,7 @@ def get_jguidera_nwbf_names(
 
     # Import spyglass file here to avoid error when running other functions in this script
     # outside spyglass environment
-    from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
+    from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
         nwbf_name_from_subject_id_date,
     )
 
@@ -125,7 +125,7 @@ def get_jguidera_nwbf_epoch_keys(high_priority=False, highest_priority=True):
 
     # If go back to using spyglass table: import locally to avoid error when importing module to run other
     # functions in this script outside spyglass environment
-    from src.jguides_2024.metadata.jguidera_epoch import (  # local import to avoid circular import error
+    from jguides_2024.metadata.jguidera_epoch import (  # local import to avoid circular import error
         RunEpoch,
     )
 
@@ -252,7 +252,7 @@ def get_dropbox_path(backup_folder=False):
 
 def get_brain_regions(nwb_file_name, targeted=False):
 
-    from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
+    from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
         subject_id_date_from_nwbf_name,
     )
 
@@ -301,7 +301,7 @@ class Contingency:
 
     def get_contingency_type(self, contingency):
 
-        from src.jguides_2024.utils.vector_helpers import unpack_single_element
+        from jguides_2024.utils.vector_helpers import unpack_single_element
 
         return unpack_single_element(
             [

@@ -2,26 +2,26 @@ import numpy as np
 import pandas as pd
 import umap
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     convert_path_names,
 )
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
     FRVec,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDATrials,
     DioWellDDTrials,
 )
-from src.jguides_2024.task_event.jguidera_task_performance import (
+from jguides_2024.task_event.jguidera_task_performance import (
     reward_outcomes_to_int,
 )
-from src.jguides_2024.utils.df_helpers import unpack_df_columns
-from src.jguides_2024.utils.kernel_helpers import ExponentialKernel
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.df_helpers import unpack_df_columns
+from jguides_2024.utils.kernel_helpers import ExponentialKernel
+from jguides_2024.utils.list_helpers import zip_adjacent_elements
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.set_helpers import check_membership
 
 
 class UmapContainer:

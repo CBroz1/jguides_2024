@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.jguides_2024.utils.vector_helpers import check_monotonic_increasing
+from jguides_2024.utils.vector_helpers import check_monotonic_increasing
 
 
 def make_bin_edges(x, bin_width, match_min_max="min", bins_encompass_x=True):

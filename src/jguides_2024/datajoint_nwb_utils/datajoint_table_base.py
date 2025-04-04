@@ -5,7 +5,7 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     UpstreamEntries,
     check_single_table_entry,
     delete_,
@@ -39,24 +39,24 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     special_fetch1,
     trial_duration_from_params_table,
 )
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.df_helpers import (
     add_column_to_df,
     df_filter_columns_isin,
 )
-from src.jguides_2024.utils.dict_helpers import check_same_values_at_shared_keys
-from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
-from src.jguides_2024.utils.interval_helpers import fill_trial_values
-from src.jguides_2024.utils.make_bins import make_bin_edges
-from src.jguides_2024.utils.plot_helpers import plot_heatmap
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.dict_helpers import check_same_values_at_shared_keys
+from jguides_2024.utils.digitize_helpers import digitize_indexed_variable
+from jguides_2024.utils.interval_helpers import fill_trial_values
+from jguides_2024.utils.make_bins import make_bin_edges
+from jguides_2024.utils.plot_helpers import plot_heatmap
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals_bool,
     get_full_event_times_relative_to_trial_start,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.string_helpers import camel_to_snake_case
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.string_helpers import camel_to_snake_case
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     check_length,
     unpack_single_element,
@@ -611,7 +611,7 @@ class FrmapSmBase(ComputedBase):
 
     def make(self, key):
         # Local import to avoid circular import error
-        from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import (
+        from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import (
             smooth_datajoint_table_fr,
         )
 
@@ -794,7 +794,7 @@ class WellEventTrialsBaseExt(WellEventTrialsBase):
         # Update key with path names if indicated
         if "path_names" in get_table_secondary_key_names(self):
             # local import to avoid circular import error
-            from src.jguides_2024.position_and_maze.jguidera_maze import (
+            from jguides_2024.position_and_maze.jguidera_maze import (
                 RewardWellPath,
             )
 
@@ -833,7 +833,7 @@ class WellEventTrialsBaseExt(WellEventTrialsBase):
         time_vector = new_index  # default
         if new_index is None:
             # Local import to avoid circular import error
-            from src.jguides_2024.position_and_maze.datajoint_position_table_helpers import (
+            from jguides_2024.position_and_maze.datajoint_position_table_helpers import (
                 fetch1_IntervalPositionInfo,
             )
 
@@ -1207,7 +1207,7 @@ class AcrossFRVecTypeTableSelBase(SelBase):
     # Takes a long time to run
     def _get_potential_keys(self, key_filter=None):
 
-        from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+        from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
             ResTimeBinsPoolCohortParams,
             ResTimeBinsPoolSel,
         )
@@ -1273,7 +1273,7 @@ class CovariateRCB(ComputedBase):
         )
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+        from jguides_2024.glm.jguidera_measurements_interp_pool import (
             XInterpPool,
         )
 

@@ -3,7 +3,7 @@ from collections import namedtuple
 import datajoint as dj
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
     PoolBase,
     PoolCohortBase,
     PoolCohortParamNameBase,
@@ -11,8 +11,8 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
     PoolSelBase,
     lookup_pool_table_param_name,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import PartBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import PartBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     check_epochs_id,
     delete_,
     fetch_iterable_array,
@@ -23,38 +23,38 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_table_name,
     insert1_print,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_delay_interval,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellADTrialsParams,
     DioWellArrivalTrialsParams,
     DioWellArrivalTrialsSubParams,
     DioWellDATrialsParams,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_set import ResSetParams
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins import (
+from jguides_2024.time_and_trials.jguidera_res_set import ResSetParams
+from jguides_2024.time_and_trials.jguidera_res_time_bins import (
     ResDioWATrialsTimeBins,
     ResDioWellADTrialsTimeBins,
     ResEpochTimeBins,
     populate_jguidera_res_time_bins,
 )
-from src.jguides_2024.time_and_trials.jguidera_time_bins import (
+from jguides_2024.time_and_trials.jguidera_time_bins import (
     EpochTimeBinsParams,
 )
-from src.jguides_2024.time_and_trials.jguidera_trials_pool import (
+from jguides_2024.time_and_trials.jguidera_trials_pool import (
     TrialsPoolCohortParams,
 )
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.dict_helpers import add_defaults, dict_list
-from src.jguides_2024.utils.interval_helpers import check_intervals_list
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.string_helpers import strip_string
-from src.jguides_2024.utils.vector_helpers import check_all_unique
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.dict_helpers import add_defaults, dict_list
+from jguides_2024.utils.interval_helpers import check_intervals_list
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.string_helpers import strip_string
+from jguides_2024.utils.vector_helpers import check_all_unique
 
 # Needed for table definitions:
 TaskIdentification
@@ -421,7 +421,7 @@ class ResTimeBinsPool(PoolBase):
 
     def delete_(self, key, safemode=True):
         # Delete from upstream tables
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
             FRVecSel,
         )
 
@@ -845,7 +845,7 @@ class ResTimeBinsPoolCohortParams(PoolCohortParamsBase):
         # Add epochs_id if epoch in key but epochs_id not
         if "epoch" in key and "epochs_id" not in key:
             key["epochs_id"] = get_epochs_id([key["epoch"]])
-        from src.jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
+        from jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
             TrainTestSplitPoolSel,
         )
 
@@ -937,16 +937,16 @@ def populate_jguidera_res_time_bins_pool(
 
 
 def drop_jguidera_res_time_bins_pool():
-    from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
+    from jguides_2024.position_and_maze.jguidera_ppt_interp import (
         drop_jguidera_ppt_interp,
     )
-    from src.jguides_2024.time_and_trials.jguidera_condition_trials import (
+    from jguides_2024.time_and_trials.jguidera_condition_trials import (
         drop_jguidera_condition_trials,
     )
-    from src.jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
+    from jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
         drop_jguidera_cross_validation_pool,
     )
-    from src.jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
+    from jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
         drop_jguidera_kfold_cross_validation,
     )
 

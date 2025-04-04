@@ -5,50 +5,50 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     PartBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     delete_,
     get_epochs_id,
     insert1_print,
     unique_table_column_sets,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
-from src.jguides_2024.metadata.jguidera_epoch import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
+from jguides_2024.metadata.jguidera_epoch import (
     EpochCohort,
     EpochsDescription,
     RunEpoch,
 )
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.spikes.jguidera_res_spikes import (
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.spikes.jguidera_res_spikes import (
     ResEpochSpikesSmDs,
     populate_jguidera_res_spikes,
 )
-from src.jguides_2024.spikes.jguidera_unit import (
+from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
     BrainRegionUnitsParams,
     EpsUnitsParams,
     populate_jguidera_unit,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohortParams,
     ResTimeBinsPoolSel,
 )
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.df_helpers import (
     df_filter_columns,
     unpack_single_df,
 )
-from src.jguides_2024.utils.dict_helpers import (
+from jguides_2024.utils.dict_helpers import (
     check_equality,
     dict_comprehension,
 )
-from src.jguides_2024.utils.list_helpers import check_single_element
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.list_helpers import check_single_element
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     unpack_single_vector,
 )
@@ -586,16 +586,16 @@ class FRVec(ComputedBase):
         )
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
             FRDiffVecCosSimSel,
         )
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
             FRVecEucDistSel,
         )
-        from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
+        from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
             PathFRVecSel,
         )
-        from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
+        from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
             TimeRelWAFRVecSel,
         )
 
@@ -634,19 +634,19 @@ def populate_jguidera_firing_rate_vector(
 
 
 def drop_jguidera_firing_rate_vector():
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
         drop_jguidera_firing_rate_difference_vector,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
         drop_jguidera_firing_rate_vector_embedding,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
         drop_jguidera_firing_rate_vector_euclidean_distance,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
+    from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import (
         drop_jguidera_path_firing_rate_vector,
     )
-    from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
+    from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
         drop_jguidera_well_event_firing_rate_vector,
     )
 

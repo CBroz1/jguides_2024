@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import scipy as sp
 
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals_bool as in_intervals_bool,
 )
 

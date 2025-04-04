@@ -1,7 +1,7 @@
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
 )
-from src.jguides_2024.utils.cross_validation_helpers import CrossValidate
+from jguides_2024.utils.cross_validation_helpers import CrossValidate
 
 
 def insert_cross_validation_table(

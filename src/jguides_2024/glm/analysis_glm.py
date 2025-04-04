@@ -12,42 +12,42 @@ from matplotlib.colors import rgb2hex
 from scipy.stats import chi2_contingency
 from statannotations.Annotator import Annotator
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     format_brain_region,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_wrappers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_wrappers import (
     PlotSTFRMap,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     abbreviate_path_name as abbreviate_condition_name,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
     get_epochs_id,
 )
-from src.jguides_2024.glm.get_glm_results_df import get_glm_results_df
-from src.jguides_2024.glm.glm_helpers import (
+from jguides_2024.glm.get_glm_results_df import get_glm_results_df
+from jguides_2024.glm.glm_helpers import (
     get_glm_file_name_base,
     get_glm_params_text,
 )
-from src.jguides_2024.glm.jguidera_el_net import ElNetParams
-from src.jguides_2024.metadata.jguidera_brain_region import (
+from jguides_2024.glm.jguidera_el_net import ElNetParams
+from jguides_2024.metadata.jguidera_brain_region import (
     BrainRegionCohort,
     BrainRegionColor,
 )
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell
-from src.jguides_2024.spikes.jguidera_unit import (
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
+from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
     BrainRegionUnitsParams,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellArrivalTrialsParams,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohortParams,
 )
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.df_helpers import (
     convert_categorical,
     df_filter1_columns,
     df_filter_columns,
@@ -59,19 +59,19 @@ from src.jguides_2024.utils.df_helpers import (
     unpack_df_columns,
     zip_df_columns,
 )
-from src.jguides_2024.utils.dict_helpers import (
+from jguides_2024.utils.dict_helpers import (
     add_defaults,
     dict_comprehension,
     invert_dict,
     unpack_dict,
     unpack_dicts,
 )
-from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
-from src.jguides_2024.utils.list_helpers import (
+from jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
+from jguides_2024.utils.list_helpers import (
     check_return_single_element,
     element_frequency,
 )
-from src.jguides_2024.utils.plot_helpers import (
+from jguides_2024.utils.plot_helpers import (
     format_ax,
     get_ax_for_layout,
     get_fig_axes,
@@ -83,10 +83,10 @@ from src.jguides_2024.utils.plot_helpers import (
     return_n_cmap_colors,
     save_figure,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.smooth_helpers import smooth_intervals
-from src.jguides_2024.utils.string_helpers import format_bool
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.smooth_helpers import smooth_intervals
+from jguides_2024.utils.string_helpers import format_bool
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     overlap_finite_samples,
     unpack_single_element,

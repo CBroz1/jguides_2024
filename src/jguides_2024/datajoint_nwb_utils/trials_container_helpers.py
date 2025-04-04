@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_meta_param_name,
 )
-from src.jguides_2024.position_and_maze.datajoint_position_table_helpers import (
+from jguides_2024.position_and_maze.datajoint_position_table_helpers import (
     fetch1_IntervalPositionInfo,
 )
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
-from src.jguides_2024.utils.make_bins import make_bin_edges
-from src.jguides_2024.utils.plot_helpers import return_n_cmap_colors
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.digitize_helpers import digitize_indexed_variable
+from jguides_2024.utils.make_bins import make_bin_edges
+from jguides_2024.utils.plot_helpers import return_n_cmap_colors
 
 
 def trials_container_default_time_vector(nwb_file_name, epochs, new_index=None):

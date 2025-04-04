@@ -1,7 +1,7 @@
 import os
 
 # Import custom datajoint tables
-from reliability_paper_2024_figs.population_reliability_plot_helpers import (
+from jguides_2024.reliability_paper_2024_figs.population_reliability_plot_helpers import (
     _add_medium_long_sized_plot_params,
     _add_medium_sized_plot_params,
     _add_outbound_path_x_params,

@@ -4,24 +4,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import custom datajoint tables
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_plot_marker,
     get_reliability_paper_nwb_file_names,
 )
-from src.jguides_2024.metadata.jguidera_epoch import (
+from jguides_2024.metadata.jguidera_epoch import (
     EpochsDescription,
     EpochsDescriptions,
     RunEpoch,
 )
-from src.jguides_2024.task_event.jguidera_task_performance import (
+from jguides_2024.task_event.jguidera_task_performance import (
     AlternationTaskPerformanceStatistics,
 )
-from src.jguides_2024.utils.plot_helpers import (
+from jguides_2024.utils.plot_helpers import (
     format_ax,
     plot_spanning_line,
     save_figure,
 )
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 analysis_dir = "/home/jguidera/Src/jguides_2024"
 # Define plotting params

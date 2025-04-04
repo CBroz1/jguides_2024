@@ -1,6 +1,6 @@
 import datajoint as dj
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
     EpsCohortParamsBase,
     PoolBase,
     PoolCohortBase,
@@ -8,8 +8,8 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
     PoolCohortParamsBase,
     PoolSelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import CohortBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import CohortBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     check_single_table_entry,
     delete_,
     fetch_entries_as_dict,
@@ -18,9 +18,9 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_table_name,
     insert1_print,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellADTrials,
     DioWellADTrialsParams,
     DioWellArrivalTrials,
@@ -31,15 +31,15 @@ from src.jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDATrialsParams,
     populate_jguidera_dio_trials,
 )
-from src.jguides_2024.time_and_trials.jguidera_epoch_interval import (
+from jguides_2024.time_and_trials.jguidera_epoch_interval import (
     EpochInterval,
     populate_jguidera_epoch_interval,
 )
-from src.jguides_2024.time_and_trials.jguidera_ppt_trials import (
+from jguides_2024.time_and_trials.jguidera_ppt_trials import (
     populate_jguidera_ppt_trials,
 )
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 # Need for table definitions
 TaskIdentification
@@ -286,7 +286,7 @@ class TrialsPoolCohort(PoolCohortBase):
 
     def delete_(self, key, safemode=True):
         # Delete from upstream tables and selection table
-        from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+        from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
             ResTimeBinsPool,
         )
 
@@ -388,7 +388,7 @@ class TrialsPoolEpsCohort(CohortBase):
         }
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.time_and_trials.jguidera_condition_trials import (
+        from jguides_2024.time_and_trials.jguidera_condition_trials import (
             ConditionTrialsSel,
         )
 
@@ -419,7 +419,7 @@ def populate_jguidera_trials_pool(
 
 
 def drop_jguidera_trials_pool():
-    from src.jguides_2024.time_and_trials.jguidera_res_set import (
+    from jguides_2024.time_and_trials.jguidera_res_set import (
         drop_jguidera_res_set,
     )
 

@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.utils.array_helpers import min_positive_val_arr
-from src.jguides_2024.utils.interval_helpers import check_intervals_list
-from src.jguides_2024.utils.plot_helpers import plot_intervals
-from src.jguides_2024.utils.stats_helpers import mean_squared_error
+from jguides_2024.utils.array_helpers import min_positive_val_arr
+from jguides_2024.utils.interval_helpers import check_intervals_list
+from jguides_2024.utils.plot_helpers import plot_intervals
+from jguides_2024.utils.stats_helpers import mean_squared_error
 
 
 def event_times_in_intervals_bool(event_times, valid_time_intervals):

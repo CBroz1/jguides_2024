@@ -1,11 +1,11 @@
 import datajoint as dj
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import (
     insert_single_trial_firing_rate_map_smoothed_well_table,
     make_well_single_trial_table_fr_df,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     FrmapBase,
     SecKeyParamsBase,
@@ -13,30 +13,30 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     TemporalFrmapParamsBase,
     TemporalFrmapSmParamsBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_schema_table_names_from_file,
     insert_analysis_table_entry,
     plot_datajoint_table_rate_map,
     populate_insert,
 )
-from src.jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
+from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
     populate_jguidera_ppt_firing_rate_map,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellADTrials,
     DioWellADTrialsParams,
 )
-from src.jguides_2024.time_and_trials.jguidera_warped_axis_bins import (
+from jguides_2024.time_and_trials.jguidera_warped_axis_bins import (
     WarpedAxisBins,
     WarpedAxisBinsParams,
 )
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.df_helpers import (
     df_filter_columns,
     df_from_data_list,
     unique_df_column_sets,
     zip_df_columns,
 )
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     rescale_1d,
     vector_midpoints,

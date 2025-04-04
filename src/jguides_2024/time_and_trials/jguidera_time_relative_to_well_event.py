@@ -6,40 +6,40 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     CovariateDigParamsBase,
     CovariateRCB,
     SecKeyParamsBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     delete_,
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.glm.jguidera_basis_function import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.glm.jguidera_basis_function import (
     RaisedCosineBasis,
     RaisedCosineBasisParams,
 )
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDDTrials,
     DioWellDDTrialsParams,
     DioWellTrials,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPool,
     ResTimeBinsPoolSel,
     populate_jguidera_res_time_bins_pool,
 )
-from src.jguides_2024.utils.array_helpers import min_positive_val_arr
-from src.jguides_2024.utils.basis_function_helpers import sample_basis_functions
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
-from src.jguides_2024.utils.make_bins import get_peri_event_bin_edges
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.array_helpers import min_positive_val_arr
+from jguides_2024.utils.basis_function_helpers import sample_basis_functions
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.digitize_helpers import digitize_indexed_variable
+from jguides_2024.utils.make_bins import get_peri_event_bin_edges
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import (
     unpack_single_element,
     vector_midpoints,
 )
@@ -59,7 +59,7 @@ class TimeRelWASel(SelBase):
     """
 
     def _get_potential_keys(self, key_filter=None):
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_fr_vec_default_param,
             get_glm_default_param,
         )
@@ -192,7 +192,7 @@ class TimeRelWA(ComputedBase):
 
     def delete_(self, key=None, safemode=True):
         # Delete downstream entries first
-        from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
+        from jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
             FRDiffVecCosSimWANnAve,
         )
 
@@ -259,7 +259,7 @@ class TimeRelWADigSel(SelBase):
 
     # Restrict combination of time bin width (TimeRelWADigParams) and time bins param name
     def _get_potential_keys(self, key_filter=None):
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_fr_vec_default_params_map,
             get_glm_default_params_map,
         )
@@ -412,7 +412,7 @@ class TimeRelWADigSingleAxisSel(SelBase):
         if key_filter is None:
             key_filter = dict()
         # Loop through default param sets
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_fr_vec_default_params_map,
             get_glm_default_params_map,
         )
@@ -522,7 +522,7 @@ class TimeRelWADigSingleAxis(ComputedBase):
         )
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
+        from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
             TimeRelWAFRVecSel,
         )
 
@@ -562,7 +562,7 @@ class TimeRelWARCBSel(SelBase):
         # Note we do not need bin_width to match time_bin_width in shorthand_params_map; bin_width is resolution
         # of covariate digitization, whereas time_bin_width corresponds to space between time samples. It just happens
         # that in this case, covariate has unit time
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import (
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import (
             get_glm_default_params_map,
         )
 
@@ -643,7 +643,7 @@ class TimeRelWARCB(CovariateRCB):
         )
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.glm.jguidera_measurements_interp_pool import (
+        from jguides_2024.glm.jguidera_measurements_interp_pool import (
             XInterpPoolSel,
         )
 
@@ -669,11 +669,11 @@ def populate_jguidera_time_relative_to_well_event(
 
 
 def drop_jguidera_time_relative_to_well_event():
-    from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
+    from jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import (
         drop_jguidera_firing_rate_difference_vector_similarity_ave,
     )
 
-    from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
+    from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import (
         drop_jguidera_well_event_firing_rate_vector,
     )
 

@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals,
 )
-from src.jguides_2024.utils.vector_helpers import series_finite_spans
+from jguides_2024.utils.vector_helpers import series_finite_spans
 
 
 def interpolate_at_average_sampling_rate(
@@ -26,7 +26,7 @@ def interpolate_at_average_sampling_rate(
     """
 
     # First, check that maximum distance between samples doesnt deviate too much from average
-    from src.jguides_2024.utils.vector_helpers import check_uniform_spacing
+    from jguides_2024.utils.vector_helpers import check_uniform_spacing
 
     check_uniform_spacing(x=t_original, error_tolerance=error_tolerance)
 

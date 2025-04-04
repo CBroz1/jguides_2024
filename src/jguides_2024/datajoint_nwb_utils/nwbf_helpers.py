@@ -1,7 +1,7 @@
 import numpy as np
 from spyglass.common import IntervalList, TaskEpoch
 
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals_bool,
 )
 

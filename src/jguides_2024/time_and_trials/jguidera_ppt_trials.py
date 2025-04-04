@@ -1,23 +1,23 @@
 import datajoint as dj
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SecKeyParamsBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     fetch1_dataframe_from_table_entry,
     insert1_print,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.position_and_maze.jguidera_maze import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.position_and_maze.jguidera_maze import (
     get_path_segment_fractions,
 )
-from src.jguides_2024.position_and_maze.jguidera_ppt import (
+from jguides_2024.position_and_maze.jguidera_ppt import (
     Ppt,
     populate_jguidera_ppt,
 )
-from src.jguides_2024.utils.interval_helpers import check_intervals_list
+from jguides_2024.utils.interval_helpers import check_intervals_list
 
 schema = dj.schema("jguidera_ppt_trials")
 

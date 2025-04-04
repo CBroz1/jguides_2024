@@ -6,37 +6,37 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import custom datajoint tables
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
     get_epochs_id,
 )
-from src.jguides_2024.embedding.embedding_params import EmbeddingParams
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
+from jguides_2024.embedding.embedding_params import EmbeddingParams
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
     FRVecEmb,
     FRVecEmbParams,
     FRVecEmbSel,
 )
-from src.jguides_2024.metadata.jguidera_brain_region import (
+from jguides_2024.metadata.jguidera_brain_region import (
     BrainRegionCohort,
     CurationSet,
 )
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import (
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
     BrainRegionUnitsParams,
     EpsUnitsParams,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohortParams,
 )
-from src.jguides_2024.utils.df_helpers import df_from_data_list, df_pop
-from src.jguides_2024.utils.plot_helpers import (
+from jguides_2024.utils.df_helpers import df_from_data_list, df_pop
+from jguides_2024.utils.plot_helpers import (
     get_gridspec_ax_maps,
     get_plot_idx_map,
     save_figure,
 )
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 # Define parameters
 curation_set_name = "runs_analysis_v1"

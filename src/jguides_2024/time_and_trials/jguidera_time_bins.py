@@ -2,37 +2,37 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SecKeyParamsBase,
     SelBase,
     TrialsTimeBinsParamsBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     fetch1_dataframe,
     get_key_filter,
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_high_priority_nwb_file_names,
 )
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
     get_epoch_time_interval,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellADTrials,
     DioWellArrivalTrials,
     DioWellArrivalTrialsSub,
     DioWellDATrials,
 )
-from src.jguides_2024.utils.df_helpers import zip_df_columns
-from src.jguides_2024.utils.list_helpers import (
+from jguides_2024.utils.df_helpers import zip_df_columns
+from jguides_2024.utils.list_helpers import (
     unzip_adjacent_elements,
     zip_adjacent_elements,
 )
-from src.jguides_2024.utils.make_bins import make_bin_edges
-from src.jguides_2024.utils.vector_helpers import vector_midpoints
+from jguides_2024.utils.make_bins import make_bin_edges
+from jguides_2024.utils.vector_helpers import vector_midpoints
 
 schema = dj.schema("jguidera_time_bins")
 

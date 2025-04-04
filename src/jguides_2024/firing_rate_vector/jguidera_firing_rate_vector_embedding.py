@@ -8,12 +8,12 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     AcrossFRVecTypeTableSelBase,
     ComputedBase,
     SecKeyParamsBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_cohort_test_entry,
     get_default_param,
     get_epochs_id,
@@ -21,43 +21,43 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert1_print,
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_delay_duration,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.embedding.umap_wrappers import embed_target_region
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.embedding.umap_wrappers import embed_target_region
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
     FRVec,
     populate_jguidera_firing_rate_vector,
 )
-from src.jguides_2024.metadata.jguidera_brain_region import (
+from jguides_2024.metadata.jguidera_brain_region import (
     BrainRegionCohort,
     CurationSet,
 )
-from src.jguides_2024.metadata.jguidera_epoch import (
+from jguides_2024.metadata.jguidera_epoch import (
     EpochCohort,
     EpochCohortParams,
     EpochsDescription,
 )
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.position_and_maze.jguidera_maze import (
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.position_and_maze.jguidera_maze import (
     MazePathWell,
     RewardWellColor,
     RewardWellPathColor,
 )
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import PptInterp
-from src.jguides_2024.spikes.jguidera_res_spikes import (
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt
+from jguides_2024.position_and_maze.jguidera_ppt_interp import PptInterp
+from jguides_2024.spikes.jguidera_res_spikes import (
     ResEpochSpikesSm,
     ResEpochSpikesSmDs,
     ResEpochSpikesSmParams,
 )
-from src.jguides_2024.spikes.jguidera_unit import (
+from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
     BrainRegionUnitsParams,
     EpsUnitsSel,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellADTrials,
     DioWellADTrialsParams,
     DioWellArrivalTrials,
@@ -67,27 +67,27 @@ from src.jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDDTrialsParams,
     DioWellTrials,
 )
-from src.jguides_2024.task_event.jguidera_task_performance import (
+from jguides_2024.task_event.jguidera_task_performance import (
     PerformanceOutcomeColors,
 )
-from src.jguides_2024.task_event.jguidera_task_value import TimeExpecVal
-from src.jguides_2024.time_and_trials.jguidera_relative_time_at_well import (
+from jguides_2024.task_event.jguidera_task_value import TimeExpecVal
+from jguides_2024.time_and_trials.jguidera_relative_time_at_well import (
     RelTimeDelay,
     RelTimeWell,
     RelTimeWellPostDelay,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohortParams,
     ResTimeBinsPoolSel,
 )
-from src.jguides_2024.utils.df_helpers import df_filter_columns
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.plot_helpers import return_n_cmap_colors
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.df_helpers import df_filter_columns
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.plot_helpers import return_n_cmap_colors
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals_bool,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 # Needed for table definitions:
 ResTimeBinsPoolCohortParams

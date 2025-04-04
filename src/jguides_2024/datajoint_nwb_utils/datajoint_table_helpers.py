@@ -13,22 +13,22 @@ from networkx import NetworkXError
 from spyglass.common import IntervalList, Session
 from spyglass.utils.dj_helper_fn import fetch_nwb as fetch_nwb_
 
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_environments,
     get_jguidera_nwbf_names,
 )
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.df_helpers import zip_df_columns
-from src.jguides_2024.utils.dict_helpers import (
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.df_helpers import zip_df_columns
+from jguides_2024.utils.dict_helpers import (
     add_defaults,
     dict_comprehension,
     merge_dicts_lists,
     remove_repeat_dicts,
 )
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.save_load_helpers import get_file_contents
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.string_helpers import (
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.save_load_helpers import get_file_contents
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.string_helpers import (
     camel_to_snake_case,
     get_string_prior_to_dunder,
     remove_leading_dunder,
@@ -37,7 +37,7 @@ from src.jguides_2024.utils.string_helpers import (
     strip_string,
     strip_trailing_s,
 )
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     find_spans_increasing_list,
     none_to_string_none,
@@ -485,14 +485,14 @@ def create_analysis_nwbf(key, nwb_objects, nwb_object_names):
         nwb_file_name = key["nwb_file_name"]
     elif "recording_set_name" in key:
         # Take first nwb file name
-        from src.jguides_2024.metadata.jguidera_epoch import (  # local import to avoid circular import error
+        from jguides_2024.metadata.jguidera_epoch import (  # local import to avoid circular import error
             RecordingSet,
         )
 
         nwb_file_name = (RecordingSet & key).fetch1("nwb_file_names")[0]
     elif "train_test_epoch_set_name" in key:
         # Take first nwb file name
-        from src.jguides_2024.metadata.jguidera_epoch import TrainTestEpochSet
+        from jguides_2024.metadata.jguidera_epoch import TrainTestEpochSet
 
         nwb_file_name = (TrainTestEpochSet & key).fetch1("nwb_file_names")[0]
     else:
@@ -1235,11 +1235,11 @@ def get_default_param(param_name):
 def get_param_defaults_map():
 
     # Local import to avoid circular import error
-    from src.jguides_2024.position_and_maze.jguidera_ppt import PptParams
-    from src.jguides_2024.spikes.jguidera_res_spikes import (
+    from jguides_2024.position_and_maze.jguidera_ppt import PptParams
+    from jguides_2024.spikes.jguidera_res_spikes import (
         ResEpochSpikesSmParams,
     )
-    from src.jguides_2024.spikes.jguidera_unit import EpsUnitsParams
+    from jguides_2024.spikes.jguidera_unit import EpsUnitsParams
 
     default_curation_id = 3
 
@@ -1423,7 +1423,7 @@ def add_upstream_res_set_params(kwargs):
     # making multiple keys from passed key, and looping through.
 
     # Local imports to avoid circular import error
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
         ResTimeBinsPoolCohortParams,
         ResTimeBinsPoolSel,
     )
@@ -1494,7 +1494,7 @@ def fetch1_dataframes_across_epochs(table, key, axis=0):
     # Concatenate dfs across epochs
 
     # Assemble keys, one for each epoch/res_epoch_time_bins_pool_param_name pair
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
         ResTimeBinsPoolCohortParams,
     )
 
@@ -1592,7 +1592,7 @@ def scrappy_clean(sel_table, main_table, safemode=True):
 
 def get_table_curation_names_for_key(table, key):
 
-    from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
+    from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
 
     # Get curation names relevant to a key
     if "curation_name" in key:

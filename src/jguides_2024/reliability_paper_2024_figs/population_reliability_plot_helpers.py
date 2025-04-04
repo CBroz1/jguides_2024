@@ -1,12 +1,12 @@
 import copy
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_ordered_subject_ids,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
     CovariateFRVecAveSummBase,
 )
-from src.jguides_2024.metadata.jguidera_epoch import RecordingSet
+from jguides_2024.metadata.jguidera_epoch import RecordingSet
 
 
 def _get_recording_set_names(

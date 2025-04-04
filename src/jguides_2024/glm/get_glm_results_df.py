@@ -3,9 +3,9 @@
 import copy
 import multiprocessing as mp
 
-from src.jguides_2024.glm.jguidera_el_net import ElNet
-from src.jguides_2024.utils.df_helpers import df_from_data_list
-from src.jguides_2024.utils.parallelization_helpers import show_error
+from jguides_2024.glm.jguidera_el_net import ElNet
+from jguides_2024.utils.df_helpers import df_from_data_list
+from jguides_2024.utils.parallelization_helpers import show_error
 
 
 def append_result(x):

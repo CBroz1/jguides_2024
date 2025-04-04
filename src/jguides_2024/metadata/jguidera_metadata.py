@@ -4,22 +4,22 @@ import datajoint as dj
 import numpy as np
 from spyglass.common import Nwbfile, TaskEpoch
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_relationship_text,
     get_schema_table_names_from_file,
     insert1_print,
     populate_insert,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_jguidera_nwbf_names,
 )
-from src.jguides_2024.utils.df_helpers import df_from_data_list, df_pop
-from src.jguides_2024.utils.dict_helpers import invert_dict
-from src.jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.df_helpers import df_from_data_list, df_pop
+from jguides_2024.utils.dict_helpers import invert_dict
+from jguides_2024.utils.set_helpers import check_membership
 
 schema = dj.schema("jguidera_metadata")
 

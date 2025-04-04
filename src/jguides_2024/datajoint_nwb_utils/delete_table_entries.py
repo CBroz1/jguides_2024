@@ -7,20 +7,20 @@ from spyglass.spikesorting import (
     SpikeSortingSelection,
 )
 
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
     FRVecEmb,
 )
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
-from src.jguides_2024.metadata.jguidera_epoch import EpochCohort
-from src.jguides_2024.position_and_maze.jguidera_position import (
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
+from jguides_2024.metadata.jguidera_epoch import EpochCohort
+from jguides_2024.position_and_maze.jguidera_position import (
     IntervalLinearizedPositionRelabel,
 )
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.spike_sorting_curation.jguidera_spikesorting import (
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt
+from jguides_2024.spike_sorting_curation.jguidera_spikesorting import (
     SpikeSortingRecordingCohortParams,
 )
-from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimes
-from src.jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPool
+from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimes
+from jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPool
 
 
 def delete_table_entries(key):

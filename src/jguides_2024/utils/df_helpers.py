@@ -2,14 +2,14 @@ import numpy as np
 import pandas as pd
 import sklearn
 
-from src.jguides_2024.utils.dict_helpers import (
+from jguides_2024.utils.dict_helpers import (
     check_dict_equality,
     dict_comprehension,
     merge_dicts,
 )
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.set_helpers import check_set_equality
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.set_helpers import check_set_equality
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     check_vectors_close,
     check_vectors_equal,
@@ -125,7 +125,7 @@ def unpack_df_columns(df, column_names, pop_single_entries=False):
 
 
 def df_filter_index(df, valid_intervals):
-    from src.jguides_2024.utils.point_process_helpers import (
+    from jguides_2024.utils.point_process_helpers import (
         event_times_in_intervals_bool,
     )
 

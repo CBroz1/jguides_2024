@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 
-from src.jguides_2024.utils.plot_helpers import format_ax
-from src.jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.plot_helpers import format_ax
+from jguides_2024.utils.set_helpers import check_membership
 
 
 class ExponentialKernel:

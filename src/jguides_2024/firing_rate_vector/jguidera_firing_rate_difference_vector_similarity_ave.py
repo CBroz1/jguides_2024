@@ -5,85 +5,85 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_subject_id,
     get_val_pairs,
     plot_junction_fractions,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
     PathWellFRVecSummBase,
     PopulationAnalysisParamsBase,
     PopulationAnalysisSelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     ParamsBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_key_filter,
     insert_analysis_table_entry,
     make_param_name,
 )
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_nwb_file_name_epochs_description,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
     FRDiffVec,
     FRDiffVecParams,
 )
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
     FRDiffVecCosSim,
     populate_jguidera_firing_rate_difference_vector_similarity,
 )
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
     FRVecEucDist,
     populate_jguidera_firing_rate_vector_euclidean_distance,
 )
-from src.jguides_2024.metadata.jguidera_brain_region import (
+from jguides_2024.metadata.jguidera_brain_region import (
     BrainRegionCohort,
     BrainRegionColor,
     CurationSet,
 )
-from src.jguides_2024.metadata.jguidera_epoch import (
+from jguides_2024.metadata.jguidera_epoch import (
     EpochsDescription,
     RecordingSet,
 )
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt, PptParams
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import (
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt, PptParams
+from jguides_2024.position_and_maze.jguidera_ppt_interp import (
     PptInterp,
     populate_jguidera_ppt_interp,
 )
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsCohortType
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsCohortType
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDDTrials,
     DioWellDDTrialsParams,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohortParamName,
     ResTimeBinsPoolCohortParams,
 )
-from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
+from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
     TimeRelWA,
 )
-from src.jguides_2024.utils.df_helpers import df_from_data_list
-from src.jguides_2024.utils.dict_helpers import (
+from jguides_2024.utils.df_helpers import df_from_data_list
+from jguides_2024.utils.dict_helpers import (
     add_defaults,
     return_shared_key_value,
 )
-from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
-from src.jguides_2024.utils.make_bins import get_peri_event_bin_edges
-from src.jguides_2024.utils.plot_helpers import plot_ave_conf
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
+from jguides_2024.utils.list_helpers import zip_adjacent_elements
+from jguides_2024.utils.make_bins import get_peri_event_bin_edges
+from jguides_2024.utils.plot_helpers import plot_ave_conf
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals_bool,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.stats_helpers import average_confidence_interval
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.stats_helpers import average_confidence_interval
+from jguides_2024.utils.vector_helpers import (
     unpack_single_element,
     vector_midpoints,
 )

@@ -3,29 +3,29 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     CovDigmethBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_delay_duration,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellTrials
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.task_event.jguidera_dio_trials import DioWellTrials
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPool,
     ResTimeBinsPoolSel,
 )
-from src.jguides_2024.utils.make_bins import make_bin_edges
-from src.jguides_2024.utils.point_process_helpers import (
+from jguides_2024.utils.make_bins import make_bin_edges
+from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals,
     event_times_in_intervals_bool,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 # Needed for table definitions:
 DioWellTrials

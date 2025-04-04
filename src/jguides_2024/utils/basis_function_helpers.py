@@ -2,11 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.utils.dict_helpers import add_pandas_index_to_dict
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
-from src.jguides_2024.utils.plot_helpers import format_ax, get_ax_for_layout
-from src.jguides_2024.utils.series_helpers import check_series
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.dict_helpers import add_pandas_index_to_dict
+from jguides_2024.utils.list_helpers import zip_adjacent_elements
+from jguides_2024.utils.plot_helpers import format_ax, get_ax_for_layout
+from jguides_2024.utils.series_helpers import check_series
+from jguides_2024.utils.vector_helpers import (
     check_monotonic_increasing,
     check_vectors_close,
     linspace,

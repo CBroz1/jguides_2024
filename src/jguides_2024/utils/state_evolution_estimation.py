@@ -4,24 +4,24 @@ from collections import namedtuple
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.utils.array_helpers import (
+from jguides_2024.utils.array_helpers import (
     array_to_list,
     array_to_tuple_list,
 )
-from src.jguides_2024.utils.check_well_defined import check_shape
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.check_well_defined import check_shape
+from jguides_2024.utils.df_helpers import (
     check_same_index,
     df_filter_columns,
     df_from_data_list,
     zip_df_columns,
 )
-from src.jguides_2024.utils.list_helpers import (
+from jguides_2024.utils.list_helpers import (
     check_return_single_element,
     return_n_empty_lists,
     zip_adjacent_elements,
 )
-from src.jguides_2024.utils.plot_helpers import plot_heatmap
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.plot_helpers import plot_heatmap
+from jguides_2024.utils.vector_helpers import (
     check_all_unique,
     find_spans_increasing_list,
     repeat_elements_idxs,

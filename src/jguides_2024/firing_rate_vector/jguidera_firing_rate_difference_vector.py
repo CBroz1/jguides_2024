@@ -3,22 +3,22 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SecKeyParamsBase,
     SelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     fetch1_dataframes,
     fetch1_dataframes_across_epochs,
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
     FRVec,
     populate_jguidera_firing_rate_vector,
 )
-from src.jguides_2024.utils.plot_helpers import plot_heatmap
+from jguides_2024.utils.plot_helpers import plot_heatmap
 
 # Needed for table definitions:
 nd
@@ -143,7 +143,7 @@ def populate_jguidera_firing_rate_difference_vector(
 
 
 def drop_jguidera_firing_rate_difference_vector():
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
         drop_jguidera_firing_rate_difference_vector_similarity,
     )
 

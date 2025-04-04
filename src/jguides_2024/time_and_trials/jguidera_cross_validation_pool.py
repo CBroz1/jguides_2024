@@ -1,19 +1,19 @@
 import datajoint as dj
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
     PoolBase,
     PoolSelBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.time_and_trials.jguidera_kfold_cross_validation import (
     KFoldTrainTestSplit,
 )
-from src.jguides_2024.time_and_trials.jguidera_leave_one_out_condition_trials_cross_validation import (
+from jguides_2024.time_and_trials.jguidera_leave_one_out_condition_trials_cross_validation import (
     LOOCTTrainTestSplit,
     populate_jguidera_leave_one_out_condition_trials_cross_validation,
 )
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohort,
 )
 

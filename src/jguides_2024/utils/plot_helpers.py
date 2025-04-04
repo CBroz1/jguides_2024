@@ -11,16 +11,16 @@ from matplotlib.gridspec import GridSpec
 from matplotlib.legend_handler import HandlerTuple
 from statannotations.Annotator import Annotator
 
-from src.jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.dict_helpers import (
+from jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.dict_helpers import (
     add_defaults,
     return_n_empty_dicts,
 )
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.stats_helpers import return_confidence_interval
-from src.jguides_2024.utils.tuple_helpers import reverse_pair
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.stats_helpers import return_confidence_interval
+from jguides_2024.utils.tuple_helpers import reverse_pair
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 
 def format_ax(
@@ -505,7 +505,7 @@ def plot_histogram(
     arrow_at_median=True,
     ax=None,
 ):
-    from src.jguides_2024.utils.make_bins import make_bin_edges
+    from jguides_2024.utils.make_bins import make_bin_edges
 
     if ax is None:
         fig, ax = plt.subplots()

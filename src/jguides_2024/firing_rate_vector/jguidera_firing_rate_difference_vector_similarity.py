@@ -4,27 +4,27 @@ import pandas as pd
 import scipy as sp
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     AcrossFRVecTypeTableSelBase,
     ComputedBase,
     PartBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     delete_,
     insert1_print,
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
     FRDiffVec,
     FRDiffVecParams,
     populate_jguidera_firing_rate_difference_vector,
 )
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
     FRVecEucDist,
 )
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnits
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohortParams,
 )
 

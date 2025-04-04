@@ -1,15 +1,15 @@
 import datajoint as dj
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SecKeyParamsBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_schema_table_names_from_file,
     populate_insert,
 )
-from src.jguides_2024.utils.vector_helpers import vector_midpoints
+from jguides_2024.utils.vector_helpers import vector_midpoints
 
 schema = dj.schema("jguidera_warped_axis_bins")
 

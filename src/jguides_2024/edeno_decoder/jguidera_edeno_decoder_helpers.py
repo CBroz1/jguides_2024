@@ -7,27 +7,27 @@ from replay_trajectory_classification.environments import Environment
 from spyglass.common.common_position import TrackGraph
 from spyglass.decoding.sorted_spikes import SortedSpikesClassifierParameters
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_reliability_paper_nwb_file_names,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_schema_table_names_from_file,
     populate_insert,
 )
-from src.jguides_2024.metadata.jguidera_epoch import RunEpoch
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.position_and_maze.jguidera_maze import (
+from jguides_2024.metadata.jguidera_epoch import RunEpoch
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.position_and_maze.jguidera_maze import (
     AnnotatedTrackGraph,
     MazePathWell,
     get_fork_maze_track_graph_name,
     return_n_junction_path_names,
 )
-from src.jguides_2024.task_event.jguidera_dio_trials import (
+from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellArrivalTrialsParams,
 )
-from src.jguides_2024.utils.dict_helpers import check_dict_equality
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.dict_helpers import check_dict_equality
+from jguides_2024.utils.list_helpers import zip_adjacent_elements
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 schema = dj.schema("jguidera_edeno_decoder_helpers")
 

@@ -4,25 +4,25 @@ import itertools
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_subject_ids,
 )
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
     subject_id_date_from_nwbf_name,
 )
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.df_helpers import (
     df_filter_columns_isin,
     zip_df_columns,
 )
-from src.jguides_2024.utils.dict_helpers import dict_comprehension
-from src.jguides_2024.utils.plot_helpers import plot_spanning_line
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.string_helpers import replace_chars
-from src.jguides_2024.utils.vector_helpers import find_spans_increasing_list
+from jguides_2024.utils.dict_helpers import dict_comprehension
+from jguides_2024.utils.plot_helpers import plot_spanning_line
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.string_helpers import replace_chars
+from jguides_2024.utils.vector_helpers import find_spans_increasing_list
 
 
 def _intervals_from_bool(bool_, index):
@@ -52,7 +52,7 @@ def get_trial_info_by_condition(
     # Group trial time and outcome information by a specified variable
 
     # Define map from trial type to trial table and name of performance outcomes in trial table
-    from src.jguides_2024.task_event.jguidera_dio_trials import (
+    from jguides_2024.task_event.jguidera_dio_trials import (
         DioWellArrivalTrials,
         DioWellDATrials,
     )
@@ -206,7 +206,7 @@ def plot_junction_fractions(
         span_data = ax.get_ylim()
 
     # Get path fraction value at maze turns
-    from src.jguides_2024.position_and_maze.jguidera_maze import (
+    from jguides_2024.position_and_maze.jguidera_maze import (
         get_n_junction_path_junction_fractions,
     )
 

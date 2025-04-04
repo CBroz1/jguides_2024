@@ -5,13 +5,13 @@ import pandas as pd
 import scipy as sp
 from matplotlib import pyplot as plt
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
     get_unit_name,
 )
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.plot_helpers import format_ax
-from src.jguides_2024.utils.vector_helpers import unpack_single_vector
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.plot_helpers import format_ax
+from jguides_2024.utils.vector_helpers import unpack_single_vector
 
 
 def plot_smoothed_spikes_table_result(table, key=None, unit_id=None, ax=None):

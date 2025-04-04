@@ -6,32 +6,32 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from spyglass.common import StateScriptFile
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert1_print,
     insert_analysis_table_entry,
 )
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_environments,
 )
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
     events_in_epoch_bool,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.task_event.jguidera_dio_event import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.task_event.jguidera_dio_event import (
     ProcessedDioEvents,
     PumpDiosComplete,
 )
-from src.jguides_2024.time_and_trials.jguidera_timestamps import EpochTimestamps
-from src.jguides_2024.utils.check_well_defined import failed_check
-from src.jguides_2024.utils.df_helpers import (
+from jguides_2024.time_and_trials.jguidera_timestamps import EpochTimestamps
+from jguides_2024.utils.check_well_defined import failed_check
+from jguides_2024.utils.df_helpers import (
     df_filter_columns,
     unpack_df_columns,
 )
-from src.jguides_2024.utils.vector_helpers import (
+from jguides_2024.utils.vector_helpers import (
     match_increasing_elements,
     remove_repeat_elements,
     unpack_single_element,

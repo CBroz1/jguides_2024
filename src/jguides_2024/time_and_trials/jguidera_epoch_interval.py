@@ -3,18 +3,18 @@ import numpy as np
 import pandas as pd
 from spyglass.common import TaskEpoch
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
 )
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert1_print,
 )
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.time_and_trials.define_interval_list import (
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.time_and_trials.define_interval_list import (
     NewIntervalList,
 )
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 # Needed for table definitions:
 TaskIdentification
