@@ -3,24 +3,23 @@ import numpy as np
 import pandas as pd
 import scipy as sp
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    AcrossFRVecTypeTableSelBase,
     ComputedBase,
     PartBase,
-    AcrossFRVecTypeTableSelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
-    insert1_print,
     delete_,
+    insert1_print,
+    insert_analysis_table_entry,
 )
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
     FRDiffVec,
-    populate_jguidera_firing_rate_difference_vector,
     FRDiffVecParams,
+    populate_jguidera_firing_rate_difference_vector,
 )
 from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
     FRVecEucDist,

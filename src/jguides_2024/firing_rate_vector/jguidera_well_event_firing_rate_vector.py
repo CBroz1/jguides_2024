@@ -4,23 +4,22 @@ from collections import namedtuple
 import datajoint as dj
 import numpy as np
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
-    CovariateFRVecBase,
-    CovariateFRVecSTAveParamsBase,
-    CovariateFRVecAveSelBase,
-    CovariateFRVecTrialAveBase,
-    CovariateFRVecSTAveBase,
-    CovariateFRVecSelBase,
-    CovariateFRVecAveSummSelBase,
-    CovariateFRVecAveSummSecKeyParamsBase,
     CovariateAveFRVecParamsBase,
-    CovariateFRVecSTAveSummBase,
     CovariateAveFRVecSummBase,
-    TimeRelWAFRVecSummBase,
+    CovariateFRVecAveSelBase,
+    CovariateFRVecAveSummSecKeyParamsBase,
+    CovariateFRVecAveSummSelBase,
+    CovariateFRVecBase,
     CovariateFRVecParamsBase,
+    CovariateFRVecSelBase,
+    CovariateFRVecSTAveBase,
+    CovariateFRVecSTAveParamsBase,
+    CovariateFRVecSTAveSummBase,
+    CovariateFRVecTrialAveBase,
+    TimeRelWAFRVecSummBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     SecKeyParamsBase,
@@ -43,29 +42,29 @@ from jguides_2024.metadata.jguidera_brain_region import (
 )
 from jguides_2024.metadata.jguidera_epoch import (
     EpochsDescription,
-    RunEpoch,
     RecordingSet,
+    RunEpoch,
 )
 from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
 from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
 from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
-    BrainRegionUnitsParams,
     BrainRegionUnitsCohortType,
+    BrainRegionUnitsParams,
 )
 from jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellTrials,
     DioWellDDTrials,
+    DioWellTrials,
 )
 from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolSel,
 )
 from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
     TimeRelWADig,
-    populate_jguidera_time_relative_to_well_event,
+    TimeRelWADigParams,
     TimeRelWADigSingleAxis,
     TimeRelWADigSingleAxisParams,
-    TimeRelWADigParams,
+    populate_jguidera_time_relative_to_well_event,
 )
 from jguides_2024.utils.df_helpers import check_same_index
 from jguides_2024.utils.dict_helpers import make_keys

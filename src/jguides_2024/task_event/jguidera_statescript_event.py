@@ -4,12 +4,12 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from spyglass.common import StateScriptFile, AnalysisNwbfile
+from spyglass.common import AnalysisNwbfile, StateScriptFile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
     insert1_print,
+    insert_analysis_table_entry,
 )
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_environments
 from jguides_2024.datajoint_nwb_utils.nwbf_helpers import events_in_epoch_bool
@@ -21,11 +21,11 @@ from jguides_2024.task_event.jguidera_dio_event import (
 )
 from jguides_2024.time_and_trials.jguidera_timestamps import EpochTimestamps
 from jguides_2024.utils.check_well_defined import failed_check
-from jguides_2024.utils.df_helpers import unpack_df_columns, df_filter_columns
+from jguides_2024.utils.df_helpers import df_filter_columns, unpack_df_columns
 from jguides_2024.utils.vector_helpers import (
     match_increasing_elements,
-    unpack_single_element,
     remove_repeat_elements,
+    unpack_single_element,
 )
 
 schema = dj.schema("jguidera_statescript_event")

@@ -1,15 +1,14 @@
 import datajoint as dj
-import spyglass as nd
 import numpy as np
-
+import spyglass as nd
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     plot_task_phases,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_decode_table_base import (
-    DecodeCovFRVecParamsBase,
     DecodeCovFRVecBase,
+    DecodeCovFRVecParamsBase,
     DecodeCovFRVecSelBase,
     DecodeCovFRVecSummBase,
 )

@@ -10,7 +10,7 @@ import spyglass as nd
 from datajoint import DataJointError
 from matplotlib import pyplot as plt
 from networkx import NetworkXError
-from spyglass.common import AnalysisNwbfile, Session, IntervalList
+from spyglass.common import AnalysisNwbfile, IntervalList, Session
 from spyglass.utils.dj_helper_fn import fetch_nwb as fetch_nwb_
 
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
@@ -20,28 +20,28 @@ from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
 from jguides_2024.utils.check_well_defined import check_one_none
 from jguides_2024.utils.df_helpers import zip_df_columns
 from jguides_2024.utils.dict_helpers import (
-    dict_comprehension,
     add_defaults,
-    remove_repeat_dicts,
+    dict_comprehension,
     merge_dicts_lists,
+    remove_repeat_dicts,
 )
 from jguides_2024.utils.list_helpers import check_return_single_element
 from jguides_2024.utils.save_load_helpers import get_file_contents
 from jguides_2024.utils.set_helpers import check_membership
 from jguides_2024.utils.string_helpers import (
     camel_to_snake_case,
-    snake_to_camel_case,
-    strip_string,
-    strip_trailing_s,
     get_string_prior_to_dunder,
     remove_leading_dunder,
     replace_chars,
+    snake_to_camel_case,
+    strip_string,
+    strip_trailing_s,
 )
 from jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
-    find_spans_increasing_list,
     check_all_unique,
+    find_spans_increasing_list,
     none_to_string_none,
+    unpack_single_element,
 )
 
 """
@@ -485,9 +485,9 @@ def create_analysis_nwbf(key, nwb_objects, nwb_object_names):
         nwb_file_name = key["nwb_file_name"]
     elif "recording_set_name" in key:
         # Take first nwb file name
-        from jguides_2024.metadata.jguidera_epoch import (
+        from jguides_2024.metadata.jguidera_epoch import (  # local import to avoid circular import error
             RecordingSet,
-        )  # local import to avoid circular import error
+        )
 
         nwb_file_name = (RecordingSet & key).fetch1("nwb_file_names")[0]
     elif "train_test_epoch_set_name" in key:
@@ -1298,8 +1298,8 @@ def get_default_param(param_name):
 def get_param_defaults_map():
 
     from jguides_2024.position_and_maze.jguidera_ppt import PptParams
-    from jguides_2024.spikes.jguidera_unit import EpsUnitsParams
     from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+    from jguides_2024.spikes.jguidera_unit import EpsUnitsParams
 
     default_curation_id = 3
 

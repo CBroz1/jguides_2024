@@ -14,9 +14,9 @@ from jguides_2024.utils.list_helpers import (
 )
 from jguides_2024.utils.set_helpers import check_membership, check_set_equality
 from jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
     check_all_unique,
     check_vectors_equal,
+    unpack_single_element,
 )
 
 

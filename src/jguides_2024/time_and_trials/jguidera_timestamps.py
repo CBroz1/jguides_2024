@@ -1,12 +1,11 @@
 import datajoint as dj
 import pandas as pd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
     get_schema_table_names_from_file,
+    insert_analysis_table_entry,
     populate_insert,
 )
 from jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file

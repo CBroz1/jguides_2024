@@ -2,16 +2,16 @@ import numpy as np
 
 # Populate lab position_and_maze tables
 from spyglass.common.common_position import (
-    IntervalPositionInfoSelection,
-    IntervalPositionInfo,
-    TrackGraph,
     IntervalLinearizationSelection,
     IntervalLinearizedPosition,
+    IntervalPositionInfo,
+    IntervalPositionInfoSelection,
+    TrackGraph,
 )
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    populate_flexible_key,
     add_param_defaults,
+    populate_flexible_key,
 )
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_jguidera_nwbf_epoch_keys,

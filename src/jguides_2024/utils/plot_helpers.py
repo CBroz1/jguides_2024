@@ -13,7 +13,7 @@ from statannotations.Annotator import Annotator
 
 from jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
 from jguides_2024.utils.check_well_defined import check_one_none
-from jguides_2024.utils.dict_helpers import return_n_empty_dicts, add_defaults
+from jguides_2024.utils.dict_helpers import add_defaults, return_n_empty_dicts
 from jguides_2024.utils.set_helpers import check_membership
 from jguides_2024.utils.stats_helpers import return_confidence_interval
 from jguides_2024.utils.tuple_helpers import reverse_pair

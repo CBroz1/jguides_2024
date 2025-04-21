@@ -17,8 +17,8 @@ from jguides_2024.utils.point_process_helpers import (
 from jguides_2024.utils.set_helpers import check_membership
 from jguides_2024.utils.string_helpers import abbreviate_camel_case
 from jguides_2024.utils.vector_helpers import (
-    repeat_elements_idxs,
     check_all_unique,
+    repeat_elements_idxs,
     unpack_single_element,
 )
 
@@ -75,9 +75,7 @@ def trials_train_test_split(
     # First, require that all times in time_vector fall within trial_intervals. Otherwise, unclear how to
     # assign those outside samples to train/test
     if not all(event_times_in_intervals_bool(time_vector, trial_intervals)):
-        raise Exception(
-            "All samples in time_vector must be in trial_intervals"
-        )
+        raise Exception("All samples in time_vector must be in trial_intervals")
 
     # Get indices of test and train trials
     train_trial_idxs, test_trial_idxs = train_test_idxs(

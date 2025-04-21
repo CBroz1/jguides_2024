@@ -4,12 +4,11 @@ import os
 analysis_dir = "/home/jguidera/Src/jguides_2024"
 os.chdir(analysis_dir)
 from reliability_paper_2024_figs.population_reliability_plot_helpers import (
+    _add_medium_long_sized_plot_params,
     _add_medium_sized_plot_params,
     _add_outbound_path_x_params,
     fr_vec_plot,
-    _add_medium_long_sized_plot_params,
 )
-
 
 # Single trial, same outbound path different outbound path, correct trials, single rats
 

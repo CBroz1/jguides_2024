@@ -9,10 +9,10 @@ from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     SelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    get_schema_table_names_from_file,
-    populate_insert,
-    insert1_print,
     get_relationship_text,
+    get_schema_table_names_from_file,
+    insert1_print,
+    populate_insert,
 )
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_jguidera_nwbf_names,

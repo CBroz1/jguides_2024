@@ -2,18 +2,17 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
     fetch1_dataframes,
     fetch1_dataframes_across_epochs,
+    insert_analysis_table_entry,
 )
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (

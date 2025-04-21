@@ -1,7 +1,6 @@
 import datajoint as dj
 import numpy as np
 
-
 schema = dj.schema("jguidera_histology")
 
 

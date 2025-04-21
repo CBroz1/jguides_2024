@@ -7,30 +7,28 @@ import datajoint as dj
 import numpy as np
 
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
-    get_subject_id,
     get_reliability_paper_nwb_file_names,
+    get_subject_id,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     SecKeyParamsBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    format_nwb_file_name,
-)
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert1_print,
-    get_schema_table_names_from_file,
-    populate_insert,
-    get_epochs_id,
     check_epochs_id,
-    get_key_filter,
-    fetch_iterable_array,
     fetch_entries_as_dict,
+    fetch_iterable_array,
+    format_nwb_file_name,
+    get_epochs_id,
+    get_key_filter,
+    get_schema_table_names_from_file,
+    insert1_print,
+    populate_insert,
 )
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import Contingency
 from jguides_2024.metadata.jguidera_metadata import (
-    TaskIdentification,
     JguideraNwbfile,
+    TaskIdentification,
 )
 from jguides_2024.time_and_trials.jguidera_epoch_interval import EpochInterval
 from jguides_2024.utils.dict_helpers import add_defaults

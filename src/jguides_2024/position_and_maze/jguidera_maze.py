@@ -9,18 +9,18 @@ from spyglass.common.common_position import TrackGraph
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
-    SelBase,
     SecKeyParamsBase,
+    SelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    get_schema_table_names_from_file,
-    insert1_print,
-    populate_insert,
+    convert_path_name,
     convert_path_names,
     fetch1_dataframe_from_table_entry,
-    get_table_secondary_key_names,
-    convert_path_name,
     fetch_entries_as_dict,
+    get_schema_table_names_from_file,
+    get_table_secondary_key_names,
+    insert1_print,
+    populate_insert,
 )
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_environments
 from jguides_2024.metadata.jguidera_metadata import TaskIdentification
@@ -29,25 +29,25 @@ from jguides_2024.position_and_maze.make_fork_maze_track_graph import (
     simulate_fork_maze,
 )
 from jguides_2024.task_event.jguidera_task_performance import (
-    ContingencyActiveContingenciesMap,
-    AlternationTaskWellIdentities,
     AlternationTaskRule,
+    AlternationTaskWellIdentities,
+    ContingencyActiveContingenciesMap,
 )
 from jguides_2024.utils.array_helpers import array_to_tuple_list
 from jguides_2024.utils.check_well_defined import check_one_none
 from jguides_2024.utils.df_helpers import (
-    df_filter_columns,
     df_filter1_columns,
+    df_filter_columns,
     df_pop,
 )
 from jguides_2024.utils.dict_helpers import (
-    pairs_keys_same_value,
     pairs_keys_different_value,
+    pairs_keys_same_value,
 )
 from jguides_2024.utils.list_helpers import zip_adjacent_elements
 from jguides_2024.utils.make_bins import make_int_bin_edges
 from jguides_2024.utils.plot_helpers import plot_text_color
-from jguides_2024.utils.set_helpers import check_set_equality, check_membership
+from jguides_2024.utils.set_helpers import check_membership, check_set_equality
 from jguides_2024.utils.string_helpers import (
     abbreviate_join_strings,
     get_even_odd_text,
@@ -55,8 +55,8 @@ from jguides_2024.utils.string_helpers import (
 from jguides_2024.utils.tuple_helpers import add_reversed_pairs
 from jguides_2024.utils.vector_helpers import (
     check_range_within,
-    unpack_single_element,
     unique_in_order,
+    unpack_single_element,
 )
 
 schema = dj.schema("jguidera_maze")  # define custom schema

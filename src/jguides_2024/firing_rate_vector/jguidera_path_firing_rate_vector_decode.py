@@ -1,6 +1,5 @@
 import datajoint as dj
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (

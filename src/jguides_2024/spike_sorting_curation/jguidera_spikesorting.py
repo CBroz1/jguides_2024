@@ -3,20 +3,20 @@ from collections import namedtuple
 import datajoint as dj
 import numpy as np
 from spyglass.common import IntervalList
+from spyglass.spikesorting.v0.spikesorting_curation import (
+    AutomaticCurationParameters,
+    CuratedSpikeSorting,
+    MetricParameters,
+    SortInterval,
+    WaveformParameters,
+)
 from spyglass.spikesorting.v0.spikesorting_recording import (
     SpikeSortingRecording,
 )
-from spyglass.spikesorting.v0.spikesorting_curation import (
-    CuratedSpikeSorting,
-    WaveformParameters,
-    AutomaticCurationParameters,
-    MetricParameters,
-    SortInterval,
-)
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SecKeyParamsBase,
     ComputedBase,
+    SecKeyParamsBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_schema_table_names_from_file,
@@ -280,9 +280,9 @@ def return_spikesorting_params():
         parameter_set_dict["preproc_params_name"][
             region
         ] = "franklab_tetrode_hippocampus_min_seg"
-        from jguides_2024.spike_sorting_curation.jguidera_artifact import (
+        from jguides_2024.spike_sorting_curation.jguidera_artifact import (  # local import to avoid circular import
             ArtifactDetectionAcrossSortGroupsParams,
-        )  # local import to avoid circular import
+        )
 
         parameter_set_dict["artifact"][
             region

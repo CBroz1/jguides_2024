@@ -1,19 +1,18 @@
 import datajoint as dj
 import numpy as np
 import pandas as pd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
     TrialsTimeBinsParamsBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
     fetch1_dataframe,
     get_key_filter,
+    insert_analysis_table_entry,
 )
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_high_priority_nwb_file_names,
@@ -23,15 +22,15 @@ from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
 )
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellArrivalTrials,
-    DioWellDATrials,
     DioWellADTrials,
+    DioWellArrivalTrials,
     DioWellArrivalTrialsSub,
+    DioWellDATrials,
 )
 from jguides_2024.utils.df_helpers import zip_df_columns
 from jguides_2024.utils.list_helpers import (
-    zip_adjacent_elements,
     unzip_adjacent_elements,
+    zip_adjacent_elements,
 )
 from jguides_2024.utils.make_bins import make_bin_edges
 from jguides_2024.utils.vector_helpers import vector_midpoints

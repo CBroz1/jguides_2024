@@ -17,16 +17,16 @@ from replay_trajectory_classification import (
     SortedSpikesClassifier,
 )
 from spyglass.common import (
-    IntervalList,
-    IntervalLinearizedPosition,
     AnalysisNwbfile,
-)
-from spyglass.decoding.v0.sorted_spikes import (
-    SortedSpikesIndicatorSelection,
-    SortedSpikesIndicator,
-    SortedSpikesClassifierParameters,
+    IntervalLinearizedPosition,
+    IntervalList,
 )
 from spyglass.decoding.v0.clusterless import ClusterlessClassifierParameters
+from spyglass.decoding.v0.sorted_spikes import (
+    SortedSpikesClassifierParameters,
+    SortedSpikesIndicator,
+    SortedSpikesIndicatorSelection,
+)
 from spyglass.spikesorting.v0.spikesorting_curation import CuratedSpikeSorting
 
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
@@ -34,70 +34,70 @@ from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_subject_id,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    get_schema_table_names_from_file,
-    populate_insert,
     get_default_param,
-    split_curation_name,
-    make_param_name,
+    get_schema_table_names_from_file,
     insert_analysis_table_entry,
+    make_param_name,
+    populate_insert,
+    split_curation_name,
 )
 from jguides_2024.edeno_decoder.jguidera_edeno_decoder_helpers import (
-    get_valid_decode_variable_names,
-    StackedEdgeTrackGraph,
     EDPathGroups,
-    max_posterior_position,
+    StackedEdgeTrackGraph,
+    get_valid_decode_variable_names,
     get_valid_turn_zone_decode_variable_names,
+    max_posterior_position,
 )
 from jguides_2024.metadata.jguidera_brain_region import (
-    CurationSet,
     BrainRegionCohort,
+    CurationSet,
 )
 from jguides_2024.metadata.jguidera_epoch import (
     EpochsDescription,
-    TrainTestEpoch,
     EpochsDescriptions,
+    TrainTestEpoch,
 )
 from jguides_2024.position_and_maze.jguidera_maze import (
-    get_path_junction_abbreviation,
     MazePathWell,
+    get_path_junction_abbreviation,
 )
 from jguides_2024.position_and_maze.jguidera_ppt import Ppt
 from jguides_2024.spikes.jguidera_unit import (
-    EpsUnitsParams,
     BrainRegionUnits,
     BrainRegionUnitsParams,
+    EpsUnitsParams,
 )
 from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellArrivalTrials,
-    DioWellDDTrials,
     DioWellArrivalTrialsSub,
+    DioWellDDTrials,
 )
 from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
 from jguides_2024.utils.cross_validation_helpers import CrossValidate
 from jguides_2024.utils.df_helpers import (
-    zip_df_columns,
-    match_two_dfs,
-    df_pop,
     df_from_data_list,
+    df_pop,
+    match_two_dfs,
+    zip_df_columns,
 )
 from jguides_2024.utils.dict_helpers import merge_dicts
 from jguides_2024.utils.list_helpers import check_return_single_element
-from jguides_2024.utils.plot_helpers import path_name_to_plot_string, format_ax
+from jguides_2024.utils.plot_helpers import format_ax, path_name_to_plot_string
 from jguides_2024.utils.point_process_helpers import (
-    event_times_in_intervals_bool,
     event_times_in_intervals,
+    event_times_in_intervals_bool,
 )
 from jguides_2024.utils.print_helpers import optional_print
 from jguides_2024.utils.save_load_helpers import pickle_file
 from jguides_2024.utils.set_helpers import check_membership, check_set_equality
 from jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
     check_all_unique,
+    unpack_single_element,
     vector_midpoints,
 )
 
@@ -1290,10 +1290,10 @@ class EdenoDecode(ComputedBase):
         :return:
         """
 
-        from jguides_2024.utils.df_helpers import zip_df_columns
         from jguides_2024.position_and_maze.jguidera_maze import (
             return_n_junction_path_names,
         )
+        from jguides_2024.utils.df_helpers import zip_df_columns
 
         # Get time of upsampled position_and_maze measurements
         pos_t = linear_position.index

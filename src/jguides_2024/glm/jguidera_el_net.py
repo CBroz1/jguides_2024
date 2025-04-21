@@ -5,27 +5,26 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 import statsmodels.api as sm
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
     get_reliability_paper_nwb_file_names,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    unique_table_column_sets,
-    insert_analysis_table_entry,
-    insert1_print,
     _get_idx_column_name,
-    preserve_df_row_idx,
-    restore_df_row_idx,
-    get_unit_name,
     delete_,
     fetch1_tolerate_no_entry,
+    get_unit_name,
+    insert1_print,
+    insert_analysis_table_entry,
+    preserve_df_row_idx,
+    restore_df_row_idx,
+    unique_table_column_sets,
 )
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.glm.glm_helpers import ElasticNetContainer
@@ -44,8 +43,8 @@ from jguides_2024.spikes.jguidera_res_spikes import (
     populate_jguidera_res_spikes,
 )
 from jguides_2024.spikes.jguidera_unit import (
-    BrainRegionUnitsParams,
     BrainRegionUnits,
+    BrainRegionUnitsParams,
     EpsUnits,
 )
 from jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
@@ -57,13 +56,13 @@ from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
 )
 from jguides_2024.utils.df_helpers import (
     check_same_index,
-    zip_df_columns,
     df_pop,
+    zip_df_columns,
 )
 from jguides_2024.utils.set_helpers import check_membership
 from jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
     check_all_unique,
+    unpack_single_element,
 )
 
 # Needed for table definitions:

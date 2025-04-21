@@ -1,19 +1,18 @@
 import datajoint as dj
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import (
     insert_cross_validation_table,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_schema_table_names_from_file,
-    populate_insert,
     get_table_secondary_key_names,
+    populate_insert,
 )
 from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohort,

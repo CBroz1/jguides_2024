@@ -2,7 +2,6 @@ import datajoint as dj
 import matplotlib.pyplot as plt
 import numpy as np
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
@@ -12,8 +11,8 @@ from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers i
     insert_cross_validation_table,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
     ComputedBase,
+    SelBase,
 )
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.time_and_trials.jguidera_condition_trials import (

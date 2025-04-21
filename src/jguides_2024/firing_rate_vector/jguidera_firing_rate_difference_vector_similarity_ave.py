@@ -4,7 +4,6 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
@@ -20,17 +19,15 @@ from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_tab
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
-    SelBase,
     ParamsBase,
+    SelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    get_key_filter,
-    make_param_name,
     delete_,
+    get_key_filter,
     get_table_secondary_key_names,
-)
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
+    make_param_name,
 )
 from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
@@ -42,19 +39,19 @@ from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector impo
     FRDiffVecParams,
 )
 from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import (
-    populate_jguidera_firing_rate_difference_vector_similarity,
     FRDiffVecCosSim,
+    populate_jguidera_firing_rate_difference_vector_similarity,
 )
 from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
     FRVecEucDist,
     populate_jguidera_firing_rate_vector_euclidean_distance,
 )
 from jguides_2024.metadata.jguidera_brain_region import (
-    BrainRegionColor,
     BrainRegionCohort,
+    BrainRegionColor,
     CurationSet,
 )
-from jguides_2024.metadata.jguidera_epoch import RecordingSet, EpochsDescription
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription, RecordingSet
 from jguides_2024.position_and_maze.jguidera_ppt import Ppt, PptParams
 from jguides_2024.position_and_maze.jguidera_ppt_interp import (
     PptInterp,
@@ -63,12 +60,12 @@ from jguides_2024.position_and_maze.jguidera_ppt_interp import (
 from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
 from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsCohortType
 from jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellDDTrialsParams,
     DioWellDDTrials,
+    DioWellDDTrialsParams,
 )
 from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
-    ResTimeBinsPoolCohortParams,
     ResTimeBinsPoolCohortParamName,
+    ResTimeBinsPoolCohortParams,
 )
 from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
     TimeRelWA,
@@ -88,8 +85,8 @@ from jguides_2024.utils.point_process_helpers import (
 from jguides_2024.utils.set_helpers import check_membership
 from jguides_2024.utils.stats_helpers import average_confidence_interval
 from jguides_2024.utils.vector_helpers import (
-    vector_midpoints,
     unpack_single_element,
+    vector_midpoints,
 )
 
 # Needed for table definitions:

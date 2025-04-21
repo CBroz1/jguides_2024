@@ -9,27 +9,27 @@ from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import (
     get_smoothed_fr_table_map,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    get_unit_name,
     abbreviate_path_name,
-    populate_multiple_flexible_key,
     abbreviate_path_names,
+    get_unit_name,
     make_params_string,
+    populate_multiple_flexible_key,
 )
 from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
     FrmapPupt,
     FrmapPuptSm,
 )
 from jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (
-    FrmapWellArrival,
-    FrmapWellArrivalSm,
-    STFrmapWellArrivalSm,
-    STFrmapWellArrival,
     FrmapUniqueWellArrival,
     FrmapUniqueWellArrivalSm,
+    FrmapWellArrival,
+    FrmapWellArrivalSm,
+    STFrmapWellArrival,
+    STFrmapWellArrivalSm,
 )
 from jguides_2024.metadata.jguidera_brain_region import (
-    SortGroupTargetedLocation,
     CurationSet,
+    SortGroupTargetedLocation,
     get_brain_region_from_targeted_location,
 )
 from jguides_2024.metadata.jguidera_epoch import EpochsDescription
@@ -40,9 +40,7 @@ from jguides_2024.position_and_maze.jguidera_position_stop import (
     StopLikeWellArrival,
 )
 from jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from jguides_2024.spikes.jguidera_spikes import (
-    EpochSpikeTimesRelabelParams,
-)
+from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabelParams
 from jguides_2024.spikes.jguidera_unit import BrainRegionUnits
 from jguides_2024.task_event.jguidera_dio_event import (
     DioEvents,
@@ -50,45 +48,45 @@ from jguides_2024.task_event.jguidera_dio_event import (
     PumpDiosComplete,
 )
 from jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellDDTrials,
-    DioWellDATrials,
     DioWellArrivalTrials,
     DioWellArrivalTrialsParams,
+    DioWellDATrials,
+    DioWellDATrialsParams,
+    DioWellDDTrials,
     DioWellDepartureTrials,
     populate_jguidera_dio_trials,
-    DioWellDATrialsParams,
 )
 from jguides_2024.task_event.jguidera_statescript_event import (
-    StatescriptEvents,
     ProcessedStatescriptEvents,
+    StatescriptEvents,
 )
 from jguides_2024.task_event.jguidera_task_performance import (
     AlternationTaskPerformance,
 )
 from jguides_2024.utils.df_helpers import (
+    df_filter1_columns,
     df_filter_columns,
     df_filter_columns_isin,
-    df_filter1_columns,
     df_from_data_list,
 )
 from jguides_2024.utils.plot_helpers import (
-    plot_spanning_line,
+    format_ax,
     get_gridspec_ax_maps,
     get_plot_idx_map,
-    format_ax,
+    plot_spanning_line,
+    save_figure,
 )
-from jguides_2024.utils.plot_helpers import save_figure
 from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals as in_intervals,
 )
 from jguides_2024.utils.string_helpers import format_optional_var
 from jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
     check_vectors_equal,
     merged_combinations,
-    vectors_finite_idxs,
-    unpack_single_vector,
     overlap,
+    unpack_single_element,
+    unpack_single_vector,
+    vectors_finite_idxs,
 )
 
 # Tables called with eval (do not remove):

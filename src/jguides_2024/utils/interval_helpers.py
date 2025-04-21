@@ -6,8 +6,8 @@ from spyglass.common.common_interval import interval_list_intersect
 from jguides_2024.utils.list_helpers import check_lists_same_length
 from jguides_2024.utils.set_helpers import check_membership
 from jguides_2024.utils.vector_helpers import (
-    check_monotonic_increasing,
     check_all_unique,
+    check_monotonic_increasing,
     unpack_single_element,
 )
 

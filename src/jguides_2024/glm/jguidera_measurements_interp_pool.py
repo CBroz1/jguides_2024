@@ -4,25 +4,24 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
-    PoolSelBase,
+    EpsCohortParamsBase,
     PoolBase,
-    PoolCohortParamsBase,
     PoolCohortBase,
     PoolCohortParamNameBase,
-    EpsCohortParamsBase,
+    PoolCohortParamsBase,
+    PoolSelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    ComputedBase,
     CohortBase,
+    ComputedBase,
     SelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert1_print,
     delete_,
+    insert1_print,
     insert_analysis_table_entry,
     unique_table_column_sets,
 )
@@ -31,21 +30,21 @@ from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.glm.jguidera_basis_function import RaisedCosineBasisParams
 from jguides_2024.position_and_maze.jguidera_ppt import PptParams
 from jguides_2024.position_and_maze.jguidera_ppt_interp import (
-    PptRCB,
     PptDigParams,
+    PptRCB,
     populate_jguidera_ppt_interp,
 )
 from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPool,
-    ResTimeBinsPoolCohortParams,
     ResTimeBinsPoolCohort,
+    ResTimeBinsPoolCohortParams,
     ResTimeBinsPoolSel,
 )
 from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
+    TimeRelWADigParams,
+    TimeRelWADigSingleAxisParams,
     TimeRelWARCB,
     populate_jguidera_time_relative_to_well_event,
-    TimeRelWADigSingleAxisParams,
-    TimeRelWADigParams,
 )
 from jguides_2024.utils.dict_helpers import (
     add_defaults,

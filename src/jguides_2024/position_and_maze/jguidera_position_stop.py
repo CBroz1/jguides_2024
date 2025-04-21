@@ -4,19 +4,16 @@ import datajoint as dj
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 from spyglass.common import AnalysisNwbfile
 
-# Import custom datajoint tables
-
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
     get_schema_table_names_from_file,
+    insert_analysis_table_entry,
     populate_insert,
 )
 from jguides_2024.position_and_maze.jguidera_position import (
@@ -27,8 +24,10 @@ from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDATrials,
     DioWellDATrialsParams,
 )
-from jguides_2024.utils.plot_helpers import plot_spanning_line, format_ax
+from jguides_2024.utils.plot_helpers import format_ax, plot_spanning_line
 from jguides_2024.utils.similarity_measure_helpers import SimilarOverlapPeriods
+
+# Import custom datajoint tables
 
 
 schema_name = "jguidera_position_stop"
@@ -338,11 +337,11 @@ def populate_jguidera_position_stop(key=None, tolerate_error=False):
 
 
 def drop_jguidera_position_stop():
-    from development.jguidera_position_stop_trials import (
-        drop_jguidera_position_trials,
-    )
     from development.jguidera_position_stop_firing_rate_map import (
         drop_jguidera_position_stop_firing_rate_map,
+    )
+    from development.jguidera_position_stop_trials import (
+        drop_jguidera_position_trials,
     )
 
     drop_jguidera_position_stop_firing_rate_map()

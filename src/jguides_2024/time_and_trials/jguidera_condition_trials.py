@@ -3,14 +3,14 @@ import copy
 import datajoint as dj
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert1_print,
-    get_table_column_names,
     delete_,
+    get_table_column_names,
+    insert1_print,
 )
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
     get_jguidera_nwbf_epoch_keys,
@@ -22,10 +22,10 @@ from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolSel,
 )
 from jguides_2024.time_and_trials.jguidera_trials_pool import (
-    TrialsPoolEpsCohort,
     TrialsPool,
+    TrialsPoolEpsCohort,
 )
-from jguides_2024.utils.df_helpers import zip_df_columns, df_filter_columns
+from jguides_2024.utils.df_helpers import df_filter_columns, zip_df_columns
 from jguides_2024.utils.list_helpers import check_return_single_element
 from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals as in_intervals,

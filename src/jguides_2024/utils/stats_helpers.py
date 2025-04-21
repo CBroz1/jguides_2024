@@ -5,11 +5,12 @@ import numpy as np
 import scipy as sp
 
 from jguides_2024.utils.df_helpers import (
-    df_from_data_list,
     df_filter_columns,
+    df_from_data_list,
     df_pop,
 )
 from jguides_2024.utils.vector_helpers import vectors_finite_idxs
+
 
 def check_confidence_interval(confidence_interval, allow_small_values=False):
     if len(confidence_interval) != 2:

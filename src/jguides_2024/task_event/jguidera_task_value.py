@@ -5,13 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
     ComputedBase,
     CovDigmethBase,
+    SelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
@@ -22,8 +21,8 @@ from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDATrialsParams,
     DioWellDDTrials,
     DioWellDDTrialsParams,
+    DioWellTrials,
 )
-from jguides_2024.task_event.jguidera_dio_trials import DioWellTrials
 from jguides_2024.task_event.jguidera_task_performance import (
     reward_outcomes_to_int,
 )
@@ -31,7 +30,7 @@ from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPool,
     ResTimeBinsPoolSel,
 )
-from jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns
+from jguides_2024.utils.df_helpers import df_filter_columns, df_from_data_list
 from jguides_2024.utils.kernel_helpers import Kernel
 from jguides_2024.utils.plot_helpers import get_fig_axes
 from jguides_2024.utils.set_helpers import check_membership
@@ -319,9 +318,7 @@ class TimeExpecVal(CovDigmethBase):
         # Get "post delay or departure" trial intervals
         trial_times = table_entry.get_post_delay_or_departure_trials()
         if len(epoch_trial_nums) != len(trial_times):
-            raise Exception(
-                "different number of trial numbers and trial times"
-            )
+            raise Exception("different number of trial numbers and trial times")
 
         # Find the index of the trial interval in which each time falls
         time_bin_centers = time_bins_df.time_bin_centers.values

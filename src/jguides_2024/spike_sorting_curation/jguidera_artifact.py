@@ -10,9 +10,9 @@ import spikeinterface as si
 import spyglass as nd
 from spyglass.common import IntervalList
 from spyglass.spikesorting.v0.spikesorting_artifact import (
+    ArtifactDetectionParameters,
     ArtifactDetectionSelection,
     ArtifactRemovedIntervalList,
-    ArtifactDetectionParameters,
 )
 from spyglass.spikesorting.v0.spikesorting_recording import (
     SpikeSortingRecording,
@@ -20,9 +20,9 @@ from spyglass.spikesorting.v0.spikesorting_recording import (
 from spyglass.utils.nwb_helper_fn import get_valid_intervals
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
     SecKeyParamsBase,
     SelBase,
-    ComputedBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     make_param_name,
@@ -211,8 +211,8 @@ def _visualize_artifacts_wrapper(
 ):  # for plot of all time. 1 = no downsampling)
 
     from jguides_2024.utils.vector_helpers import (
-        index_if_not_none,
         expand_interval,
+        index_if_not_none,
     )
 
     if plot_trace_idxs_all_time is None:
@@ -344,9 +344,7 @@ def detect_artifacts_across_sort_groups(
 
     # Check inputs well defined
     if zscore_thresh is None and amplitude_thresh is None:
-        raise Exception(
-            "Either z score or amplitude threshold must be defined"
-        )
+        raise Exception("Either z score or amplitude threshold must be defined")
 
     # Load traces and timestamps
     traces, valid_timestamps = load_ssr_traces(

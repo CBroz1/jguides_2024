@@ -8,30 +8,29 @@ import pandas as pd
 analysis_dir = "/home/jguidera/Src/jguides_2024"
 os.chdir(analysis_dir)
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
-    get_thesis_nwb_file_names,
     format_brain_region,
-    get_subject_id_shorthand,
     get_subject_id,
+    get_subject_id_shorthand,
+    get_thesis_nwb_file_names,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
 )
 from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec
 from jguides_2024.metadata.jguidera_brain_region import (
-    BrainRegionColor,
     BrainRegionCohort,
+    BrainRegionColor,
 )
 from jguides_2024.metadata.jguidera_epoch import RunEpoch
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams
 from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolSel,
 )
-from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams
-from jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns
+from jguides_2024.utils.df_helpers import df_filter_columns, df_from_data_list
 from jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
+from jguides_2024.utils.pca_wrappers import PCAContainer
 from jguides_2024.utils.plot_helpers import format_ax, save_figure
 from jguides_2024.utils.stats_helpers import random_sample
-from jguides_2024.utils.pca_wrappers import PCAContainer
-
 
 # Define parameters
 nwb_file_names = get_thesis_nwb_file_names()

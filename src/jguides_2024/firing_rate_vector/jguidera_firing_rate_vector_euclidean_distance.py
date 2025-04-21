@@ -1,22 +1,21 @@
 import copy
 from collections import namedtuple
 
-from spyglass.common import AnalysisNwbfile
-
 import datajoint as dj
 import numpy as np
 import pandas as pd
 import scipy as sp
+from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    AcrossFRVecTypeTableSelBase,
     ComputedBase,
     PartBase,
-    AcrossFRVecTypeTableSelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
-    insert1_print,
     delete_,
+    insert1_print,
+    insert_analysis_table_entry,
 )
 from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema

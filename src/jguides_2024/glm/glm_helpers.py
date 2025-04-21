@@ -8,28 +8,28 @@ from statsmodels import api as sm
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
-    make_param_name,
     get_epochs_id,
+    make_param_name,
 )
 from jguides_2024.utils.array_helpers import check_arrays_equal
 from jguides_2024.utils.check_well_defined import check_one_none
 from jguides_2024.utils.cross_validation_helpers import CrossValidate
 from jguides_2024.utils.df_helpers import (
-    zip_df_columns,
     df_filter_columns,
     df_from_data_list,
+    zip_df_columns,
 )
 from jguides_2024.utils.dict_helpers import find_key_for_list_value
 from jguides_2024.utils.for_loop_helpers import print_iteration_progress
 from jguides_2024.utils.list_helpers import check_single_element
-from jguides_2024.utils.plot_helpers import plot_text_color, get_cmap_colors
+from jguides_2024.utils.plot_helpers import get_cmap_colors, plot_text_color
 from jguides_2024.utils.set_helpers import check_membership
-from jguides_2024.utils.string_helpers import format_optional_var, format_bool
+from jguides_2024.utils.string_helpers import format_bool, format_optional_var
 from jguides_2024.utils.vector_helpers import (
+    check_vectors_equal,
     repeat_elements_idxs,
     unpack_single_element,
     unpack_single_vector,
-    check_vectors_equal,
 )
 
 

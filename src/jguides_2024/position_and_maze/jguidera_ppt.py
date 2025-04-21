@@ -5,19 +5,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
-    SecKeyParamsBase,
     ComputedBase,
+    SecKeyParamsBase,
+    SelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert1_print,
     delete_multiple_flexible_key,
-)
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    insert1_print,
     insert_analysis_table_entry,
     intersect_tables,
 )
@@ -28,11 +25,9 @@ from jguides_2024.datajoint_nwb_utils.trials_container_helpers import (
 from jguides_2024.metadata.jguidera_epoch import RunEpoch
 from jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from jguides_2024.position_and_maze.jguidera_maze import (
+    AnnotatedUniversalTrackGraph,
     TrackGraphUniversalTrackGraphMap,
     UniversalForkMazePathEdgePathFractionMap,
-    AnnotatedUniversalTrackGraph,
-)
-from jguides_2024.position_and_maze.jguidera_maze import (
     get_default_environment_track_graph_name_map,
 )
 from jguides_2024.position_and_maze.jguidera_position import (
@@ -40,17 +35,17 @@ from jguides_2024.position_and_maze.jguidera_position import (
 )
 from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDATrials,
+    DioWellDATrialsParams,
     populate_jguidera_dio_trials,
 )
-from jguides_2024.task_event.jguidera_dio_trials import DioWellDATrialsParams
 from jguides_2024.utils.check_well_defined import check_one_none
 from jguides_2024.utils.df_helpers import (
-    df_filter_index,
-    zip_df_columns,
-    df_filter_columns,
     df_filter1_columns,
-    df_from_data_list,
+    df_filter_columns,
     df_filter_columns_isin,
+    df_filter_index,
+    df_from_data_list,
+    zip_df_columns,
 )
 from jguides_2024.utils.digitize_helpers import digitize_indexed_variable
 from jguides_2024.utils.make_bins import make_bin_edges
@@ -59,11 +54,11 @@ from jguides_2024.utils.point_process_helpers import (
     event_times_in_intervals_bool as in_intervals_bool,
 )
 from jguides_2024.utils.vector_helpers import (
-    find_scale_factors,
     check_in_range,
+    find_scale_factors,
     find_spans_increasing_list,
+    linspace,
 )
-from jguides_2024.utils.vector_helpers import linspace
 
 # Needed for table definitions
 RunEpoch
@@ -675,16 +670,17 @@ def populate_jguidera_ppt(
 
 
 def drop_jguidera_ppt():
+    from development.jguidera_position_stop import drop_jguidera_position_stop
+
+    from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
+        drop_jguidera_ppt_firing_rate_map,
+    )
     from jguides_2024.position_and_maze.jguidera_ppt_interp import (
         drop_jguidera_ppt_interp,
     )
     from jguides_2024.time_and_trials.jguidera_ppt_trials import (
         drop_jguidera_ppt_trials,
     )
-    from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (
-        drop_jguidera_ppt_firing_rate_map,
-    )
-    from development.jguidera_position_stop import drop_jguidera_position_stop
 
     drop_jguidera_ppt_interp()
     drop_jguidera_ppt_trials()

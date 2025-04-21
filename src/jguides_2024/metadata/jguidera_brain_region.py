@@ -2,7 +2,7 @@ import datajoint as dj
 import matplotlib.pyplot as plt
 import numpy as np
 import spyglass as nd
-from spyglass.common import ElectrodeGroup, AnalysisNwbfile
+from spyglass.common import AnalysisNwbfile, ElectrodeGroup
 from spyglass.spikesorting.v0.spikesorting_recording import SortGroup
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
@@ -11,31 +11,31 @@ from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     SelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert1_print,
     check_nwb_file_name,
+    fetch_entries_as_dict,
+    get_curation_name,
+    insert1_print,
+    insert_analysis_table_entry,
+    split_curation_name,
     split_unit_name,
     unique_table_column_sets,
-    split_curation_name,
-    get_curation_name,
-    insert_analysis_table_entry,
-    fetch_entries_as_dict,
 )
 from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
-    get_jguidera_nwbf_epoch_keys,
     get_brain_regions,
+    get_jguidera_nwbf_epoch_keys,
     get_jguidera_nwbf_names,
 )
 from jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.metadata.jguidera_epoch import EpochsDescription
 from jguides_2024.metadata.jguidera_metadata import (
-    TaskIdentification,
     JguideraNwbfile,
+    TaskIdentification,
 )
 from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
 from jguides_2024.utils.check_well_defined import check_one_none
-from jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns
+from jguides_2024.utils.df_helpers import df_filter_columns, df_from_data_list
 from jguides_2024.utils.list_helpers import check_return_single_element
 from jguides_2024.utils.plot_helpers import tint_color
 from jguides_2024.utils.set_helpers import check_set_equality

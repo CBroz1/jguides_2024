@@ -9,8 +9,6 @@ def get_table(table):
     write_get_datajoint_table()
 
     # Import after writing so can import newly made script
-    from jguides_2024.datajoint_nwb_utils._get_datajoint_table import (
-        _get_table,
-    )  #
+    from jguides_2024.datajoint_nwb_utils._get_datajoint_table import _get_table
 
     return _get_table(table)

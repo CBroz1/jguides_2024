@@ -5,14 +5,14 @@ import numpy as np
 import pandas as pd
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SecKeyParamsBase,
     ComputedBase,
+    SecKeyParamsBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    delete_,
     get_schema_table_names_from_file,
     populate_insert,
     replace_param_name_chars,
-    delete_,
 )
 from jguides_2024.position_and_maze.jguidera_ppt import Ppt
 from jguides_2024.utils.basis_function_helpers import RaisedCosineBasis as RCB

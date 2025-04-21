@@ -1,18 +1,17 @@
 import copy
 
 import datajoint as dj
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import spyglass as nd
-import matplotlib.pyplot as plt
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SelBase,
-    CovDigmethBase,
     ComputedBase,
     CovariateDigParamsBase,
+    CovDigmethBase,
+    SelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     insert_analysis_table_entry,
@@ -20,9 +19,9 @@ from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_delay_duration
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellTrials,
-    DioWellDDTrialsParams,
     DioWellDDTrials,
+    DioWellDDTrialsParams,
+    DioWellTrials,
 )
 from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPool,

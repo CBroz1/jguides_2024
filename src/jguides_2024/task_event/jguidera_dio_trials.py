@@ -13,22 +13,22 @@ from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
     EventTrialsParamsBase,
-    WellEventTrialsBase,
     SecKeyParamsBase,
     SelBase,
+    WellEventTrialsBase,
     WellEventTrialsBaseExt,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    fetch1_dataframe_from_table_entry,
-    insert1_print,
-    get_table_column_names,
     delete_,
+    fetch1_dataframe_from_table_entry,
     get_entry_secondary_key,
+    get_table_column_names,
+    insert1_print,
 )
 from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
-    get_delay_interval,
     get_delay_duration,
+    get_delay_interval,
 )
 from jguides_2024.datajoint_nwb_utils.nwbf_helpers import (
     get_epoch_time_interval,
@@ -37,8 +37,8 @@ from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.metadata.jguidera_epoch import RunEpoch
 from jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from jguides_2024.position_and_maze.jguidera_maze import (
-    RewardWellPath,
     MazePathWell,
+    RewardWellPath,
     RewardWellPathColor,
 )
 from jguides_2024.position_and_maze.jguidera_position import (
@@ -763,9 +763,7 @@ class DioWellTrials(ComputedBase):
         trial_nums = self.fetch1("epoch_trial_numbers")
         trial_times = self.epoch_trial_times()
         if len(trial_nums) != len(trial_times):
-            raise Exception(
-                "different number of trial numbers and trial times"
-            )
+            raise Exception("different number of trial numbers and trial times")
 
         # Find the index of the trial interval in which each time falls
         idxs = [

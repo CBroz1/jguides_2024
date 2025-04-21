@@ -7,21 +7,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    AcrossFRVecTypeTableSelBase,
     ComputedBase,
     SecKeyParamsBase,
-    AcrossFRVecTypeTableSelBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
-    insert1_print,
     get_cohort_test_entry,
-    get_table_name,
-    get_epochs_id,
     get_default_param,
+    get_epochs_id,
+    get_table_name,
+    insert1_print,
+    insert_analysis_table_entry,
 )
 from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_delay_duration
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
@@ -31,38 +30,38 @@ from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
     populate_jguidera_firing_rate_vector,
 )
 from jguides_2024.metadata.jguidera_brain_region import (
-    CurationSet,
     BrainRegionCohort,
+    CurationSet,
 )
 from jguides_2024.metadata.jguidera_epoch import (
-    EpochCohortParams,
     EpochCohort,
+    EpochCohortParams,
     EpochsDescription,
 )
 from jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from jguides_2024.position_and_maze.jguidera_maze import (
-    RewardWellPathColor,
     MazePathWell,
     RewardWellColor,
+    RewardWellPathColor,
 )
 from jguides_2024.position_and_maze.jguidera_ppt import Ppt
 from jguides_2024.position_and_maze.jguidera_ppt_interp import PptInterp
 from jguides_2024.spikes.jguidera_res_spikes import (
-    ResEpochSpikesSmParams,
     ResEpochSpikesSm,
     ResEpochSpikesSmDs,
+    ResEpochSpikesSmParams,
 )
 from jguides_2024.spikes.jguidera_unit import (
     BrainRegionUnits,
-    EpsUnitsSel,
     BrainRegionUnitsParams,
+    EpsUnitsSel,
 )
 from jguides_2024.task_event.jguidera_dio_trials import (
-    DioWellDATrials,
+    DioWellADTrials,
+    DioWellADTrialsParams,
     DioWellArrivalTrials,
     DioWellArrivalTrialsParams,
-    DioWellADTrialsParams,
-    DioWellADTrials,
+    DioWellDATrials,
     DioWellDDTrials,
     DioWellDDTrialsParams,
     DioWellTrials,
@@ -72,8 +71,8 @@ from jguides_2024.task_event.jguidera_task_performance import (
 )
 from jguides_2024.task_event.jguidera_task_value import TimeExpecVal
 from jguides_2024.time_and_trials.jguidera_relative_time_at_well import (
-    RelTimeWell,
     RelTimeDelay,
+    RelTimeWell,
     RelTimeWellPostDelay,
 )
 from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
@@ -88,8 +87,8 @@ from jguides_2024.utils.point_process_helpers import (
 )
 from jguides_2024.utils.set_helpers import check_membership
 from jguides_2024.utils.vector_helpers import (
-    unpack_single_element,
     find_spans_increasing_list,
+    unpack_single_element,
 )
 
 # Needed for table definitions:

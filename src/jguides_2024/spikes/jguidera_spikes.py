@@ -6,30 +6,30 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 import spyglass as nd
-from spyglass.common import IntervalList, AnalysisNwbfile
+from spyglass.common import AnalysisNwbfile, IntervalList
 from spyglass.spikesorting.v0.spikesorting_curation import (
-    SortInterval,
     CuratedSpikeSorting,
+    SortInterval,
 )
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     ComputedBase,
-    SecKeyParamsBase,
     PartBase,
+    SecKeyParamsBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
-    insert_analysis_table_entry,
-    get_schema_table_names_from_file,
-    insert1_print,
-    populate_insert,
     add_param_defaults,
-    get_curation_name,
-    fetch_entries_as_dict,
-    get_table_key_names,
-    get_key_filter,
     delete_,
+    fetch_entries_as_dict,
+    get_curation_name,
+    get_key_filter,
+    get_schema_table_names_from_file,
     get_table_curation_names_for_key,
+    get_table_key_names,
     get_unit_name,
+    insert1_print,
+    insert_analysis_table_entry,
+    populate_insert,
 )
 from jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from jguides_2024.metadata.jguidera_premaze_durations import PremazeDurations

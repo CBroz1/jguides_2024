@@ -1,5 +1,6 @@
-import numpy as np
 import re
+
+import numpy as np
 
 
 def camel_to_snake_case(string, group_uppercase=False):

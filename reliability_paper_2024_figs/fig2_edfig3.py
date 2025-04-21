@@ -9,31 +9,29 @@ import numpy as np
 os.chdir("/home/jguidera/Src/jguides_2024/")
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     format_nwb_file_name,
-)
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     get_epochs_id,
 )
-from jguides_2024.utils.df_helpers import df_from_data_list, df_pop
 from jguides_2024.embedding.embedding_params import EmbeddingParams
-from jguides_2024.metadata.jguidera_brain_region import (
-    BrainRegionCohort,
-    CurationSet,
-)
-from jguides_2024.metadata.jguidera_epoch import EpochsDescription
 from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import (
     FRVecEmb,
     FRVecEmbParams,
     FRVecEmbSel,
 )
+from jguides_2024.metadata.jguidera_brain_region import (
+    BrainRegionCohort,
+    CurationSet,
+)
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
 from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import (
+    BrainRegionUnits,
+    BrainRegionUnitsParams,
+    EpsUnitsParams,
+)
 from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
     ResTimeBinsPoolCohortParams,
 )
-from jguides_2024.spikes.jguidera_unit import (
-    EpsUnitsParams,
-    BrainRegionUnitsParams,
-    BrainRegionUnits,
-)
+from jguides_2024.utils.df_helpers import df_from_data_list, df_pop
 from jguides_2024.utils.plot_helpers import (
     get_gridspec_ax_maps,
     get_plot_idx_map,

@@ -3,16 +3,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
-    SecKeyParamsBase,
     ComputedBase,
     ParamNameBase,
     PartBase,
+    SecKeyParamsBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
     convert_array_none,
-    make_param_name,
-    insert1_print,
     get_key_filter,
+    insert1_print,
+    make_param_name,
 )
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.metadata.jguidera_metadata import TaskIdentification
@@ -24,7 +24,7 @@ from jguides_2024.time_and_trials.jguidera_trials_pool import (
 from jguides_2024.utils.dict_helpers import sort_dict_by_keys
 from jguides_2024.utils.interval_helpers import CombineIntervalLists
 from jguides_2024.utils.list_helpers import zip_adjacent_elements
-from jguides_2024.utils.plot_helpers import plot_intervals, format_ax
+from jguides_2024.utils.plot_helpers import format_ax, plot_intervals
 from jguides_2024.utils.point_process_helpers import bins_in_intervals_bool
 
 schema = dj.schema("jguidera_res_set")

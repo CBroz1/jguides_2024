@@ -18,8 +18,8 @@ from jguides_2024.metadata.jguidera_epoch import RunEpoch
 from jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from jguides_2024.position_and_maze.jguidera_maze import (
     AnnotatedTrackGraph,
-    get_fork_maze_track_graph_name,
     MazePathWell,
+    get_fork_maze_track_graph_name,
     return_n_junction_path_names,
 )
 from jguides_2024.task_event.jguidera_dio_trials import (

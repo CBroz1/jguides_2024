@@ -7,7 +7,6 @@ import scipy as sp
 
 from jguides_2024.utils.check_well_defined import check_one_none
 
-
 # Note that cannot import from plot_helpers (will get circular import)
 
 

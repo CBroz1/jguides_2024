@@ -3,15 +3,14 @@ from collections import namedtuple
 import datajoint as dj
 import numpy as np
 import spyglass as nd
-
 from spyglass.common import AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
-    CovariateFRVecSelBase,
-    CovariateFRVecBase,
     CovariateAveFRVecParamsBase,
-    CovariateFRVecTrialAveBase,
     CovariateFRVecAveSelBase,
+    CovariateFRVecBase,
+    CovariateFRVecSelBase,
+    CovariateFRVecTrialAveBase,
 )
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
     SecKeyParamsBase,
@@ -30,8 +29,8 @@ from jguides_2024.metadata.jguidera_epoch import EpochsDescription, RunEpoch
 from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
 from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
 from jguides_2024.spikes.jguidera_unit import (
-    BrainRegionUnitsParams,
     BrainRegionUnits,
+    BrainRegionUnitsParams,
 )
 from jguides_2024.task_event.jguidera_dio_trials import (
     DioWellDDTrials,
