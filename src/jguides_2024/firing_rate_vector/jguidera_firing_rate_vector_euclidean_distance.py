@@ -1,6 +1,8 @@
 import copy
 from collections import namedtuple
 
+from spyglass.common import AnalysisNwbfile
+
 import datajoint as dj
 import numpy as np
 import pandas as pd
@@ -66,7 +68,7 @@ class FRVecEucDist(ComputedBase):
     # Euclidean distance between firing rate vectors
     -> FRVecEucDistSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     fr_euc_dist_object_id : varchar(40)
     time_vector_object_id : varchar(40)
     epoch_vector_object_id : varchar(40)

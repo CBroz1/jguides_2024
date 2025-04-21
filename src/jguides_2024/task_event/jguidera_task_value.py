@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase, CovDigmethBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
@@ -90,7 +92,7 @@ class TrialExpecVal(ComputedBase):
     # Expected value for trials
     -> TrialExpecValSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     trial_expec_val_object_id : varchar(40)
     """
 
@@ -199,7 +201,7 @@ class TimeExpecVal(CovDigmethBase):
     # Expected value at times
     -> TimeExpecValSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_expec_val_object_id : varchar(40)
     """
 

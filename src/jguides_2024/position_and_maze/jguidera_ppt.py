@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (SelBase, SecKeyParamsBase, ComputedBase)
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, \
     delete_multiple_flexible_key
@@ -112,7 +114,7 @@ class Ppt(ComputedBase):
     # Proportion path traversed
     -> PptSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_object_id : varchar(40)
     ppt_range : blob
     """
@@ -442,7 +444,7 @@ class PptBinEdgesParams(SecKeyParamsBase):
 @schema
 class PptBinEdges(ComputedBase):
     definition = """
-    # Bin edges for proportion path traversed 
+    # Bin edges for proportion path traversed
     -> PptBinEdgesParams
     ---
     ppt_bin_edges : blob  # proportion path traversed bin edges for maze edges

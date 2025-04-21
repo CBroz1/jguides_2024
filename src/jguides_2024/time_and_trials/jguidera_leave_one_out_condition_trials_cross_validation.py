@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_horizontal_lines
 from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import \
     insert_cross_validation_table
@@ -35,7 +37,7 @@ class LOOCTTrainTestSplit(ComputedBase):
     # Train and test indices for leave one out cross validation on condition trials
     -> LOOCTTrainTestSplitSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     train_set_df_object_id = "none" : varchar(40)
     test_set_df_object_id = "none" : varchar(40)
     train_test_set_df_object_id : varchar(40)

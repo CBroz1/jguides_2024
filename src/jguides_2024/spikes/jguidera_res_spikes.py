@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase, SecKeyParamsBase, \
     PartBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
@@ -18,7 +20,7 @@ from jguides_2024.spikes.datajoint_spikes_table_helpers import plot_smoothed_spi
     firing_rate_across_sort_groups, \
     firing_rate_across_sort_groups_epochs
 from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel, _get_kernel_standard_deviations
-from jguides_2024.time_and_trials.jguidera_res_set import ResSet, ResSetParams
+from jguides_2024.time_and_trials.jguidera_res_set import reset, ResSetParams
 from jguides_2024.time_and_trials.jguidera_res_time_bins import ResEpochTimeBins
 from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel, ResTimeBinsPool, \
     populate_jguidera_res_time_bins_pool
@@ -46,7 +48,7 @@ class ResEpochSpikeTimesSel(SelBase):
     definition = """
     # Selection from upstream tables for ResEpochSpikeTimes
     -> EpochSpikeTimesRelabel
-    -> ResSet
+    -> reset
     """
 
 
@@ -56,8 +58,8 @@ class ResEpochSpikeTimes(ComputedBase):
     # Spike times from EpochSpikeTimesRelabel within valid time intervals
     -> ResEpochSpikeTimesSel
     ---
-    valid_time_intervals : blob  # carry over from ResSet for convenience
-    -> nd.common.AnalysisNwbfile
+    valid_time_intervals : blob  # carry over from reset for convenience
+    -> AnalysisNwbfile
     res_epoch_spike_times_object_id : varchar(40)
     """
 
@@ -66,12 +68,12 @@ class ResEpochSpikeTimes(ComputedBase):
         spike_times_df = (
                     EpochSpikeTimesRelabel.RelabelEntries & key).fetch1_dataframe()  # each row has spike times for a unit
         # Get spike times from each unit within valid intervals
-        spike_times = [ResSet().apply_restriction(key, time_bin_centers=x)[0]
+        spike_times = [reset().apply_restriction(key, time_bin_centers=x)[0]
                                     for x in spike_times_df.epoch_spike_times.values]
         # Store in dataframe
         df = pd.DataFrame.from_dict({"unit_id": spike_times_df.index, "spike_times": spike_times})
-        # Store valid time intervals from upstream ResSet for convenience
-        key["valid_time_intervals"] = (ResSet & key).fetch1("valid_time_intervals")
+        # Store valid time intervals from upstream reset for convenience
+        key["valid_time_intervals"] = (reset & key).fetch1("valid_time_intervals")
         # Insert into table
         insert_analysis_table_entry(self, [df], key, [self.get_object_id_name()])
 
@@ -137,7 +139,7 @@ class ResEpochSpikeCounts(ComputedBase):
     # Selection from upstream tables for ResEpochSpikeCounts
     -> ResEpochSpikeCountsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_epoch_spike_counts_df_object_id : varchar(40)
     """
 
@@ -213,7 +215,7 @@ class ResEpochSpikeCounts(ComputedBase):
             delete_(self, [ElNetSel], key, safemode)
 
 
-""" 
+"""
 Notes on restricted epoch spikes smoothed / downsampled tables:
 
 1) The chosen workflow for smoothing spikes via these tables is as follows: we convolve spikes with a Gaussian
@@ -312,8 +314,8 @@ class ResEpochSpikesSm(ComputedBase):
     # Spikes convolved with a Gaussian kernel within valid intervals
     -> ResEpochSpikesSmSel
     ---
-    valid_time_intervals : blob  # carry over from ResSet for convenience
-    -> nd.common.AnalysisNwbfile
+    valid_time_intervals : blob  # carry over from reset for convenience
+    -> AnalysisNwbfile
     res_epoch_spikes_sm_object_id : varchar(40)
     """
 
@@ -507,7 +509,7 @@ class ResEpochSpikesSmDs(ComputedBase):
     -> ResEpochSpikesSmDsParams
     ---
     valid_time_intervals : blob  # carry over from ResEpochSpikesSm for convenience
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_epoch_spikes_sm_ds_object_id : varchar(40)
     """
 

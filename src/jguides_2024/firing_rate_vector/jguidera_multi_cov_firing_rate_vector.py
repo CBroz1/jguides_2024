@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecSelBase, CovariateFRVecBase, CovariateFRVecTrialAveBase, CovariateAveFRVecParamsBase, \
     CovariateFRVecAveSelBase, CovariateFRVecSTAveBase, CovariateFRVecSTAveParamsBase, CovariateFRVecSTAveSummBase, \
@@ -214,7 +216,7 @@ class MultiCovFRVec(CovariateFRVecBase):
     ---
     unit_names : blob
     table_old_new_bin_nums_map : blob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     vector_df_object_id : varchar(40)
     ave_vector_df_object_id : varchar(40)
     diff_vector_df_object_id : varchar(40)
@@ -443,7 +445,7 @@ class MultiCovAveFRVecParams(CovariateAveFRVecParamsBase):
 @schema
 class MultiCovAveFRVecSel(MultiCovFRVecAveSelBase):
     definition = """
-    # Selection from upstream tables for MultiCovAveFRVec 
+    # Selection from upstream tables for MultiCovAveFRVec
     -> EpochsDescription
     res_time_bins_pool_param_name : varchar(1000)
     -> BrainRegionUnits
@@ -480,13 +482,13 @@ class MultiCovAveFRVec(MultiCovFRVecAveBase, CovariateFRVecTrialAveBase):
     # Comparison of average firing rate vectors across combinations of bin, label, and epoch
     -> MultiCovAveFRVecSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     """
 
     class Upstream(dj.Part):
         definition = """
-        # Achieves dependence on upstream tables 
+        # Achieves dependence on upstream tables
         -> MultiCovAveFRVec
         -> MultiCovFRVec
         """
@@ -553,7 +555,7 @@ class MultiCovFRVecSTAve(MultiCovFRVecAveBase, CovariateFRVecSTAveBase):
     # Single 'trial' comparison of firing rate vectors across combinations of time bin and path identity
     -> MultiCovFRVecSTAveSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     """
 
@@ -570,12 +572,12 @@ class MultiCovFRVecSTAve(MultiCovFRVecAveBase, CovariateFRVecSTAveBase):
 
 """
 Notes on MultiCovFRVecSTAveSumm table setup:
-- We want to combine entries across MultiCovFRVecSTAve, across nwb_file_names, epochs_description, 
+- We want to combine entries across MultiCovFRVecSTAve, across nwb_file_names, epochs_description,
 and brain_region. For this reason, we want MultiCovFRVecSTAveSel to have all primary keys of MultiCovFRVecSTAve
-except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and 
-curation_name. 
+except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and
+curation_name.
   To specify the nwb_file_names and corresponding epochs_descriptions we want to combine across, we use recording_set.
-  To specify the brain regions we want to combine across, we use brain_region_cohort. 
+  To specify the brain regions we want to combine across, we use brain_region_cohort.
   To specify curation_name, we use curation_set_name.
   To specify brain region unit information, we use BrainRegionUnitsCohortType
 - We include BrainRegionUnitsCohortType in MultiCovFRVecSTAveSummParams so that we can stay within the
@@ -614,7 +616,7 @@ class MultiCovFRVecSTAveSummSel(CovariateFRVecAveSummSelBase):
     -> MultiCovFRVecSTAveSummParams
     ---
     upstream_keys : mediumblob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     df_concat_object_id : varchar(40)
     """
 
@@ -663,7 +665,7 @@ class MultiCovFRVecSTAveSumm(CovariateFRVecSTAveSummBase, MultiCovFRVecSummBase)
     # Summary of single 'trial' comparison of firing rate vectors
     -> MultiCovFRVecSTAveSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)
@@ -725,7 +727,7 @@ class MultiCovAveFRVecSummSel(CovariateFRVecAveSummSelBase):
     -> MultiCovAveFRVecSummParams
     ---
     upstream_keys : mediumblob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     df_concat_object_id : varchar(40)
     """
 
@@ -758,7 +760,7 @@ class MultiCovAveFRVecSumm(CovariateAveFRVecSummBase, MultiCovFRVecSummBase):
     # Summary of trial average comparison of firing rate vectors
     -> MultiCovAveFRVecSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

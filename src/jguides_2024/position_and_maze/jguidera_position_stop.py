@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from spyglass.common import AnalysisNwbfile
+
 # Import custom datajoint tables
 os.chdir("/home/jguidera/Src/jguides_2024/")
 
@@ -86,7 +88,7 @@ class StopLikeWellArrival(ComputedBase):
     above_overlap_thresh_idxs : blob
     above_overlap_thresh_spans : blob
     valid_above_overlap_thresh_spans : blob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     stop_like_well_arrival_object_id : varchar(40)
     """
 

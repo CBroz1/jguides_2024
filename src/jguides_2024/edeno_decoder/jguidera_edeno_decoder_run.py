@@ -13,7 +13,7 @@ import pandas as pd
 import spyglass as nd
 import xarray as xr
 from replay_trajectory_classification import ClusterlessClassifier, SortedSpikesClassifier
-from spyglass.common import IntervalList, IntervalLinearizedPosition
+from spyglass.common import IntervalList, IntervalLinearizedPosition, AnalysisNwbfile
 from spyglass.decoding.v0.sorted_spikes import (
     SortedSpikesIndicatorSelection, SortedSpikesIndicator, SortedSpikesClassifierParameters)
 from spyglass.decoding.v0.clusterless import ClusterlessClassifierParameters
@@ -862,7 +862,7 @@ class EdenoDecode(ComputedBase):
                 ppt_df, ["trials_time", "trials_ppt", "trials_path_name"]):  # for each trial
             pos_trial_t = pos_t[np.logical_and(pos_t > ppt_trial_t[0],
                                                pos_t < ppt_trial_t[-1])]  # upsampled position_and_maze times within trial
-            ppt = [np.nan] * len(pos_trial_t)  # intialize
+            ppt = [np.nan] * len(pos_trial_t)  # initialize
             if not only_two_junction_paths or path_name in return_n_junction_path_names(2):
                 ppt = np.interp(x=pos_trial_t, xp=ppt_trial_t, fp=ppt_trial)
             ppt_decode[pos_trial_t] = ppt  # update proportion path traversed
@@ -1442,7 +1442,7 @@ class EdenoDecodeMAP(ComputedBase):
     # Maximum a posteriori probability estimate of decode variable
     -> EdenoDecodeMAPSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     edeno_decode_map_object_id : varchar(40)
     """
 

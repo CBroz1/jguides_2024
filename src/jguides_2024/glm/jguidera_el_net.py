@@ -6,6 +6,8 @@ import pandas as pd
 import spyglass as nd
 import statsmodels.api as sm
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_reliability_paper_nwb_file_names
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import unique_table_column_sets, \
@@ -116,7 +118,7 @@ class ElNet(ComputedBase):
     # Elastic net, statsmodels
     -> ElNetSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     fit_params_df_object_id : varchar(40)
     log_likelihood_object_id : varchar(40)
     results_folds_merged_df_object_id : varchar(40)

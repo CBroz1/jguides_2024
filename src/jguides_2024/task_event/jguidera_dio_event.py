@@ -2,7 +2,7 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from spyglass.common import Nwbfile, Session
+from spyglass.common import Nwbfile, Session, AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
@@ -27,7 +27,7 @@ class DioEvents(ComputedBase):
     # DIO events recorded at full sampling rate
     -> TaskIdentification
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     dio_events_object_id : varchar(40)
     """
 
@@ -184,7 +184,7 @@ class ProcessedDioEvents(ComputedBase):
     ---
     diff_threshold : float
     num_excluded_dio_events : blob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     processed_dio_events_object_id : varchar(40)
     """
 
@@ -204,8 +204,8 @@ class ProcessedDioEvents(ComputedBase):
         -> ProcessedDioEvents.Pokes
         ---
         dio_first_poke_names : blob
-        dio_first_poke_times : blob   
-        dio_first_poke_values : blob        
+        dio_first_poke_times : blob
+        dio_first_poke_values : blob
         """
 
     class LastDownPokes(dj.Part):
@@ -214,8 +214,8 @@ class ProcessedDioEvents(ComputedBase):
         -> ProcessedDioEvents.Pokes
         ---
         dio_last_poke_names : blob
-        dio_last_poke_times : blob 
-        dio_last_poke_values : blob        
+        dio_last_poke_times : blob
+        dio_last_poke_values : blob
         """
 
     class Pumps(dj.Part):
@@ -408,7 +408,7 @@ def convert_dio_description(dio_description, convert_to_type=None):
         raise Exception(f"convert_to_type must be in {valid_types}")
     # Get digital in as integer (helpful for all cases below)
     if isinstance(dio_description, str):
-        dio_description_int = int(dio_description.split("Din")[-1].split("Dout")[-1])
+        dio_description_int = int(dio_description.split("Din")[-1].split("Doubt")[-1])
     else:
         dio_description_int = int(dio_description)
     # Return in desired form

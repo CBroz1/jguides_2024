@@ -2,6 +2,8 @@ import datajoint as dj
 import numpy as np
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, CovariateRCB, \
     CovariateDigParamsBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
@@ -61,7 +63,7 @@ class PptInterp(ComputedBase):
     # Proportion path traversed interpolated using time bins from ResTimeBinsPool
     -> PptInterpSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_interp_object_id : varchar(40)
     ppt_range : blob  # copied from Ppt for convenience
     """
@@ -150,7 +152,7 @@ class PptDig(ComputedBase):
     # Digitized interpolated fraction path traversed
     -> PptDigSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_dig_object_id : varchar(40)
     """
 
@@ -211,7 +213,7 @@ class PptRCB(CovariateRCB):
     # Sampled raised cosine basis, proportion path traversed
     -> PptRCBSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_rcb_df_object_id : varchar(40)
     """
 

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import spyglass as nd
-from spyglass.common import close_nwb_files
+from spyglass.common import close_nwb_files, AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, \
     plot_junction_fractions, get_val_pairs
@@ -70,7 +70,7 @@ class EdenoDecodeErr(ComputedBase):
     # Decoding errors using edeno Bayesian decoder
     -> EdenoDecodeErrSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     edeno_decode_err_object_id : varchar(40)
     """
 
@@ -403,7 +403,7 @@ class EdenoDecodeErrSumm(PathWellPopSummBase):
     # Summary of decode errors using edeno Bayesian decoder
     -> EdenoDecodeErrSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

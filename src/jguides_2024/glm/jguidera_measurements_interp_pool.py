@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import PoolSelBase, PoolBase, \
     PoolCohortParamsBase, PoolCohortBase, \
     PoolCohortParamNameBase, EpsCohortParamsBase
@@ -61,7 +63,7 @@ class Intercept(ComputedBase):
     # Intercept term for model (vector of ones)
     -> InterceptSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     intercept_df_object_id : varchar(40)
     """
 

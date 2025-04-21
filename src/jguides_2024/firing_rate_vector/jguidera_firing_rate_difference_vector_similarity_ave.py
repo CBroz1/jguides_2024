@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, get_val_pairs, \
     plot_junction_fractions, plot_task_phases
 from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
@@ -65,16 +67,16 @@ schema = dj.schema("jguidera_firing_rate_difference_vector_similarity_ave")
 
 """
 Notes on FRDiffVecCosSimPptNnAve and FRDiffVecCosSimWANnAve tables setup
-1) the parameter 'mask_duration' is the amount of time to mask on either side of a sample. This was chosen to be 
+1) the parameter 'mask_duration' is the amount of time to mask on either side of a sample. This was chosen to be
 consistent with 'mask_duration' in the single trial firing rate vector tables (PathFRVecSTAve and TimeRelWAFRVecSTAve)
 
-2) dio_well_dd_trials_param_name is a secondary key of this table, rather than a primary key here or in params table, 
-because we will require it to always have the same value (representing no trial start/end shift). So we dont want 
-it taking up space unecessarily as a primary key. It is better a secondary key in the selection table than in the 
+2) dio_well_dd_trials_param_name is a secondary key of this table, rather than a primary key here or in params table,
+because we will require it to always have the same value (representing no trial start/end shift). So we dont want
+it taking up space unnecessarily as a primary key. It is better a secondary key in the selection table than in the
 params table, because we want the secondary keys in the params table to reflect params that can change in the analysis.
 
-3) multiple epochs (epochs_id) allowed in FRDiffVecCosSim, and only single epochs allowed in PptInterp and 
-DioWellDDTrials. Unlikely that will want to do analysis across epochs, but to allow for this possibility, 
+3) multiple epochs (epochs_id) allowed in FRDiffVecCosSim, and only single epochs allowed in PptInterp and
+DioWellDDTrials. Unlikely that will want to do analysis across epochs, but to allow for this possibility,
 use epochs_id. Requires having dependencies on Ppt and DioWellDDTrials in a part table.
 """
 
@@ -351,7 +353,7 @@ class FRDiffVecCosSimPptNnAve(FRDiffVecCosSimVarNnAveBase):
     # Cosine similarity of firing rate difference vectors to nearest neighbors, averaged in proportion path traversed bins
     -> FRDiffVecCosSimPptNnAveSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     fr_diff_vec_cos_sim_ppt_nn_ave_object_id : varchar(40)
     """
 
@@ -437,7 +439,7 @@ class FRDiffVecCosSimWANnAve(FRDiffVecCosSimVarNnAveBase):
     # Cosine similarity of firing rate difference vectors to nearest neighbors, averaged in proportion path traversed bins
     -> FRDiffVecCosSimWANnAveSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     fr_diff_vec_cos_sim_to_wa_nn_ave_object_id : varchar(40)
     fr_diff_vec_cos_sim_from_wa_nn_ave_object_id : varchar(40)
     """
@@ -631,13 +633,13 @@ intervals = df.bin_edges
 x_val = np.min(trial_intervals)
 val_list = [x_val]*len(intervals)
 plot_intervals(intervals, ax, val_list, label="bin edges", interval_axis="y", color="gray")
-    
+
 for idx, df_row in df.iterrows():
     label = None
     if idx == 0:
         label = "conf ave x2"
     ax.plot([x_val]*2, df_row.mean_x2_conf, color="red", label=label)
-    
+
     label = None
     if idx == 0:
         label = "ave x2"
@@ -653,14 +655,14 @@ ax.legend()
 """
 Notes on FRDiffVecCosSimWANnAveSumm table setup:
 - We want to combine entries across FRDiffVecCosSimWANnAveSumm, across nwb_file_names, epochs_description,
-brain_region, and brain_region_units_param_names (in case want to do hierarchical bootstrap across unit subsets). 
+brain_region, and brain_region_units_param_names (in case want to do hierarchical bootstrap across unit subsets).
 For this reason, we want FRDiffVecCosSimWANnAveSummSel to have all primary keys of FRDiffVecCosSimWANnAve
-except for nwb_file_name, epochs_id, brain_region, brain_region_units_param_name, and 
-curation_name. 
+except for nwb_file_name, epochs_id, brain_region, brain_region_units_param_name, and
+curation_name.
   To specify the nwb_file_names and corresponding epochs_id we want to combine across, we use recording_set.
-  To specify the brain regions we want to combine across, we use brain_region_cohort_name. 
+  To specify the brain regions we want to combine across, we use brain_region_cohort_name.
   To specify curation_name, we use curation_set_name.
-  To specify brain region unit information, we use brain_region_units_params_cohort_name in 
+  To specify brain region unit information, we use brain_region_units_params_cohort_name in
   FRDiffVecCosSimWANnAveSummParams
 - We include BrainRegionUnitsCohortType in PathAveFRVecSummParams so that we can stay within the
 limit on number of primary keys
@@ -993,7 +995,7 @@ class FRDiffVecCosSimWANnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
     # Summary of cosine similarity of firing rate difference vectors to nearest neighbors, averaged in proportion path traversed bins
     -> FRDiffVecCosSimWANnAveSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)
@@ -1098,7 +1100,7 @@ class FRDiffVecCosSimPptNnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
     # Summary of cosine similarity of firing rate difference vectors to nearest neighbors, averaged in proportion path traversed bins
     -> FRDiffVecCosSimPptNnAveSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

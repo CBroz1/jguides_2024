@@ -4,6 +4,8 @@ import pandas as pd
 import scipy as sp
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, PartBase, \
     AcrossFRVecTypeTableSelBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
@@ -61,7 +63,7 @@ class FRDiffVecCosSim(ComputedBase):
     # Cosine similarity between firing rate difference vectors
     -> FRDiffVecCosSimSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     fr_diff_vec_cos_dist_object_id : varchar(40)
     vector_tail_time_object_id : varchar(40)
     vector_tip_time_object_id : varchar(40)

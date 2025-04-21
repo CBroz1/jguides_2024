@@ -4,6 +4,8 @@ import datajoint as dj
 import numpy as np
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecSelBase, CovariateFRVecBase, CovariateAveFRVecParamsBase, CovariateFRVecTrialAveBase, \
     CovariateFRVecAveSelBase
@@ -149,7 +151,7 @@ class RelPostDelFRVec(CovariateFRVecBase):
     -> RelPostDelFRVecSel
     ---
     unit_names : blob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     vector_df_object_id : varchar(40)
     ave_vector_df_object_id : varchar(40)
     diff_vector_df_object_id : varchar(40)
@@ -318,7 +320,7 @@ class RelPostDelAveFRVecParams(CovariateAveFRVecParamsBase):
 @schema
 class RelPostDelAveFRVecSel(RelPostDelFRVecAveSelBase):
     definition = """
-    # Selection from upstream tables for RelPostDelAveFRVec 
+    # Selection from upstream tables for RelPostDelAveFRVec
     -> EpochsDescription
     res_time_bins_pool_param_name : varchar(1000)
     -> RelTimeWellPostDelayDigParams
@@ -352,13 +354,13 @@ class RelPostDelAveFRVec(RelPostDelFRVecAveBase, CovariateFRVecTrialAveBase):
     # Comparison of average firing rate vectors across combinations of relative time bin, path identity, and epoch
     -> RelPostDelAveFRVecSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     """
 
     class Upstream(dj.Part):
         definition = """
-        # Achieves dependence on upstream tables 
+        # Achieves dependence on upstream tables
         -> RelPostDelAveFRVec
         -> RelPostDelFRVec
         """

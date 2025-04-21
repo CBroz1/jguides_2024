@@ -8,6 +8,8 @@ import spyglass as nd
 from spyglass.common.common_position import (IntervalLinearizedPosition, IntervalPositionInfo)
 from spyglass.utils.dj_helper_fn import fetch_nwb
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import fetch1_dataframe, \
     insert_analysis_table_entry, get_schema_table_names_from_file, \
@@ -145,7 +147,7 @@ class IntervalPositionInfoRelabel(ComputedBase):
             return fetch1_dataframe_position_info(self)
 
         def fetch_nwb(self, *attrs, **kwargs):
-            return fetch_nwb(self, (nd.common.AnalysisNwbfile, 'analysis_file_abs_path'),
+            return fetch_nwb(self, (AnalysisNwbfile, 'analysis_file_abs_path'),
                              *attrs, **kwargs)
 
     def make(self, key):
@@ -270,7 +272,7 @@ class IntervalLinearizedPositionRelabel(ComputedBase):
             return fetch1_dataframe(self, 'linearized_position').set_index('time')
 
         def fetch_nwb(self, *attrs, **kwargs):
-            return fetch_nwb(self, (nd.common.AnalysisNwbfile, 'analysis_file_abs_path'),
+            return fetch_nwb(self, (AnalysisNwbfile, 'analysis_file_abs_path'),
                              *attrs, **kwargs)
 
     def make(self, key):
@@ -298,7 +300,7 @@ class IntervalLinearizedPositionRescaled(ComputedBase):
     position_info_param_name : varchar(50)
     interval_list_name : varchar(50)
     linearization_param_name : varchar(100)
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     interval_linearized_position_rescaled_object_id : varchar(40)
     """
 

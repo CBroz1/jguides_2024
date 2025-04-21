@@ -2,6 +2,8 @@ import datajoint as dj
 import pandas as pd
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, delete_
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
@@ -55,7 +57,7 @@ class ResEpochTimeBins(ComputedBase):
     # Time bins within epoch with restrictions applied
     -> ResEpochTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_epoch_time_bins_object_id : varchar(40)
     """
 
@@ -121,7 +123,7 @@ class ResDioWATrialsTimeBins(ComputedBase):
     # Time bins during trials based on single well arrival detected with dios, with restrictions applied
     -> ResDioWATrialsTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_dio_well_arrival_trials_time_bins_object_id : varchar(40)
     dio_well_arrival_trials_param_name : varchar(40)  # for convenience when inserting into table
     """
@@ -190,7 +192,7 @@ class ResDioWellADTrialsTimeBins(ComputedBase):
     # Time bins during trials that begin at well arrivals and end at well departure detected with dios, with restrictions applied
     -> ResDioWellADTrialsTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_dio_well_ad_trials_time_bins_object_id : varchar(40)
     dio_well_ad_trials_param_name : varchar(40)  # for convenience when inserting into table
     """

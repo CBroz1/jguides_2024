@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecSTAveParamsBase, \
     CovariateFRVecAveSelBase, CovariateFRVecTrialAveBase, CovariateFRVecSTAveBase, CovariateFRVecBase, \
@@ -236,7 +238,7 @@ class PathFRVec(CovariateFRVecBase):
     -> PathFRVecSel
     ---
     unit_names : blob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     vector_df_object_id : varchar(40)
     ave_vector_df_object_id : varchar(40)
     diff_vector_df_object_id : varchar(40)
@@ -475,7 +477,7 @@ class PathFRVecAveSelBase(CovariateFRVecAveSelBase):
 @schema
 class PathFRVecSTAveSel(PathFRVecAveSelBase):
     definition = """
-    # Selection from upstream tables for PathFRVecSTAve 
+    # Selection from upstream tables for PathFRVecSTAve
     -> EpochsDescription
     res_time_bins_pool_param_name : varchar(1000)
     -> PptParams
@@ -507,16 +509,16 @@ class PathFRVecAveBase:
 @schema
 class PathFRVecSTAve(PathFRVecAveBase, CovariateFRVecSTAveBase):
     definition = """
-    # Single 'trial' comparison of firing rate vectors across combinations of path bin and path identity 
+    # Single 'trial' comparison of firing rate vectors across combinations of path bin and path identity
     -> PathFRVecSTAveSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     """
 
     class Upstream(dj.Part):
         definition = """
-        # Achieves dependence on upstream tables 
+        # Achieves dependence on upstream tables
         -> PathFRVecSTAve
         -> PathFRVec
         """
@@ -584,7 +586,7 @@ class PathAveFRVec(PathFRVecAveBase, CovariateFRVecTrialAveBase):
     # Comparison of average firing rate vectors across combinations of path bin, path identity, and epoch
     -> PathAveFRVecSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     """
 
@@ -598,12 +600,12 @@ class PathAveFRVec(PathFRVecAveBase, CovariateFRVecTrialAveBase):
 
 """
 Notes on PathFRVecSTAveSumm table setup:
-- We want to combine entries across PathFRVecSTAve, across nwb_file_names, epochs_description, 
+- We want to combine entries across PathFRVecSTAve, across nwb_file_names, epochs_description,
 and brain_region. For this reason, we want PathFRVecSTAveSummSel to have all primary keys of PathFRVecSTAve
-except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and 
-curation_name. 
+except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and
+curation_name.
   To specify the nwb_file_names and corresponding epochs_descriptions we want to combine across, we use recording_set.
-  To specify the brain regions we want to combine across, we use brain_region_cohort. 
+  To specify the brain regions we want to combine across, we use brain_region_cohort.
   To specify curation_name, we use curation_set_name.
   To specify brain region unit information, we use BrainRegionUnitsCohortType
 - We include BrainRegionUnitsCohortType in PathFRVecSTAveSummParams so that we can stay within the
@@ -649,7 +651,7 @@ class PathFRVecSTAveSummSel(CovariateFRVecAveSummSelBase):
     -> PathFRVecSTAveSummParams
     ---
     upstream_keys : mediumblob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     df_concat_object_id : varchar(40)
     """
 
@@ -735,7 +737,7 @@ class PathFRVecSTAveSumm(CovariateFRVecSTAveSummBase, PathFRVecSummBase):
     # Summary of single 'trial' comparison of firing rate vectors
     -> PathFRVecSTAveSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)
@@ -824,7 +826,7 @@ class PathAveFRVecSumm(CovariateAveFRVecSummBase, PathFRVecSummBase):
     # Summary of trial average comparison of firing rate vectors
     -> PathAveFRVecSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

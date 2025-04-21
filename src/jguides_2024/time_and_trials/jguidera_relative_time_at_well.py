@@ -6,6 +6,8 @@ import pandas as pd
 import spyglass as nd
 import matplotlib.pyplot as plt
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, CovDigmethBase, ComputedBase, \
     CovariateDigParamsBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry
@@ -117,7 +119,7 @@ class RelTimeWell(RelTimeBase):
     # Relative time at well
     -> RelTimeWellSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     rel_time_well_object_id : varchar(40)
     """
 
@@ -152,7 +154,7 @@ class RelTimeDelay(RelTimeBase):
     # Relative time in 2s delay
     -> RelTimeDelaySel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     rel_time_delay_object_id : varchar(40)
     """
 
@@ -247,7 +249,7 @@ class RelTimeWellPostDelay(RelTimeBase):
     # Relative time at well following 2s delay
     -> RelTimeWellPostDelaySel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     rel_time_well_post_delay_object_id : varchar(40)
     """
 
@@ -340,7 +342,7 @@ class RelTimeWellPostDelayDig(ComputedBase):
     # Digitized relative time during post delay period
     -> RelTimeWellPostDelayDigSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     rel_time_well_post_delay_dig_object_id : varchar(100)
     """
 

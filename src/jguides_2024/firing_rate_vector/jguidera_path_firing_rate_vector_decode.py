@@ -1,6 +1,8 @@
 import datajoint as dj
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_junction_fractions, plot_task_phases
 from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_decode_table_base import \
     DecodeCovFRVecBase, DecodeCovFRVecParamsBase, DecodeCovFRVecSelBase, DecodeCovFRVecSummBase
@@ -142,7 +144,7 @@ class DecodePathFRVecSel(CovariateFRVecAveSelBase):
 # class DecodePathFRVecSel(dj.Manual):  # use when initially generating table; if not cannot update table later
 
     definition = """
-    # Selection from upstream tables for DecodePathFRVec 
+    # Selection from upstream tables for DecodePathFRVec
     -> EpochsDescription
     res_time_bins_pool_param_name : varchar(1000)
     -> PptParams
@@ -189,13 +191,13 @@ class DecodePathFRVec(DecodeCovFRVecBase):
     # Decode covariate along paths
     -> DecodePathFRVecSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     """
 
     class Upstream(dj.Part):
         definition = """
-        # Achieves dependence on upstream tables 
+        # Achieves dependence on upstream tables
         -> DecodePathFRVec
         -> PathFRVec
         """
@@ -207,12 +209,12 @@ class DecodePathFRVec(DecodeCovFRVecBase):
 
 """
 Notes on DecodePathFRVecSumm table setup:
-- We want to combine entries across DecodePathFRVec, across nwb_file_names, epochs_description, 
+- We want to combine entries across DecodePathFRVec, across nwb_file_names, epochs_description,
 and brain_region. For this reason, we want DecodePathFRVecSummSel to have all primary keys of DecodePathFRVec
-except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and 
-curation_name. 
+except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and
+curation_name.
   To specify the nwb_file_names and corresponding epochs_descriptions we want to combine across, we use recording_set.
-  To specify the brain regions we want to combine across, we use brain_region_cohort. 
+  To specify the brain regions we want to combine across, we use brain_region_cohort.
   To specify curation_name, we use curation_set_name.
   To specify brain region unit information, we use BrainRegionUnitsCohortType
 - We include BrainRegionUnitsCohortType in DecodePathFRVecSummParams so that we can stay within the
@@ -307,7 +309,7 @@ class DecodePathFRVecSummSel(DecodeCovFRVecSelBase):
     -> DecodePathFRVecSummParams
     ---
     upstream_keys : mediumblob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     df_concat_object_id : varchar(40)
     """
 
@@ -328,7 +330,7 @@ class DecodePathFRVecSumm(DecodeCovFRVecSummBase):
     # Summary of decodes of covariate along paths
     -> DecodePathFRVecSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

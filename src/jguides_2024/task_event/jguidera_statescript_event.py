@@ -4,7 +4,7 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from spyglass.common import StateScriptFile
+from spyglass.common import StateScriptFile, AnalysisNwbfile
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
@@ -40,7 +40,7 @@ class StatescriptEvents(ComputedBase):
         # Find statescript printouts (lines that are not comments and have content)
         state_script_printouts = [x for x in [z for z in ss_file_entry[0]["file"].fields["content"].split("\n")
                                               if len(z) > 0]
-            if x[0] != "#"]  # note that must first find lines with content to enbale search for hash indicating comment
+            if x[0] != "#"]  # note that must first find lines with content to enable search for hash indicating comment
         # Parse printouts into event times and event (printouts have form "time event")
         event_times, event_names = zip(
             *[(int(line.split(" ")[0]), " ".join(line.split(" ")[1:])) for line in state_script_printouts])
@@ -92,7 +92,7 @@ class ProcessedStatescriptEventsDioMismatch(dj.Manual):
     -> TaskIdentification
     dio_name_ss : varchar(40)
     ---
-    times_dist : blob  
+    times_dist : blob
     """
 
 
@@ -103,7 +103,7 @@ class ProcessedStatescriptEvents(ComputedBase):
     -> StatescriptEvents
     -> EpochTimestamps
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     processed_statescript_events_object_id : varchar(40)
     """
 
@@ -123,7 +123,7 @@ class ProcessedStatescriptEvents(ComputedBase):
             -> ProcessedStatescriptEvents.Pokes
             ---
             processed_statescript_first_poke_names : blob
-            processed_statescript_first_poke_times_ptp : blob        
+            processed_statescript_first_poke_times_ptp : blob
             """
 
     class LastPokes(dj.Part):
@@ -132,7 +132,7 @@ class ProcessedStatescriptEvents(ComputedBase):
             -> ProcessedStatescriptEvents.Pokes
             ---
             processed_statescript_last_poke_names : blob
-            processed_statescript_last_poke_times_ptp : blob        
+            processed_statescript_last_poke_times_ptp : blob
         """
 
     class Pumps(dj.Part):
@@ -363,7 +363,7 @@ class ProcessedStatescriptEvents(ComputedBase):
         environment = (TaskIdentification & key).fetch1("task_environment")
         dio_names_map = {k: v for k, v in get_nwbf_ss_dio_name_map().items()
                          if environment in k}  # restrict to DIOs in current environment
-        # ...For each DIO type, check that each statescript event "matched" by a ProcessedDioEvent event thats close
+        # ...For each DIO type, check that each statescript event "matched" by a ProcessedDioEvent event that's close
         # in time. Then plot statescript and ProcessedDioEvents dios.
         for dio_name_nwbf, dio_name_ss in dio_names_map.items():  # for each DIO
             # Get DIO event times in statescript

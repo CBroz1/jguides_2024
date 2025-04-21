@@ -6,6 +6,8 @@ import pandas as pd
 import scipy as sp
 import spyglass as nd
 
+from spyglass.common import AnalysisNwbfile
+
 from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import smooth_datajoint_table_fr, get_bin_centers_name
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import FrmapSmBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (SecKeyParamsBase, SelBase, ComputedBase, FrmapBase)
@@ -46,11 +48,11 @@ class FrmapPptSel(SelBase):
 
 @schema
 class FrmapPpt(FrmapBase):
-    definition = """ 
+    definition = """
     # Firing rate as a function of proportion path traversed
     -> FrmapPptSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     frmap_ppt_object_id : varchar(40)
     """
 
@@ -104,7 +106,7 @@ class FrmapPptSm(FrmapSmBase):
     -> FrmapPpt
     -> FrmapPptSmParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     frmap_ppt_sm_object_id : varchar(40)
     """
 
@@ -174,7 +176,7 @@ class CorrFrmapPptSm(ComputedBase):
     -> FrmapPptSm.proj(epoch_2='epoch', interval_list_name_epoch_2='interval_list_name', track_graph_name_epoch_2='track_graph_name')
     -> DistinctRunEpochPair
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     corr_frmap_ppt_sm_object_id : varchar(40)
     """
 
@@ -200,7 +202,7 @@ class OverlapFrmapPptSm(ComputedBase):
     -> FrmapPptSm.proj(epoch_2='epoch', interval_list_name_epoch_2='interval_list_name', track_graph_name_epoch_2='track_graph_name')
     -> DistinctRunEpochPair
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     overlap_frmap_ppt_sm_object_id : varchar(40)
     """
 
@@ -218,12 +220,12 @@ class OverlapFrmapPptSm(ComputedBase):
 
 @schema
 class FrmapPupt(FrmapBase):
-    definition = """ 
+    definition = """
     # Firing rate as a function of percent unique path traversed
     -> FrmapPptSel
     path_name : varchar(40)
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     frmap_pupt_object_id : varchar(40)
     """
 
@@ -262,7 +264,7 @@ class FrmapPuptSm(FrmapSmBase):
     -> FrmapPupt
     -> FrmapPptSmParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     frmap_pupt_sm_object_id : varchar(40)
     """
 
@@ -273,12 +275,12 @@ class FrmapPuptSm(FrmapSmBase):
 
 @schema
 class STFrmapPupt(ComputedBase):
-    definition = """ 
+    definition = """
     # Firing rate as a function of percent unique path traversed on single trials
     -> FrmapPptSel
     path_name : varchar(40)
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     st_frmap_pupt_object_id : varchar(40)
     """
 
@@ -346,7 +348,7 @@ class STFrmapPuptSm(ComputedBase):
     -> STFrmapPupt
     -> FrmapPptSmParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     st_frmap_pupt_sm_object_id : varchar(40)
     """
 
