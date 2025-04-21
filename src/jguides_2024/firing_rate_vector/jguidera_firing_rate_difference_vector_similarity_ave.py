@@ -6,12 +6,13 @@ import pandas as pd
 import spyglass as nd
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, get_val_pairs, \
-    plot_junction_fractions
+    plot_junction_fractions, plot_task_phases
 from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
-    PathWellFRVecSummBase, PopulationAnalysisParamsBase, \
+    PathWellFRVecSummBase, PopulationAnalysisSecKeyParamsBase, \
     PopulationAnalysisSelBase
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, ParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_key_filter, make_param_name
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_key_filter, make_param_name, delete_, \
+    get_table_secondary_key_names
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_nwb_file_name_epochs_description
@@ -186,7 +187,7 @@ class FRDiffVecCosSimVarNnAveSelBase(SelBase):
             "epoch_100ms")
         # ...Collect valid params
         valid_params = {
-            "res_epoch_spikes_sm_param_name": ["0.1"], "zscore_fr": [0], "res_time_bins_pool_cohort_param_name":
+            "res_epoch_spikes_sm_param_name": ["0.1"], "zscore_fr": [0, 1], "res_time_bins_pool_cohort_param_name":
                 [res_time_bins_pool_cohort_param_name]}
 
         # Get keys from intersection of upstream tables
@@ -340,6 +341,9 @@ class FRDiffVecCosSimPptNnAveSel(FRDiffVecCosSimVarNnAveSelBase):
     def _get_covariate_table():
         return PptInterp
 
+    def delete_(self, key, safemode=True):
+        delete_(self, [FRDiffVecCosSimPptNnAve], key, safemode)
+
 
 @schema
 class FRDiffVecCosSimPptNnAve(FRDiffVecCosSimVarNnAveBase):
@@ -381,6 +385,9 @@ class FRDiffVecCosSimPptNnAve(FRDiffVecCosSimVarNnAveBase):
         # Define ppt bins
         return Ppt.get_ppt_bin_edges(bin_width)
 
+    def delete_(self, key, safemode=True):
+        delete_(self, [FRDiffVecCosSimPptNnAveSummSel], key, safemode)
+
 
 """
 Notes on FRDiffVecCosSimWANnAve tables setup:
@@ -419,6 +426,9 @@ class FRDiffVecCosSimWANnAveSel(FRDiffVecCosSimVarNnAveSelBase):
     @staticmethod
     def _get_covariate_table():
         return TimeRelWA
+
+    def delete_(self, key, safemode=True):
+        delete_(self, [FRDiffVecCosSimWANnAve], key, safemode)
 
 
 @schema
@@ -508,6 +518,9 @@ class FRDiffVecCosSimWANnAve(FRDiffVecCosSimVarNnAveBase):
         plot_y = self.get_pre_post_quantites_single_axis("mean_cos_sim", object_id_name)
         conf_bounds = self.get_pre_post_quantites_single_axis("mean_cos_sim_conf", object_id_name)
         self._plot_results(ax, x_vals, plot_y, conf_bounds, **plot_params)
+
+    def delete_(self, key, safemode=True):
+        delete_(self, [FRDiffVecCosSimWANnAveSummSel], key, safemode)
 
 
 def average_value_in_trials_in_bins(x1, x2, x1_bin_edges, trial_intervals, x2_name="x2", tolerate_nan=True):
@@ -654,7 +667,7 @@ limit on number of primary keys
 """
 
 
-class FRDiffVecCosSimCovNnAveSummParamsBase(PopulationAnalysisParamsBase):
+class FRDiffVecCosSimCovNnAveSummSecKeyParamsBase(PopulationAnalysisSecKeyParamsBase):
 
     def get_default_param_name(self):
         return self.lookup_param_name(self._default_params()[0])
@@ -672,6 +685,9 @@ class FRDiffVecCosSimCovNnAveSummParamsBase(PopulationAnalysisParamsBase):
 
         # Return parameters
         return params
+
+    def get_params(self):
+        return {k: self.fetch1(k) for k in get_table_secondary_key_names(self)}
 
 
 class FRDiffVecCosSimCovNnAveSummSelBase(PopulationAnalysisSelBase):
@@ -691,13 +707,15 @@ class FRDiffVecCosSimCovNnAveSummSelBase(PopulationAnalysisSelBase):
              # Non rat cohort
              (recording_set_name, boot_set_name) for recording_set_name in
              RecordingSet().get_recording_set_names(
-                 key_filter, ["Haight_rotation", "first_day_learning_single_epoch"])
+                 key_filter, ["Haight_rotation"])
              for boot_set_name in self._default_noncohort_boot_set_names()]
 
         param_name_map = dict()
         for recording_set_name, boot_set_name in recording_set_names_boot_set_names:
             for brain_region_units_cohort_type in brain_region_units_cohort_types:
-                param_name_map_key = self._format_param_name_map_key(recording_set_name, brain_region_units_cohort_type)
+                param_name_map_key = self._format_param_name_map_key(
+                    recording_set_name=recording_set_name,
+                    brain_region_units_cohort_type=brain_region_units_cohort_type)
                 if param_name_map_key not in param_name_map:
                     param_name_map[param_name_map_key] = []
                 param_names = (params_table & {
@@ -709,12 +727,8 @@ class FRDiffVecCosSimCovNnAveSummSelBase(PopulationAnalysisSelBase):
         return param_name_map
 
     @staticmethod
-    def _format_param_name_map_key(recording_set_name, brain_region_units_cohort_type):
-        return (recording_set_name, brain_region_units_cohort_type)
-
-    def _get_param_name_map_key(self, key, brain_region_units_cohort_type):
-        # Make key to param name map given a set of parameters
-        return self._format_param_name_map_key(key["recording_set_name"], brain_region_units_cohort_type)
+    def _format_param_name_map_key(self, **kwargs):
+        return (kwargs["recording_set_name"], kwargs["brain_region_units_cohort_type"])
 
     def _default_noncohort_boot_set_names(self):
         return super()._default_noncohort_boot_set_names() + ["brain_region_diff"]
@@ -767,7 +781,8 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
 
         # ...Define bootstrap params as indicated
         params_table_subset = (self._get_params_table()() & key)
-        bootstrap_params = params_table_subset.get_boot_params()
+        bonferroni_num_tests = len(set(metric_df.x_val))
+        bootstrap_params = params_table_subset.get_boot_params(bonferroni_num_tests)
         boot_set_name = params_table_subset.fetch1("boot_set_name")
 
         # average values
@@ -783,6 +798,16 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
         # average difference values across brain regions
         elif boot_set_name in ["brain_region_diff", "brain_region_diff_rat_cohort"]:
 
+            target_column_name = "brain_region"
+            pairs_order = self._get_brain_region_order_for_pairs()
+            vals_index_name = self._get_vals_index_name()
+            eps_labels_resample_col_name = None
+            exclude_columns = None
+            metric_df2, resample_levels2, ave_group_column_names2 = self._get_boot_diff_params(
+                target_column_name, metric_df, pairs_order, vals_index_name, boot_set_name,
+                eps_labels_resample_col_name, exclude_columns)
+
+            # ***
             # First redefine metric_df to reflect difference between val for different brain regions
             target_column_name = "brain_region"
             # ...Define pairs of brain regions
@@ -802,6 +827,11 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
             # ...Alter params based on whether rat cohort
             resample_levels, ave_group_column_names = self._alter_boot_params_rat_cohort(
                 boot_set_name, resample_levels, ave_group_column_names)
+            # ***
+
+            raise Exception(f"Verify that metric_df2 == metric_df, resample_levels2 == resample_levels, and "
+                            f"ave_group_column_names2 == ave_group_column_names, then delete what is between *** "
+                            f"and *** (old code), then remove this exception if all values equal")
 
         # Raise exception if boot set name not accounted for in code
         else:
@@ -834,8 +864,9 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
 
     def _get_val_lims(self, **kwargs):
         # Get a set range for value, e.g. for use in plotting value on same range across plots
+        params_table = self._get_params_table()()
         boot_set_name = self.get_upstream_param("boot_set_name")
-        if boot_set_name in self._get_params_table()._valid_brain_region_diff_boot_set_names():
+        if boot_set_name in params_table._valid_brain_region_diff_boot_set_names():
             return [-.5, .3]
         return [0, .8]
 
@@ -911,7 +942,7 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
 
 
 @schema
-class FRDiffVecCosSimWANnAveSummParams(FRDiffVecCosSimCovNnAveSummParamsBase):
+class FRDiffVecCosSimWANnAveSummParams(FRDiffVecCosSimCovNnAveSummSecKeyParamsBase):
     definition = """
     # Parameters for FRDiffVecCosSimWANnAveSumm
     fr_diff_vec_cos_sim_wa_nn_ave_summ_param_name : varchar(200)
@@ -951,6 +982,9 @@ class FRDiffVecCosSimWANnAveSummSel(FRDiffVecCosSimCovNnAveSummSelBase):
     @staticmethod
     def _upstream_table():
         return FRDiffVecCosSimWANnAve
+
+    def delete_(self, key, safemode=True):
+        delete_(self, [FRDiffVecCosSimWANnAveSumm], key, safemode)
 
 
 @schema
@@ -992,13 +1026,13 @@ class FRDiffVecCosSimWANnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
         return metric_df[valid_bool]
 
     def _get_x_text(self):
-        return "Time in delay (s)"
+        return "Time from well arrival (s)"
 
     def _get_x_lims(self):
-        return [0, 2]
+        return [-1, 3]
 
     def _get_xticks(self):
-        return [.5, 1, 1.5]
+        return [-1, 0, 1, 2, 3]
 
     # Override parent class method so can add params specific to this table
     def get_default_table_entry_params(self):
@@ -1010,9 +1044,20 @@ class FRDiffVecCosSimWANnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
         # Return default params
         return params
 
+    def extend_plot_results(self, **kwargs):
+
+        super().extend_plot_results(**kwargs)
+
+        if not kwargs["empty_plot"]:
+
+            ax = kwargs["ax"]
+
+            # Colored patches to denote task phase
+            plot_task_phases(ax, "time_in_delay")
+
 
 @schema
-class FRDiffVecCosSimPptNnAveSummParams(FRDiffVecCosSimCovNnAveSummParamsBase):
+class FRDiffVecCosSimPptNnAveSummParams(FRDiffVecCosSimCovNnAveSummSecKeyParamsBase):
     definition = """
     # Parameters for FRDiffVecCosSimPptNnAveSumm
     fr_diff_vec_cos_sim_ppt_nn_ave_summ_param_name : varchar(200)
@@ -1042,6 +1087,9 @@ class FRDiffVecCosSimPptNnAveSummSel(FRDiffVecCosSimCovNnAveSummSelBase):
     @staticmethod
     def _upstream_table():
         return FRDiffVecCosSimPptNnAve
+
+    def delete_(self, key, safemode=True):
+        delete_(self, [FRDiffVecCosSimPptNnAveSumm], key, safemode)
 
 
 @schema
@@ -1088,10 +1136,17 @@ class FRDiffVecCosSimPptNnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
 
     def extend_plot_results(self, **kwargs):
 
-        # Vertical lines to denote track segments
+        super().extend_plot_results(**kwargs)
+
         if not kwargs["empty_plot"]:
+
             ax = kwargs["ax"]
+
+            # Vertical lines to denote track segments
             plot_junction_fractions(ax)
+
+            # Colored patches to denote task phase
+            plot_task_phases(ax, "path_progression")
 
 
 def populate_jguidera_firing_rate_difference_vector_similarity_ave(

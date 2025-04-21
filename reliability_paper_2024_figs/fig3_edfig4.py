@@ -22,6 +22,19 @@ from src.jguides_2024.utils.df_helpers import df_from_data_list, df_filter1_colu
 from src.jguides_2024.utils.save_load_helpers import unpickle_file, pickle_file
 
 
+# Set file limit
+import subprocess
+
+# Define the new file limit
+new_limit = 20480
+
+try:
+    subprocess.run(["ulimit", "-n", str(new_limit)], check=True, shell=True)
+    print(f"File limit set to {new_limit}")
+except subprocess.CalledProcessError as e:
+    print(f"Error setting file limit: {e}")
+
+
 # Define additional functions
 
 def _get_param_names(condition_name, time_bins_shorthand, cross_validation_table_name, covariates_shorthand):
@@ -132,6 +145,7 @@ populated_keys = ElNet().print_populated(return_keys=True, populate_tables=popul
 
 # Load or create data
 # Indicate whether to load just data to generate group summary plots (group_data_quick_load = True), or rawer data
+# (group_data_quick_load = False)
 group_data_quick_load = False
 # Indicate whether to restrict to single contingency used in example unit plots (fast to load)
 restrict_single_contingency = False
@@ -209,7 +223,7 @@ if not restrict_single_contingency and not group_data_quick_load:
             "nwb_file_names", "epochs_descriptions_names")
         for nwb_file_name, epochs_descriptions_name in zip(nwb_file_names, epochs_descriptions_names):
             epochs_descriptions = (EpochsDescriptions() & {
-                "nwb_file_name": nwb_file_name, "epochs_descriptions_names": epochs_descriptions_names}).fetch1(
+                "nwb_file_name": nwb_file_name, "epochs_descriptions_name": epochs_descriptions_name}).fetch1(
                 "epochs_descriptions")
             for epochs_description in epochs_descriptions:
                 epochs_id = (EpochsDescription() & {"nwb_file_name": nwb_file_name,
@@ -307,7 +321,7 @@ if not group_data_quick_load:
     sigma = 5  # samples. e.g. 20 ms bins x 5 samples = 100ms. bin size in: glm_container.glm_params
     similarity_metrics = ["correlation"]
     test_mode = False
-    save_fig = True
+    save_fig = False
 
     unit_names_map = get_unit_names_map(nwb_file_name, epochs_id)
 

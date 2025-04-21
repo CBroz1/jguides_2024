@@ -12,8 +12,10 @@ import scipy as sp
 import scipy.stats as stats
 import spikeinterface as si
 from spyglass.common import IntervalList
-from spyglass.spikesorting import (SpikeSortingRecording, SpikeSorting, SortingviewWorkspace)
-from spyglass.spikesorting.spikesorting_curation import (CuratedSpikeSorting, Waveforms, WaveformSelection)
+from spyglass.spikesorting.v0.spikesorting_recording import SpikeSortingRecording
+from spyglass.spikesorting.v0.spikesorting_sorting import SpikeSorting
+from spyglass.spikesorting.v0.sortingview import SortingviewWorkspace
+from spyglass.spikesorting.v0.spikesorting_curation import (CuratedSpikeSorting, Waveforms, WaveformSelection)
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import format_nwb_file_name, make_params_string
 from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import nwbf_name_from_subject_id_date
@@ -62,26 +64,32 @@ def _convert_curation_spreadsheet_dtype(row, column_name):
     return row
 
 
-def get_curation_spreadsheet_notes(subject_id, date, sort_description, tolerate_no_notes=True):
+def get_curation_spreadsheet_notes(subject_id, date, sort_description, curation_version, tolerate_no_notes=True):
     """
     Get google spreadsheet with manual curation notes
     :param subject_id: str, name of subject
     :param date: str, date in the form YYYYMMDD where YYYY corresponds to the year, MM corresponds to the month, and
     DD corresponds to the day
     :param sort_description: str, description of the spike sorting
+    :param curation_version: str, v2 or v3 currently supported
     :param tolerate_no_notes: bool, True to tolerate notes not existing, False to raise error if no notes
     :return: pandas df with merge labels
     :return: pandas df with merge labels
     """
 
     # Define directory with service account file
-    service_account_dir = f"/home/jguidera/Src/jguides_2024/spikesorting_notebooks/curation_merge_notes"
+    service_account_dir = f"/home/jguidera/Src/jguides_2024_archive/nwb_custom_analysis_untracked/spikesorting_notebooks/curation_merge_notes"
 
     # Define name of service account file
     service_account_json = "frank-lab-jupyter-01e1afefcf28.json"
 
     # Define key to spreadsheet
-    spreadsheet_key = "1GKyg4Apwwk6kd48_tuyBC5fI_reE8Gn9pRQ9J0X7hfo"
+    if curation_version == "v2":
+        spreadsheet_key = "1GKyg4Apwwk6kd48_tuyBC5fI_reE8Gn9pRQ9J0X7hfo"
+    elif curation_version == "v3":
+        spreadsheet_key = "1WEwkIGHfzcpvT30ySAHAk_xWc3f9rT-SbInx5Qsa_Ck"
+    else:
+        raise Exception(f"spreadsheet_key {spreadsheet_key} not recognized")
 
     # Define names of columns in spreadsheet to retrieve
     column_names = np.asarray([
@@ -190,7 +198,10 @@ def load_curation_data(
 
         # Continue if data doesnt exist
         if not os.path.exists(file_name_save):
+            print(f"No data for {file_name_save}, skipping...")
             continue
+        else:
+            print(f"Loading {file_name_save}...")
 
         # Otherwise store sort group data
         sort_groups_data[sort_group_id] = pickle.load(open(file_name_save, "rb"))
@@ -343,7 +354,8 @@ def make_curation_data(
                 data_subset["waveform_window"] = np.arange(-we.nbefore, we.nafter)
                 # IMPORTANT NOTE: WAVEFORMS AND SPIKE TIMES ARE SUBSAMPLED (SEEMS MAX IS AT 20000). This
                 # happens in line below.
-                waveform_data = {unit_id: we.get_waveforms(unit_id, with_index=True) for unit_id in valid_unit_ids}
+                waveform_data = {unit_id: we.get_waveforms(
+                    unit_id, with_index=True, force_dense=True) for unit_id in valid_unit_ids}
                 spike_samples = {unit_id: we.sorting.get_unit_spike_train(unit_id=unit_id) for unit_id in valid_unit_ids}
                 # TODO: check line below
                 data_subset["waveforms"] = {unit_id: np.swapaxes(wv[0], 0, 2) for unit_id, wv in waveform_data.items()}
@@ -365,6 +377,11 @@ def make_curation_data(
 
                 # Get amplitude size comparison
                 data_subset["amplitude_size_comparisons"] = get_amplitude_size_comparisons(data_subset)
+
+                # Get max cosine similarity across waveforms shifts
+                if verbose:
+                    print(f"Getting max cosine similarity across waveform shifts...")
+                data_subset["max_cosine_similarities"] = get_max_shift_cosine_similarities(data_subset["average_waveforms"])
 
                 # Get cosine similarity
                 if verbose:
@@ -465,7 +482,7 @@ def make_curation_data_wrapper(subject_ids,
 
 
 def label_units(subject_id, date, targeted_location, sort_description, sort_interval_name, curation_id=1,
-                label_col_name="label_1", verbose=True):
+                label_col_name="label_1", curation_version="v3", verbose=True):
 
     # Define directory to save data in
     save_dir = f"/cumulus/jguidera/curation_data/{subject_id}/"
@@ -487,7 +504,7 @@ def label_units(subject_id, date, targeted_location, sort_description, sort_inte
         verbose=verbose)
 
     # Get curation merge notes
-    curation_merge_notes, unit_notes = get_curation_spreadsheet_notes(subject_id, date, sort_description)
+    curation_merge_notes, unit_notes = get_curation_spreadsheet_notes(subject_id, date, sort_description, curation_version)
 
     # Label units
     # Initialize all units to accept / no merge, then fill in changes
@@ -633,6 +650,32 @@ def _compute_cosine_similarity(wv_avg_1, wv_avg_2):
     wv_avg_nrm_1, wv_avg_nrm_2 = (wv_avg / np.linalg.norm(wv_avg, axis=0) for wv_avg in (wv_avg_1, wv_avg_2))
     sim = np.dot(wv_avg_nrm_1, wv_avg_nrm_2)
     return sim
+
+
+def _compute_max_shift_cosine_similarity(wv_avg_1, wv_avg_2):
+    wv_avg_1, wv_avg_2 = (np.ravel(wv_avg) for wv_avg in (wv_avg_1, wv_avg_2))
+
+    # Define number of shifts on either side
+    shift = 10  # samples
+
+    sims = []
+    for i in np.arange(-shift, shift + 1):
+        if i == 0:
+            wv_avg_1_ = wv_avg_1
+            wv_avg_2_ = wv_avg_2
+        elif i < 0:
+            i *= -1
+            wv_avg_1_ = wv_avg_1[:-i]
+            wv_avg_2_ = wv_avg_2[i:]
+        elif i > 0:
+            wv_avg_1_ = wv_avg_1[i:]
+            wv_avg_2_ = wv_avg_2[:-i]
+        wv_avg_nrm_1, wv_avg_nrm_2 = (wv_avg / np.linalg.norm(wv_avg, axis=0) for wv_avg in (wv_avg_1_, wv_avg_2_))
+        sims.append(np.dot(wv_avg_nrm_1, wv_avg_nrm_2))
+
+    max_sim = np.max(sims)
+
+    return max_sim
 
 
 def get_correlogram_default_params():
@@ -811,6 +854,10 @@ def get_amplitude_size_comparisons(data):
 
 def get_cosine_similarities(average_waveforms):
     return _compute_pairwise_cluster_data(_compute_cosine_similarity, average_waveforms)
+
+
+def get_max_shift_cosine_similarities(average_waveforms):
+    return _compute_pairwise_cluster_data(_compute_max_shift_cosine_similarity, average_waveforms)
 
 
 # Get correlograms using multiprocessing
@@ -1279,13 +1326,15 @@ def plot_merge_matrices(
     plt.show()
 
 
-def plot_average_waveforms(cluster_data, sort_group_id, unit_id, waveform_type="whitened", color="#2196F3",
-                           title=None, ax=None):
+def plot_average_waveforms(cluster_data, sort_group_id, unit_id, waveform_type="whitened", color=None,
+                           title=None, ax=None, max_num_chs=3):
     # Get inputs if not passed
     if ax is None:
         _, ax = plt.subplots()
     if title is None:
         title = f"{sort_group_id}_{unit_id}"
+    if color is None:
+        color = "#2196F3"
 
     # Define amplitude range and spacing between traces
     if waveform_type == "whitened":
@@ -1296,15 +1345,22 @@ def plot_average_waveforms(cluster_data, sort_group_id, unit_id, waveform_type="
         trace_offset = 200
 
     data = cluster_data["sort_groups"][sort_group_id][waveform_type]
-    n_channels = data["n_channels"]
+    wv_avg = data["average_waveforms"][unit_id]
+
+    peak_ch = data["peak_channels"][unit_id]
+    if max_num_chs is None:
+        max_num_chs = np.shape(wv_avg)[0]
+    min_ch = np.max([0, peak_ch - max_num_chs])
+    max_ch = np.min([np.shape(wv_avg)[0], peak_ch + max_num_chs])
+    n_channels = max_ch - min_ch
+
     n_points = data["waveform_window"].size
     ax.axvline(x=n_points / 2, color="#9E9E9E", linewidth=1)
 
     offset = np.tile(-np.arange(n_channels) * trace_offset, (n_points, 1))
-    wv_avg = data["average_waveforms"][unit_id]
-    trace = wv_avg.T + offset
+    trace = wv_avg[min_ch:max_ch].T + offset
     peak_ind = np.full(n_channels, False)
-    peak_ind[data["peak_channels"][unit_id]] = True
+    peak_ind[peak_ch - min_ch] = True
 
     ax.plot(trace[:, ~peak_ind], color=color, linewidth=1, clip_on=False)
     ax.plot(trace[:, peak_ind], color=color, linewidth=2.5, clip_on=False)
@@ -1314,14 +1370,15 @@ def plot_average_waveforms(cluster_data, sort_group_id, unit_id, waveform_type="
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
     ax.set_title(title, fontsize=12)
+    ax.text(0, 0, f"min/max ch\n: {min_ch} {max_ch}", fontsize=6)
 
 
 def plot_average_waveforms_wrapper(cluster_data, sort_group_unit_ids=None, subplot_height=3):
     # Get inputs if not passed
     if sort_group_unit_ids is None:
         sort_group_unit_ids = np.concatenate(
-            [[(sort_group_id, unit_id) for unit_id in vals["whitened"]["waveforms"].keys()]
-             for sort_group_id, vals in cluster_data["sort_groups"].items() if "whitened" in vals])
+            [[(sort_group_id, unit_id) for unit_id in cluster_data["sort_groups"][sort_group_id]["whitened"]["average_waveforms"].keys()]
+             for sort_group_id in cluster_data["sort_groups"]])
 
     # Plot waveforms for multiple units
     num_columns = 10
@@ -1336,7 +1393,12 @@ def plot_average_waveforms_wrapper(cluster_data, sort_group_unit_ids=None, subpl
     for sort_group_id, unit_id in sort_group_unit_ids:
         ax = get_ax_for_layout(axes, plot_counter)
         plot_counter += 1
-        plot_average_waveforms(cluster_data, sort_group_id, unit_id, ax=ax)
+        # Different color if merged unit
+        color = None
+        if "merged_units" in cluster_data["sort_groups"][sort_group_id]["whitened"]:
+            if unit_id in cluster_data["sort_groups"][sort_group_id]["whitened"]["merged_units"]:
+                color = "red"
+        plot_average_waveforms(cluster_data, sort_group_id, unit_id, color=color, ax=ax)
 
 
 def plot_amplitude_distribution(cluster_data, sort_group_id, unit_id,

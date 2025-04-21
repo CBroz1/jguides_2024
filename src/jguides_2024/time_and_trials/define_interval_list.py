@@ -15,7 +15,8 @@ from src.jguides_2024.utils.set_helpers import check_membership
 class NewIntervalList:
 
     def __init__(self, starting_interval_list_names, nwb_file_name, NO_PREMAZE=False, NO_HOME=False, NO_SLEEP=False,
-                 widen_exclusion_factor=.002):
+                 widen_exclusion_factor=.002, version_num=None):
+
         # Check inputs
         if not isinstance(starting_interval_list_names, list):
             raise Exception("starting_interval_list_names must be a list")
@@ -27,6 +28,7 @@ class NewIntervalList:
         self.NO_HOME = NO_HOME
         self.NO_SLEEP = NO_SLEEP
         self.widen_exclusion_factor = widen_exclusion_factor
+        self.version_num = version_num
 
         self.new_interval_list_name = self.define_new_interval_list_name()
         self.new_interval_list = self._get_new_interval_list()
@@ -34,7 +36,7 @@ class NewIntervalList:
     @staticmethod
     def _valid_starting_interval_list_names():
         valid_starting_interval_list_names = ["raw data valid times"] + [
-            f"pos {x} valid times" for x in np.arange(0, 20)]
+            f"pos {x} valid times" for x in np.arange(0, 22)]
         # Check that no valid starting interval list names are contained within another (important for getting
         # starting interval list names from interval_list_names)
         if any([x in y for idx_x, x in enumerate(valid_starting_interval_list_names) for idx_y, y in enumerate(
@@ -67,11 +69,20 @@ class NewIntervalList:
             new_interval_list_name += self._no_home_text()
         if self.NO_SLEEP:
             new_interval_list_name += self._no_sleep_text()
+        if self.version_num is not None:
+            new_interval_list_name += f"_{self.version_num}"
         return new_interval_list_name
 
     @classmethod
     def get_starting_interval_list_names_from_new_interval_list_name(cls, new_interval_list_name):
         # Inverse of define_new_interval_list_name
+
+        # Remove version number
+        split_new_interval_list_name = new_interval_list_name.split("_v")
+        version_num = split_new_interval_list_name[-1]
+        if version_num.isdigit():
+            new_interval_list_name = "_v".join(split_new_interval_list_name[:-1])
+
         # Remove exclusion text
         for fn in ["_no_sleep_text", "_no_home_text", "_no_premaze_text"]:
             text = getattr(cls, fn)()
@@ -83,9 +94,9 @@ class NewIntervalList:
         starting_interval_list_names = [
             x for x in cls._valid_starting_interval_list_names() if x in new_interval_list_name]
         if len(" ".join(starting_interval_list_names)) != len(new_interval_list_name):
-            raise Exception(f"starting_interval_list_names not as expected; one way this can happen is if passed"
+            raise Exception(f"starting_interval_list_names not as expected; one way this can happen is if passed "
                             f"new_interval_list_name is not constructed solely from _valid_starting_interval_list_names"
-                            f"and exclusion text")
+                            f" and exclusion text")
         return starting_interval_list_names
 
     @classmethod
@@ -105,7 +116,9 @@ class NewIntervalList:
 
     def _define_exclusion_periods(self):
         # Define exclusion periods as indicated by flags
+
         exclude_interval_list = []  # initialize list for intervals to exclude
+
         # Get names of epochs in IntervalList to be able to search for relevant epochs based on flags
         # (e.g. run epochs if excluding premaze times)
         epoch_names = (TaskEpoch & {"nwb_file_name": self.nwb_file_name}).fetch("interval_list_name")
@@ -157,6 +170,7 @@ class NewIntervalList:
                                                  "interval_list_name": sleep_epoch_name}).fetch1("valid_times")
                 # Append sleep epoch period to list of intervals to exclude
                 exclude_interval_list.append([interval_list[0][0], interval_list[-1][-1]])
+
         return exclude_interval_list
 
     def _widen_exclusion_periods(self, exclude_interval_list):

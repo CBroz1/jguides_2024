@@ -8,8 +8,9 @@ import spyglass as nd
 from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecBase, CovariateFRVecSTAveParamsBase, \
     CovariateFRVecAveSelBase, CovariateFRVecTrialAveBase, CovariateFRVecSTAveBase, CovariateFRVecSelBase, \
-    CovariateFRVecAveSummSelBase, CovariateFRVecAveSummParamsBase, \
-    CovariateAveFRVecParamsBase, CovariateFRVecSTAveSummBase, CovariateAveFRVecSummBase, TimeRelWAFRVecSummBase
+    CovariateFRVecAveSummSelBase, CovariateFRVecAveSummSecKeyParamsBase, \
+    CovariateAveFRVecParamsBase, CovariateFRVecSTAveSummBase, CovariateAveFRVecSummBase, TimeRelWAFRVecSummBase, \
+    CovariateFRVecParamsBase
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, drop_
 from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
@@ -42,6 +43,7 @@ RecordingSet
 BrainRegionUnitsCohortType
 DioWellDDTrials
 
+# TODO: rename this schema jguidera_time_rel_wa_firing_rate_vector
 schema = dj.schema("jguidera_well_event_firing_rate_vector")
 
 
@@ -53,18 +55,23 @@ post well arrival period.
 """
 
 
+# TODO: if remake this table, increase allowed length of time_rel_wa_fr_vec_param_name (currently at 40). Do same for related tables.
+# Once have done that, switch eo_correct_incorrect_stay_trials_pdaw to even_odd_correct_incorrect_stay_trials_pdaw
 @schema
-class TimeRelWAFRVecParams(SecKeyParamsBase):
+class TimeRelWAFRVecParams(CovariateFRVecParamsBase):
     definition = """
     # Parameters for TimeRelWAFRVec
-    time_rel_wa_fr_vec_param_name : varchar(40)
+    time_rel_wa_fr_vec_param_name : varchar(80)
     ---
-    labels_description = "none" : varchar(40)  # indicate how to alter labels from their original form
+    labels_description = "none" : varchar(80)  # indicate how to alter labels from their original form
     """
 
     def _default_params(self):
         return [[x] for x in [
-            "even_odd_stay_trials", "stay_leave_trials_pre_departure", "correct_incorrect_stay_trials"]]
+            "even_odd_stay_trials", "stay_leave_trials_pre_departure",
+            "correct_incorrect_stay_trials", "correct_incorrect_stay_trials_pdaw",
+            "even_odd_correct_incorrect_stay_trials", "eo_correct_incorrect_stay_trials_pdaw"
+        ]]
 
     def drop_(self):
         drop_([TimeRelWAAveFRVecSel(), TimeRelWAFRVecSTAveSel(), TimeRelWAFRVecSel(), self])
@@ -79,7 +86,7 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
     -> TimeRelWAFRVecParams
     """
 
-    # Override parent class method so further restrict potential keys
+    # Override parent class method to further restrict potential keys
     def _get_potential_keys(self, key_filter=None, verbose=True):
 
         # Approach: avoid a combinatorial explosion of entries
@@ -94,15 +101,18 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
 
         # Define a first set of parameters, to be used with all units
         # get param names outside loops to save compute
+
+        include_no_unit_subset = False  # indicate whether or not to use the params defined below for no unit subset
+
         min_epoch_mean_firing_rate = .1
         primary_kernel_sds = [.1]
         primary_res_epoch_spikes_sm_param_names = [
             ResEpochSpikesSmParams().lookup_param_name([kernel_sd]) for kernel_sd in primary_kernel_sds]
         primary_time_rel_wa_dig_single_axis_param_names = [
                 TimeRelWADigSingleAxisParams().lookup_param_name(x)
-                for x in [[0, 2]]]  # make all combinations with each of these
+                for x in [[-1, 3]]]  # make all combinations with each of these
         brain_region_cohort_name = "all_targeted"
-        curation_set_name = "runs_analysis_v1"
+        curation_set_name = "runs_analysis_v2"
         primary_features = {
             "time_rel_wa_fr_vec_param_name": "none", "zscore_fr": 0,
             "time_rel_wa_dig_param_name": TimeRelWADigParams().lookup_param_name([.25]),
@@ -120,14 +130,17 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
         # ...we want to populate using the above across multiple time_rel_wa_fr_vec_param_names
         primary_features_2 = copy.deepcopy(primary_features)
         primary_features_2.pop("time_rel_wa_fr_vec_param_name")
-        primary_time_rel_wa_fr_vec_param_names_2 = set(TimeRelWAFRVecParams().fetch(
-                "time_rel_wa_fr_vec_param_name"))
+        primary_time_rel_wa_fr_vec_param_names_2 = TimeRelWAFRVecParams().fetch("time_rel_wa_fr_vec_param_name")
         primary_kernel_sds_2 = [.1]
         primary_res_epoch_spikes_sm_param_names_2 = [
             ResEpochSpikesSmParams().lookup_param_name([kernel_sd]) for kernel_sd in primary_kernel_sds_2]
         primary_time_rel_wa_dig_single_axis_param_names_2 = [
                 TimeRelWADigSingleAxisParams().lookup_param_name(x)
-                for x in [[0, 2]]]  # make all combinations with each of these
+                for x in [[-1, 3]]]  # make all combinations with each of these
+
+        # Restrict above params if outside params passed
+        if "time_rel_wa_fr_vec_param_name" in key_filter:
+            primary_time_rel_wa_fr_vec_param_names_2 = [key_filter["time_rel_wa_fr_vec_param_name"]]
 
         # Define nwb file names
         nwb_file_names = get_jguidera_nwbf_names()
@@ -168,17 +181,18 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
                     key.update({"curation_name": curation_name})
 
                     # No unit subset (use make_keys function):
-                    if verbose:
-                        print(f"on no unit subset cases...")
-                    brain_region_units_param_name = BrainRegionUnitsParams().lookup_single_epoch_param_name(
-                        nwb_file_name, epoch, min_epoch_mean_firing_rate)
-                    key.update({
-                        "epoch": epoch, "brain_region_units_param_name": brain_region_units_param_name})
-                    for time_rel_wa_dig_single_axis_param_name in primary_time_rel_wa_dig_single_axis_param_names:
-                        for res_epoch_spikes_sm_param_name in primary_res_epoch_spikes_sm_param_names:
-                            k = {"res_epoch_spikes_sm_param_name": res_epoch_spikes_sm_param_name, "time_rel_wa_dig_single_axis_param_name":
-                                time_rel_wa_dig_single_axis_param_name}
-                            keys += make_keys({**primary_features, **key, **k}, all_features)
+                    if include_no_unit_subset:
+                        if verbose:
+                            print(f"on no unit subset cases...")
+                        brain_region_units_param_name = BrainRegionUnitsParams().lookup_single_epoch_param_name(
+                            nwb_file_name, epoch, min_epoch_mean_firing_rate)
+                        key.update({
+                            "epoch": epoch, "brain_region_units_param_name": brain_region_units_param_name})
+                        for time_rel_wa_dig_single_axis_param_name in primary_time_rel_wa_dig_single_axis_param_names:
+                            for res_epoch_spikes_sm_param_name in primary_res_epoch_spikes_sm_param_names:
+                                k = {"res_epoch_spikes_sm_param_name": res_epoch_spikes_sm_param_name, "time_rel_wa_dig_single_axis_param_name":
+                                    time_rel_wa_dig_single_axis_param_name}
+                                keys += make_keys({**primary_features, **key, **k}, all_features)
 
                     # Unit subset (do not use make_keys function):
                     if verbose:
@@ -198,9 +212,19 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
                                          "time_rel_wa_fr_vec_param_name": time_rel_wa_fr_vec_param_name}
                                     keys.append({**primary_features_2, **key, **k})
 
-        table_intersection_keys = super()._get_potential_keys()
+        print(f"\nDefined {len(keys)} potential keys, now restricting to those with matches in upstream tables...\n")
 
-        return [x for x in keys if x in table_intersection_keys]
+        # Calls parent class method
+        table_intersection_keys = super()._get_potential_keys(key_filter=key_filter)
+        print(f"...found {len(table_intersection_keys)} upstream table keys, now checking which potential keys "
+              f"are in these...")
+
+        # NOTE: tried speeding this up with multiprocessing, but this did not help much
+        potential_keys = [x for x in keys if x in table_intersection_keys]
+
+        print(f"\nReturning {len(potential_keys)} potential keys...")
+
+        return potential_keys
 
     def delete_(self, key, safemode=True):
         delete_(self, [TimeRelWAFRVec], key, safemode)
@@ -211,6 +235,8 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
         drop_([TimeRelWAAveFRVecSel(), TimeRelWAFRVecSTAveSel(), TimeRelWAFRVec(), self])
 
 
+# TODO: if drop this table, could add secondary key to track samples that were excluded because they fell within
+#  both stay/leave trials
 @schema
 class TimeRelWAFRVec(CovariateFRVecBase):
     definition = """
@@ -241,8 +267,11 @@ class TimeRelWAFRVec(CovariateFRVecBase):
 
     @staticmethod
     def alter_input_labels_stay_leave(labels, key):
-        # Add to labels whether time is "associated" with "stay trial" (rat stays at well for full delay period)
-        # or "leave trial" (rat does not stay at well for full delay period). What is means to be "associated":
+        # IMPORTANT NOTES:
+        # - samples falling in both stay and leave trials are excluded
+
+        # Approach: Add to labels whether time is "associated" with "stay trial" (rat stays at well for full delay
+        # period) or "leave trial" (rat does not stay at well for full delay period). What is means to be "associated":
         # with a trial: time falls within the interval around well arrival defined by rel_time_start and
         # rel_time_end in corresponding entry in TimeRelWADigSingleAxisParams.
 
@@ -267,36 +296,74 @@ class TimeRelWAFRVec(CovariateFRVecBase):
             # ...Get boolean indicating whether samples in intervals above
             in_intervals_bool = event_times_in_intervals_bool(labels.index, trial_peri_wa_intervals)
             # ...Add text to labels in interval
-            labels[in_intervals_bool] = [
+            labels.loc[in_intervals_bool] = [
                 MazePathWell().get_stay_leave_trial_path_name(x, label_name)
                 for x in labels[in_intervals_bool].values]
             # Store boolean indicating whether samples in intervals above, so can ultimately exclude samples
             # not associated with stay or leave trials
             in_intervals_bool_map[label_name] = in_intervals_bool
 
+        # Exclude samples falling within both stay and leave trials
+        invalid_bool = in_intervals_bool_map["stay_trial"]*in_intervals_bool_map["leave_trial"]
+        if np.sum(invalid_bool) > 0:
+            print(f"At least one timepoint assigned to both stay and leave trial, excluding these samples")
+            in_intervals_bool_map["stay_trial"][invalid_bool] = False
+            in_intervals_bool_map["leave_trial"][invalid_bool] = False
+
         # Return updated labels and boolean indicating labels that are associated with stay or leave trials
         return labels, in_intervals_bool_map
+
+    # Get boolean indicating whether rat at well during post delay period ("post delay at well (pdaw)")
+    def _get_pdaw_bool(self, dig_time_rel_wa, key, verbose):
+        # Important to pass dig_time_rel_wa rather than get it from key because want to allow dig_time_rel_wa to
+        # have already been restricted before this function
+
+        valid_well_bool = [True] * len(dig_time_rel_wa)  # initialize
+
+        # Make boolean where values are true if before well arrival OR after well arrival and rat still at well
+        well_times = (DioWellTrials & key).well_times()
+        self._update_upstream_entries_tracker(DioWellTrials, key)
+        at_well_bool = event_times_in_intervals_bool(dig_time_rel_wa.index, well_times)
+
+        # based on _convert_pre_wa_int method of TimeRelWADigSingleAxis, zero
+        # is first bin for pre well arrival period, so use <= 0 to include it
+        before_well_bool = dig_time_rel_wa <= 0
+        valid_well_bool = np.logical_or(before_well_bool, at_well_bool)
+
+        # Plot quantities for checking if indicated
+        if verbose:
+            import matplotlib.pyplot as plt
+            fig, ax2 = plt.subplots(figsize=(20, 3))
+            ax2.plot((TimeRelWADigSingleAxis & key).fetch1_dataframe().time_rel_wa,
+                     label="digitized time relative to well arrival")
+            ax2.plot(dig_time_rel_wa.index, at_well_bool, 'o', label="at well")
+            ax2.plot(dig_time_rel_wa.index, valid_well_bool, 'x',
+                     label="valid period (pre well arrival or at well)")
+            ax2.plot(dig_time_rel_wa.loc[valid_well_bool], ".", color="red", label="valid data")
+            ax2.legend()
+
+        return valid_well_bool
 
     def get_inputs(self, key, verbose=False, ax=None):
 
         # Get firing rate vectors
         fr_vec_df = (FRVec & key).firing_rate_vector_across_sort_groups(populate_tables=False)
 
-        # Get time relative to well arrival (on a single axis where negative means before well arrival and
+        # Get digitized time relative to well arrival (on a single axis where negative means before well arrival and
         # positive means after)
-        time_rel_wa = (TimeRelWADigSingleAxis & key).fetch1_dataframe().time_rel_wa
+        dig_time_rel_wa = (TimeRelWADigSingleAxis & key).fetch1_dataframe().time_rel_wa
 
-        # Get average vector during time relative to well arrival bins
-        labels = (TimeRelWADig & key).fetch1_dataframe()["dd_path_names"]  # departure to departure trials path names
+        # Get labels (departure to departure trials path names)
+        labels = (TimeRelWADig & key).fetch1_dataframe()["dd_path_names"]
 
         # Check same index across data sources
-        check_same_index([fr_vec_df, time_rel_wa, labels])
+        check_same_index([fr_vec_df, dig_time_rel_wa, labels])
 
         # Restrict to times when covariate finite and labels not "none"
-        valid_bool = np.logical_and(np.isfinite(time_rel_wa), labels != "none")
+        valid_bool = np.logical_and(np.isfinite(dig_time_rel_wa), labels != "none")
 
         # Update quantities to reflect
-        time_rel_wa = time_rel_wa[valid_bool]
+        dig_time_rel_wa = dig_time_rel_wa[valid_bool]
         labels = labels[valid_bool]
         fr_vec_df = fr_vec_df[valid_bool]
 
@@ -313,11 +380,12 @@ class TimeRelWAFRVec(CovariateFRVecBase):
 
         # ...add whether stay or leave trial on top of current labels and optionally restrict to samples
         # where rat at well if also indicated by labels_description
-        elif labels_description in ["stay_leave_trials", "stay_leave_trials_pre_departure"]:
+        elif labels_description in [
+            "stay_leave_trials", "stay_leave_trials_pre_departure"]:
             labels, in_intervals_bool_map = self.alter_input_labels_stay_leave(labels, key)
 
-            # Apply additional exclusions: 1) samples not labeled as stay or leave, 2) samples where rat left well if
-            # indicated
+            # Apply additional exclusions as indicated: 1) samples not labeled as stay or leave, 2) samples where
+            # rat left well
 
             # 1) Restrict to samples labeled as stay or leave
             in_intervals_bool_list = list(in_intervals_bool_map.values())
@@ -332,7 +400,7 @@ class TimeRelWAFRVec(CovariateFRVecBase):
                     labels.index, pre_departure_intervals))
 
             # Update quantities
-            time_rel_wa = time_rel_wa[valid_bool]
+            dig_time_rel_wa = dig_time_rel_wa[valid_bool]
             labels = labels[valid_bool]
             fr_vec_df = fr_vec_df[valid_bool]
 
@@ -348,11 +416,13 @@ class TimeRelWAFRVec(CovariateFRVecBase):
             valid_bool = in_intervals_bool_map["stay_trial"]
 
             # Update quantities
-            time_rel_wa = time_rel_wa[valid_bool]
+            dig_time_rel_wa = dig_time_rel_wa[valid_bool]
             labels = labels[valid_bool]
             fr_vec_df = fr_vec_df[valid_bool]
 
-        elif labels_description == "correct_incorrect_stay_trials":
+        elif labels_description in [
+            "correct_incorrect_stay_trials", "even_odd_correct_incorrect_stay_trials",
+            "correct_incorrect_stay_trials_pdaw", "eo_correct_incorrect_stay_trials_pdaw"]:
 
             # Add text to denote whether "stay" or "leave" trial
             labels, in_intervals_bool_map = self.alter_input_labels_stay_leave(labels, key)
@@ -361,13 +431,23 @@ class TimeRelWAFRVec(CovariateFRVecBase):
             # note that the line below returns only labels with correct/incorrect
             labels, label_bool = self.alter_input_labels_correct_incorrect(labels, key)
 
+            # Add text to denote whether even/odd trial in a given context (e.g. left to center path) if indicated
+            if labels_description in [
+                "even_odd_correct_incorrect_stay_trials", "eo_correct_incorrect_stay_trials_pdaw"]:
+                labels = self.alter_input_labels_even_odd(labels)
+
             # Keep only stay trials
-            stay_bool = in_intervals_bool_map["stay_trial"]
+            valid_bool = in_intervals_bool_map["stay_trial"]
+
+            # Keep only post delay times at well if indicated
+            if "pdaw" in labels_description:
+                pdaw_bool = self._get_pdaw_bool(dig_time_rel_wa, key, verbose)
+                valid_bool = np.logical_and(valid_bool, pdaw_bool)
 
             # Update quantities
-            labels = labels[stay_bool[label_bool]]
-            valid_bool = np.logical_and(label_bool, stay_bool)
-            time_rel_wa = time_rel_wa[valid_bool]
+            labels = labels[valid_bool[label_bool]]
+            valid_bool = np.logical_and(label_bool, valid_bool)
+            dig_time_rel_wa = dig_time_rel_wa[valid_bool]
             fr_vec_df = fr_vec_df[valid_bool]
 
         elif labels_description == "none":
@@ -380,11 +460,26 @@ class TimeRelWAFRVec(CovariateFRVecBase):
         self._plot_labels("post", labels, verbose, ax)
 
         return namedtuple("Inputs", "x labels df unit_names")(
-            time_rel_wa, labels, fr_vec_df, np.asarray(fr_vec_df.columns))
+            dig_time_rel_wa, labels, fr_vec_df, np.asarray(fr_vec_df.columns))
 
-    def get_bin_centers(self):
-        key = self.fetch1("KEY")
+    def get_bin_centers(self, key=None):
+
+        # Get key if not passed
+        if key is None:
+            key = self.fetch1("KEY")
+
         return TimeRelWADigSingleAxisParams().get_bin_centers(key)
+
+    def get_valid_covariate_bin_nums(self, key):
+        # Important to pass full key because bins depend on file in this case
+        return TimeRelWADigSingleAxisParams().get_valid_bin_nums(key)
+
+    def get_bin_centers_map(self):
+        key = self.fetch1("KEY")
+        x = TimeRelWADigSingleAxisParams().get_valid_bin_nums(key)
+        bin_centers = (self & key).get_bin_centers()
+
+        return AverageVectorDuringLabeledProgression.get_bin_centers_map(x, bin_centers)
 
     def delete_(self, key=None, safemode=True):
         # Delete downstream entries first
@@ -441,8 +536,30 @@ class TimeRelWAFRVecSTAveSel(TimeRelWAFRVecAveSelBase):
     time_rel_wa_fr_vec_param_name : varchar(40)
     """
 
+    def _get_potential_keys(self, key_filter=None, populate_tables=False):
+
+        # Restrict params based on cov_fr_vec_param_names
+        cov_fr_vec_param_names = self._get_cov_fr_vec_param_names()
+
+        if "time_rel_wa_fr_vec_param_name" in key_filter:
+            cov_fr_vec_param_names = [key_filter["time_rel_wa_fr_vec_param_name"]]
+
+        cov_fr_vec_param_names_params_map = {
+            "correct_incorrect_stay_trials_pdaw": {"time_rel_wa_dig_single_axis_param_name": "-1^3"}}
+
+        potential_keys = []
+        for cov_fr_vec_param_name in cov_fr_vec_param_names:
+            key_filter.update({"cov_fr_vec_param_name": cov_fr_vec_param_name})
+            if cov_fr_vec_param_name in cov_fr_vec_param_names_params_map:
+                key_filter.update(cov_fr_vec_param_names_params_map[cov_fr_vec_param_name])
+
+            potential_keys += super()._get_potential_keys(key_filter=key_filter)
+
+        return potential_keys
+
     def _get_cov_fr_vec_param_names(self):
-        return ["stay_leave_trials_pre_departure", "correct_incorrect_stay_trials"]
+        return [
+            "stay_leave_trials_pre_departure", "correct_incorrect_stay_trials", "correct_incorrect_stay_trials_pdaw"]
 
     def delete_(self, key, safemode=True):
         delete_(self, [TimeRelWAFRVecSTAve], key, safemode)
@@ -450,18 +567,6 @@ class TimeRelWAFRVecSTAveSel(TimeRelWAFRVecAveSelBase):
 
 # Overrides methods in CovariateFRVecAveBase in a manner specific to time relative to well arrival covariate
 class TimeRelWAFRVecAveBase:
-
-    @staticmethod
-    def get_valid_covariate_bin_nums(key):
-        # Important to pass full key because bins depend on file in this cas
-        return TimeRelWADigSingleAxisParams().get_valid_bin_nums(key)
-
-    def get_bin_centers_map(self):
-        key = self.fetch1("KEY")
-        x = TimeRelWADigSingleAxisParams().get_valid_bin_nums(key)
-        bin_centers = (self._fr_vec_table() & key).get_bin_centers()
-
-        return AverageVectorDuringLabeledProgression.get_bin_centers_map(x, bin_centers)
 
     @staticmethod
     def _fr_vec_table():
@@ -539,10 +644,11 @@ class TimeRelWAAveFRVecSel(TimeRelWAFRVecAveSelBase):
         return ["even_odd_stay_trials"]
 
 
+# TODO: regenerate table if possible; changed table heading
 @schema
 class TimeRelWAAveFRVec(TimeRelWAFRVecAveBase, CovariateFRVecTrialAveBase):
     definition = """
-    # Comparison of average firing rate difference vectors across combinations of path bin, path identity, and epoch
+    # Comparison of average firing rate vectors across combinations of time bin, path identity, and epoch
     -> TimeRelWAAveFRVecSel
     ---
     -> nd.common.AnalysisNwbfile
@@ -573,7 +679,7 @@ limit on number of primary keys
 
 
 @schema
-class TimeRelWAFRVecSTAveSummParams(CovariateFRVecAveSummParamsBase):
+class TimeRelWAFRVecSTAveSummParams(CovariateFRVecAveSummSecKeyParamsBase):
     definition = """
     # Parameters for TimeRelWAFRVecSTAveSumm
     time_rel_wa_fr_vec_st_ave_summ_param_name : varchar(200)
@@ -592,6 +698,7 @@ class TimeRelWAFRVecSTAveSummParams(CovariateFRVecAveSummParamsBase):
 
 @schema
 class TimeRelWAFRVecSTAveSummSel(CovariateFRVecAveSummSelBase):
+# class TimeRelWAFRVecSTAveSummSel(dj.Manual):  # use to initialize table
     definition = """
     # Selection from upstream tables for TimeRelWAFRVecSTAveSumm
     -> RecordingSet
@@ -607,28 +714,51 @@ class TimeRelWAFRVecSTAveSummSel(CovariateFRVecAveSummSelBase):
     -> TimeRelWAFRVecSTAveSummParams
     ---
     upstream_keys : mediumblob
+    -> nd.common.AnalysisNwbfile
+    df_concat_object_id : varchar(40)
     """
 
-    def _default_noncohort_boot_set_names(self):
-        return super()._default_noncohort_boot_set_names() + [
-            "brain_region_diff", "stay_leave_diff", "stay_leave_diff_brain_region_diff"]
+    class Upstream(dj.Part):
+        definition = """
+        # Achieves upstream dependence on upstream tables
+        -> TimeRelWAFRVecSTAveSummSel
+        -> BrainRegionCohort
+        -> CurationSet
+        -> TimeRelWAFRVecSTAve
+        """
 
-    def _default_cohort_boot_set_names(self):
-        return super()._default_cohort_boot_set_names() + [
-            "brain_region_diff_rat_cohort", "stay_leave_diff_rat_cohort",
-            "stay_leave_diff_brain_region_diff_rat_cohort"]
+    def _default_recording_set_names_boot_set_names_cov_fr_vec_param_names(self, **key_filter):
+        x = [
 
-    def _default_cov_fr_vec_param_names(self):
-        return ["none", "stay_leave_trials_pre_departure"]
+            # Rat cohort
+            # ...all trials
+            # (RecordingSet().lookup_rat_cohort_set_name(), "brain_region_diff_rat_cohort", "none"),
+            # ...correct trials
+            (RecordingSet().lookup_rat_cohort_set_name(), "brain_region_diff_rat_cohort",
+             "correct_incorrect_stay_trials_pdaw"),
+            # ...stay/leave
+            (RecordingSet().lookup_rat_cohort_set_name(), "stay_leave_diff_rat_cohort",
+             "stay_leave_trials_pre_departure"),
+            (RecordingSet().lookup_rat_cohort_set_name(), "stay_leave_diff_brain_region_diff_rat_cohort",
+             "stay_leave_trials_pre_departure"),
+            ]
 
-    # Override parent class method so can look at reliability of firing rate vector geometry and dynamics
-    # during delay period on first day of learning
-    def _recording_set_name_types(self):
-        return super()._recording_set_name_types() + ["first_day_learning_single_epoch"]
+        # Non cohort
+        for recording_set_name in RecordingSet().get_recording_set_names(
+                key_filter, ["Haight_rotation"]):
+            # ...correct trials
+            x.append((recording_set_name, "default", "correct_incorrect_stay_trials_pdaw"))
+            # ...stay/leave
+            x.append((recording_set_name, "default", "stay_leave_trials_pre_departure"))
+            x.append((recording_set_name, "stay_leave_diff", "stay_leave_trials_pre_departure"))
+            x.append((recording_set_name, "stay_leave_diff_brain_region_diff", "stay_leave_trials_pre_departure"))
+
+        return x
 
 
 @schema
 class TimeRelWAFRVecSTAveSumm(CovariateFRVecSTAveSummBase, TimeRelWAFRVecSummBase):
+# class TimeRelWAFRVecSTAveSumm(dj.Computed):  # use to initialize table
     definition = """
     # Summary of single 'trial' comparison of firing rate vectors
     -> TimeRelWAFRVecSTAveSummSel
@@ -638,15 +768,6 @@ class TimeRelWAFRVecSTAveSumm(CovariateFRVecSTAveSummBase, TimeRelWAFRVecSummBas
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)
     """
-
-    class Upstream(dj.Part):
-        definition = """
-        # Achieves upstream dependence on upstream tables
-        -> TimeRelWAFRVecSTAveSumm
-        -> BrainRegionCohort
-        -> CurationSet
-        -> TimeRelWAFRVecSTAve
-        """
 
     @staticmethod
     def _upstream_table():
@@ -677,7 +798,7 @@ Notes on TimeRelWAAveFRVecSumm table setup: same reasoning as for TimeRelWAFRVec
 
 
 @schema
-class TimeRelWAAveFRVecSummParams(CovariateFRVecAveSummParamsBase):
+class TimeRelWAAveFRVecSummParams(CovariateFRVecAveSummSecKeyParamsBase):
     definition = """
     # Parameters for TimeRelWAAveFRVecSumm
     time_rel_wa_ave_fr_vec_summ_param_name : varchar(160)
@@ -726,16 +847,17 @@ class TimeRelWAAveFRVecSummSel(CovariateFRVecAveSummSelBase):
     def _default_cohort_boot_set_names(self):
         return super()._default_cohort_boot_set_names() + ["relationship_div_rat_cohort_median"]
 
-    # Override parent class method so can look at reliability of firing rate vector geometry and dynamics
-    # during delay period on first day of learning
-    def _recording_set_name_types(self):
-        return super()._recording_set_name_types() + ["first_day_learning_single_epoch"]
+    # # Override parent class method so can look at reliability of firing rate vector geometry and dynamics
+    # # during delay period on first day of learning
+    # def _recording_set_name_types(self):
+    #     return super()._recording_set_name_types() + ["first_day_learning_single_epoch"]
 
 
+# TODO: would be good to regenerate table since changed heading
 @schema
 class TimeRelWAAveFRVecSumm(CovariateAveFRVecSummBase, TimeRelWAFRVecSummBase):
     definition = """
-    # Summary of single 'trial' comparison of firing rate vectors
+    # Summary of trial average comparison of firing rate vectors
     -> TimeRelWAAveFRVecSummSel
     ---
     -> nd.common.AnalysisNwbfile

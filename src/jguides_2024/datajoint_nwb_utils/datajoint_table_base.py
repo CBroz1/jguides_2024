@@ -38,13 +38,37 @@ populate, insert1, fetch1. So avoiding overriding datajoint table methods with t
 
 class ParamsBase(dj.Manual):
 
+    def _get_main_table(self):
+        """
+        Get "main" datajoint table for current params table
+        :return: datajoint table
+        """
+
+        # Get current table name
+        table_name = get_table_name(self)
+
+        # Raise error if current table doesnt following naming convention (require override of this method in that case)
+        if table_name[-6:] != "Params":
+            raise Exception(
+                f"Non canonical params table name; must override this method for current table given this")
+
+        # Return main table name. By convention, this has the same name as the current able without the final "Sel"
+        return get_table(table_name[:-6])
+
     def meta_param_name(self):
         # As method rather than attribute because if datajoint table not initialized, get error when defining attribute
 
         return get_meta_param_name(self, verbose=False)  # set verbose to True to print warnings
 
-    def lookup_param_name(self):
+    def lookup_param_name(self, **kwargs):
         raise Exception(f"Must be implemented in child class")
+
+    def insert1(self, key, **kwargs):
+
+        if "skip_duplicates" not in kwargs:
+            kwargs["skip_duplicates"] = True
+
+        super().insert1(key, **kwargs)
 
 
 class SecKeyParamsBase(ParamsBase):
@@ -138,13 +162,6 @@ class SecKeyParamsBase(ParamsBase):
     def get_default_param_name(self):
         return self.lookup_param_name(unpack_single_element(self._default_params()))
 
-    def insert1(self, key, **kwargs):
-
-        if "skip_duplicates" not in kwargs:
-            kwargs["skip_duplicates"] = True
-
-        super().insert1(key, **kwargs)
-
     def insert_entry(self, secondary_key_values, key_filter=None):
 
         # Insert from secondary key values
@@ -170,6 +187,9 @@ class SecKeyParamsBase(ParamsBase):
     def _get_param_name_table(self):
         # Get param name table. Error thrown if not present
         return get_table(unpack_single_element([x for x in get_upstream_table_names(self) if "ParamName" in x]))
+
+    def get_params(self):
+        return {k: self.fetch1(k) for k in get_table_secondary_key_names(self)}
 
 
 class SelBase(dj.Manual):
@@ -260,6 +280,15 @@ class SelBase(dj.Manual):
         for key in bad_entries:
             self.delete_(key, safemode)
 
+    def get_object_id_name(self, leave_out_object_id=False, unpack_single_object_id=True):
+        return get_table_object_id_name(self, leave_out_object_id, unpack_single_object_id)
+
+    def fetch1_dataframe(self, object_id_name=None, restore_empty_nwb_object=True, df_index_name=None):
+        return fetch1_dataframe(self, object_id_name, restore_empty_nwb_object, df_index_name)
+
+    def fetch_nwb(self):
+        return fetch_nwb(self)
+
 
 class PartBase(dj.Part):
 
@@ -329,9 +358,9 @@ class ComputedBase(dj.Computed):
 
         return params_table
 
-    def get_upstream_param(self, column_name):
+    def get_upstream_param(self, param_name):
         params_table = self._get_params_table()()
-        return (params_table & self.fetch1("KEY")).fetch1(column_name)
+        return (params_table & self.fetch1("KEY")).get_params()[param_name]
 
     # More interpretable as method than as attribute since not all computed tables have params table
     def meta_param_name(self):
@@ -389,7 +418,10 @@ class ComputedBase(dj.Computed):
                 selection_table().insert_defaults(**kwargs)
 
         # Populate main table
-        populate_flexible_key(self, key, tolerate_error, verbose=verbose)
+        processes = 20
+        if "processes" in kwargs:
+            processes = kwargs["processes"]
+        populate_flexible_key(self, key, tolerate_error, verbose=verbose, processes=processes)
 
         # Return list with populated tables so we can avoid running populate on these again
         return populated_tables
@@ -403,8 +435,8 @@ class ComputedBase(dj.Computed):
     def get_object_id_name(self, leave_out_object_id=False, unpack_single_object_id=True):
         return get_table_object_id_name(self, leave_out_object_id, unpack_single_object_id)
 
-    def fetch_nwb(self):
-        return fetch_nwb(self)
+    def fetch_nwb(self, **kwargs):
+        return fetch_nwb(self, **kwargs)
 
     @staticmethod
     def get_default_df_index_name(df_index_name, object_id_name, df_index_name_map):
@@ -941,11 +973,22 @@ class CovariateDigParamsBase(SecKeyParamsBase):
         return unpack_single_element([x for x in get_table_secondary_key_names(self) if "bin_width" in x])
 
     def get_bin_centers(self, **kwargs):
-        return vector_midpoints(self.make_bin_edges(self.fetch1(self.bin_width_name()), **kwargs))
+        if "bin_width" in kwargs:
+            raise Exception(f"bin_width should not be passed as it is defined here based on table entry")
+        table_subset = self
+        if "key" in kwargs:
+            table_subset = (self & kwargs["key"])
+        kwargs["bin_width"] = table_subset.fetch1(self.bin_width_name())
+        return vector_midpoints(self.make_bin_edges(**kwargs))
 
     def get_num_bin_edges(self, **kwargs):
-        bin_width = self.fetch1(self.bin_width_name())
-        return len(self.make_bin_edges(bin_width, **kwargs))
+        if "bin_width" in kwargs:
+            raise Exception(f"kwargs should not contain bin_width as this is defined based on table entry")
+        table_subset = self
+        if "key" in kwargs:
+            table_subset = (self & kwargs["key"])
+        kwargs["bin_width"] = table_subset.fetch1(self.bin_width_name())
+        return len(self.make_bin_edges(**kwargs))
 
     def get_num_bins(self, **kwargs):
         return self.get_num_bin_edges(**kwargs) - 1
@@ -954,7 +997,7 @@ class CovariateDigParamsBase(SecKeyParamsBase):
         # Bin nums depends on how table handles negative values, so require custom function in each child class
         raise Exception(f"This method should be overridden in child class")
 
-    def make_bin_edges(self, bin_width, **kwargs):
+    def make_bin_edges(self, **kwargs):
         raise Exception(f"This method should be overridden in child class")
 
 
@@ -972,8 +1015,10 @@ class CovDigmethBase(ComputedBase):
         raise Exception(f"This method must be overwritten in child class")
 
     @classmethod
-    def make_bin_edges(cls, bin_width):
-        return make_bin_edges(cls.get_range(), bin_width)
+    def make_bin_edges(cls, **kwargs):
+        if "bin_width" not in kwargs:
+            raise Exception(f"bin_width must be passed")
+        return make_bin_edges(cls.get_range(), kwargs["bin_width"])
 
     def fetch1_dataframe_exclude(self, exclusion_params=None, object_id_name=None, restore_empty_nwb_object=True,
                                  df_index_name=None):
@@ -988,7 +1033,7 @@ class CovDigmethBase(ComputedBase):
 
         # Make bin edges if not passed
         if bin_edges is None:
-            bin_edges = self.make_bin_edges(bin_width)
+            bin_edges = self.make_bin_edges(bin_width=bin_width)
 
         # Get covariate
         cov_df = self.fetch1_dataframe_exclude(exclusion_params=exclusion_params)

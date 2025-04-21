@@ -8,7 +8,7 @@ from src.jguides_2024.utils.check_well_defined import check_one_none
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import format_nwb_file_name
 from src.jguides_2024.utils.df_helpers import df_filter_columns_isin, zip_df_columns
 from src.jguides_2024.utils.dict_helpers import dict_comprehension
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_subject_ids
+from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_subject_ids, get_delay_duration
 from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import subject_id_date_from_nwbf_name
 from src.jguides_2024.utils.plot_helpers import plot_spanning_line
 from src.jguides_2024.utils.set_helpers import check_membership
@@ -134,12 +134,17 @@ def get_subject_id(nwb_file_name):
 
 
 def plot_junction_fractions(
-        ax, span_data=None, linewidth=1, color="gray", linestyle="solid", alpha=1, zorder=1, x_scale_factor=1):
-    # Plot vertical lines denoting junction fractions
+        ax, span_data=None, linewidth=1, span_axis="y", color="gray", linestyle="solid", alpha=1, zorder=1,
+        x_scale_factor=1):
 
-    # Span y lim if span_data not passed
+    # Plot lines denoting junction fractions
+
+    # Span axis lim if span_data not passed
     if span_data is None:
-        span_data = ax.get_ylim()
+        if span_axis == "y":
+            span_data = ax.get_ylim()
+        elif span_axis == "x":
+            span_data = ax.get_xlim()
 
     # Get path fraction value at maze turns
     from src.jguides_2024.position_and_maze.jguidera_maze import get_n_junction_path_junction_fractions
@@ -148,18 +153,77 @@ def plot_junction_fractions(
     # Scale junction path fractions to x axis in plot
     junction_fractions *= x_scale_factor
     for junction_fraction in junction_fractions:
-        plot_spanning_line(span_data, junction_fraction, ax, "y", linewidth, color, linestyle, alpha, zorder)
+        plot_spanning_line(span_data, junction_fraction, ax, span_axis, linewidth, color, linestyle, alpha, zorder)
 
 
 def plot_well_events(
-        ax, span_data=None, linewidth=1, color="brown", linestyle="solid", alpha=1, zorder=1, x_scale_factor=1):
+        ax, span_data=None, linewidth=1, color="brown", linestyle="solid", alpha=1, zorder=1, x_scale_factor=1,
+        shift_x=0):
     # Plot vertical lines denoting well arrival and reward delivery
 
     # Span y lim if span_data not passed
     if span_data is None:
         span_data = ax.get_ylim()
-    for well_event_time in np.asarray([0, 2])*x_scale_factor:
+    for well_event_time in np.asarray([0, 2])*x_scale_factor + shift_x:
         plot_spanning_line(span_data, well_event_time, ax, "y", linewidth, color, linestyle, alpha, zorder)
+
+
+def plot_task_phases(ax, axis_type):
+
+    # Plot rectangles denoting task phase
+
+    from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_task_period_color_map
+    from matplotlib.patches import Rectangle
+
+    task_period_color_map = get_task_period_color_map()
+
+    xlims = ax.get_xlim()
+    x_start = xlims[0]
+    x_extent = xlims[1] - xlims[0]
+    ylims = ax.get_ylim()
+    y_start = ylims[1]
+    y_extent = (ylims[1] - ylims[0]) * .1
+
+    if axis_type == "path_progression":
+
+        color = task_period_color_map["path traversal"]
+        ax.add_patch(Rectangle((x_start, y_start), x_extent, y_extent, color=color))
+
+    elif axis_type == "time_in_delay":
+
+        # Path traversal
+        xlims = ax.get_xlim()
+        x_start = xlims[0]
+        x_extent = 0 - xlims[0]
+        ylims = ax.get_ylim()
+        y_start = ylims[1]
+        y_extent = (ylims[1] - ylims[0]) * .1
+        color = task_period_color_map["path traversal"]
+        from matplotlib.patches import Rectangle
+        if x_extent > 0:
+            ax.add_patch(Rectangle((x_start, y_start), x_extent, y_extent, color=color))
+
+        # Delay
+        x_start = 0
+        x_extent = get_delay_duration()
+        color = task_period_color_map["delay"]
+        ax.add_patch(Rectangle((x_start, y_start), x_extent, y_extent, color=color))
+
+        # Post delay
+        x_start = 2
+        x_extent = xlims[1] - x_start
+        color = task_period_color_map["post delay"]
+        if x_extent > 0:
+            ax.add_patch(Rectangle((x_start, y_start), x_extent, y_extent, color=color))
+
+    else:
+        raise Exception(f"axis_type {axis_type} not recognized")
+
+    # Update y lims
+    ax.set_ylim([ylims[0], ylims[1] + y_extent])
+
+    # Truncate y axis spine at original y limits
+    ax.spines["left"].set_bounds(*ylims)
 
 
 def key_text(key, separating_character="_"):
@@ -216,13 +280,15 @@ def get_thesis_nwb_file_names():
         "J1620210606_.nwb", "mango20211207_.nwb", "june20220419_.nwb", "peanut20201108_.nwb", "fig20211109_.nwb"])
 
 
-def get_reliability_paper_nwb_file_names(as_dict=False):
+def get_reliability_paper_nwb_file_names(as_dict=False, restrict_dual_mPFC_OFC=False):
     paper_nwb_file_names_map = {
         "J16": ["J1620210605_.nwb", "J1620210606_.nwb", "J1620210607_.nwb"],
         "mango": ["mango20211205_.nwb", "mango20211206_.nwb", "mango20211207_.nwb"],
         "june": ["june20220419_.nwb", "june20220420_.nwb", "june20220421_.nwb"],
         "peanut": ["peanut20201107_.nwb", "peanut20201108_.nwb", "peanut20201109_.nwb"],
         "fig": ["fig20211108_.nwb", "fig20211109_.nwb", "fig20211110_.nwb"]}
+    if restrict_dual_mPFC_OFC:
+        paper_nwb_file_names_map = {k: v for k, v in paper_nwb_file_names_map.items() if k in ["J16", "mango", "june"]}
     if as_dict:
         return paper_nwb_file_names_map
     return np.concatenate(list(paper_nwb_file_names_map.values()))
@@ -246,5 +312,9 @@ def plot_horizontal_lines(xlims, y_vals, ax):
     # Plot horizontal lines to help visualize y positions
     for y_val in np.unique(y_vals):
         ax.plot(xlims, [y_val] * 2, color="gray", alpha=.3)
+
+
+def get_task_period_color_map():
+    return {"path traversal": "rosybrown", "delay": "burlywood", "post delay": "navajowhite"}
 
 

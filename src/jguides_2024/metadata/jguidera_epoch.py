@@ -40,6 +40,25 @@ def insert_epoch_table(table, key, target_contingency_type):
 
 
 @schema
+class EpochFullLen(dj.Computed):
+    definition = """
+    # Indicates whether or not epoch full length
+    -> EpochInterval
+    ---
+    epoch_full_len : bool
+    """
+
+    def make(self, key):
+        key.update({"epoch_full_len": int((EpochInterval & key).get_epoch_duration() > 19 * 60)})
+        insert1_print(self, key)
+
+    def exclude_non_full_len_epochs_descriptions(self, nwb_file_name, epochs_descriptions):
+        return [x for x in epochs_descriptions if (self & {
+            "nwb_file_name": nwb_file_name, "epoch": (EpochsDescription & {
+                "nwb_file_name": nwb_file_name, "epochs_description": x}).get_epoch()}).fetch1("epoch_full_len")]
+
+
+@schema
 class EpochCohortParams(SecKeyParamsBase):
     definition = """
     # Parameters for specifying groups of run epochs
@@ -141,10 +160,10 @@ class RunEpoch(ComputedBase):
     def get_run_num(self, nwb_file_name, epoch):
         return unpack_single_element(np.where(self.get_epochs(nwb_file_name) == epoch)[0]) + 1
 
-    def get_single_contingency_epochs(self, nwb_file_name):
+    def get_single_contingency_epochs(self, nwb_file_name, contingency=None):
         # Return epochs with single contingency, i.e. without epoch contingency switch
         return [epoch for epoch in (self & {"nwb_file_name": nwb_file_name}).fetch("epoch")
-                if TaskIdentification().is_single_contingency_epoch(nwb_file_name, epoch)]
+                if TaskIdentification().is_single_contingency_epoch(nwb_file_name, epoch, contingency)]
 
 
 @schema
@@ -242,16 +261,20 @@ class EpochsDescription(dj.Manual):
     def valid_epochs_descriptions(cls):
         return [cls.get_all_runs_description()] + [cls.format_single_run_description(x) for x in np.arange(1, 10)]
 
-    def get_single_contingency_descriptions(self, nwb_file_name, exclude_non_full_len=False, exclude_artifact=False):
+    def get_single_contingency_descriptions(
+            self, nwb_file_name, exclude_non_full_len=False, exclude_artifact=False, contingency=None):
 
         # Return descriptions of single epochs with single contingency, i.e. without epoch contingency switch,
         # also optionally excluding non-full length epochs and/or epochs with artifacts
+
+        # Check inputs
+        check_membership([contingency], [None] + TaskIdentification().single_contingencies())
 
         # Get single contigency epoch descriptions
         epochs_descriptions = [epochs_description for epochs_description, epochs in fetch_iterable_array((
             self & {"nwb_file_name": nwb_file_name}), ["epochs_description", "epochs"])
                 if len(epochs) == 1  # single epochs
-                and TaskIdentification().is_single_contingency_epoch(nwb_file_name, epochs[0])
+                and TaskIdentification().is_single_contingency_epoch(nwb_file_name, epochs[0], contingency)
                ]
 
         # Exclude epochs that are not full length if indicated
@@ -336,25 +359,6 @@ class EpochsDescription(dj.Manual):
 
 
 @schema
-class EpochFullLen(dj.Computed):
-    definition = """
-    # Indicates whether or not epoch full length
-    -> EpochInterval
-    ---
-    epoch_full_len : bool
-    """
-
-    def make(self, key):
-        key.update({"epoch_full_len": int((EpochInterval & key).get_epoch_duration() > 19 * 60)})
-        insert1_print(self, key)
-
-    def exclude_non_full_len_epochs_descriptions(self, nwb_file_name, epochs_descriptions):
-        return [x for x in epochs_descriptions if (self & {
-            "nwb_file_name": nwb_file_name, "epoch": (EpochsDescription & {
-                "nwb_file_name": nwb_file_name, "epochs_description": x}).get_epoch()}).fetch1("epoch_full_len")]
-
-
-@schema
 class EpochArtifactFree(dj.Computed):
     definition = """
     # Indicates whether epoch free of artifacts
@@ -409,12 +413,20 @@ class EpochsDescriptions(dj.Manual):
         for parts_table in [self.EpochArtifactFree, self.EpochFullLen]:
             parts_table.insert1({**key, **parts_key}, skip_duplicates=True)
 
-    # TODO (feature): use key_filter if passed
     def insert_defaults(self, **kwargs):
+
+        key_filter = kwargs.pop("key_filter", None)
 
         # CASE 1: For single nwb files, insert single contingency runs that are: 1) full length 2) free of artifacts
         epochs_descriptions_name = "valid_single_contingency_runs"
-        for nwb_file_name in np.unique(EpochInterval().fetch("nwb_file_name")):
+        nwb_file_names = np.unique(EpochInterval().fetch("nwb_file_name"))
+
+        # Restrict nwb_file_name if indicated
+        if key_filter is not None:
+            if "nwb_file_name" in key_filter:
+                nwb_file_names = [x for x in nwb_file_names if x == key_filter["nwb_file_name"]]
+
+        for nwb_file_name in nwb_file_names:
 
             # Get single contingency epochs descriptions that are full length and without artifacts
             epochs_descriptions = EpochsDescription().get_single_contingency_descriptions(
@@ -429,8 +441,40 @@ class EpochsDescriptions(dj.Manual):
             for epochs_description in epochs_descriptions:
                 self._insert_parts(key, nwb_file_name, epochs_description)
 
-        # CASE 2: For single nwb files on first day of learning, insert single contingency run, one at a time
-        for nwb_file_name in ["J1620210529_.nwb"]:
+        # CASE 2: For single nwb files, insert single contingency runs that are: 1) full length 2) free of artifacts
+        # 3) contingency is handle alternation
+        epochs_descriptions_name = "valid_handleAlternation_runs"
+        nwb_file_names = np.unique(EpochInterval().fetch("nwb_file_name"))
+
+        # Restrict nwb_file_name if indicated
+        if key_filter is not None:
+            if "nwb_file_name" in key_filter:
+                nwb_file_names = [x for x in nwb_file_names if x == key_filter["nwb_file_name"]]
+
+        for nwb_file_name in nwb_file_names:
+
+            # Get single contingency epochs descriptions that are full length and without artifacts
+            epochs_descriptions = EpochsDescription().get_single_contingency_descriptions(
+                nwb_file_name, exclude_non_full_len=True, exclude_artifact=True, contingency="handleAlternation")
+
+            # Insert into main table
+            key = {
+                "nwb_file_name": nwb_file_name, "epochs_descriptions_name": epochs_descriptions_name}
+            self.insert1({**key, **{"epochs_descriptions": epochs_descriptions}}, skip_duplicates=True)
+
+            # Insert into parts tables
+            for epochs_description in epochs_descriptions:
+                self._insert_parts(key, nwb_file_name, epochs_description)
+
+        # CASE 3: For single nwb files on first day of learning, insert single contingency run, one at a time
+        nwb_file_names = ["J1620210529_.nwb"]
+
+        # Restrict nwb_file_name if indicated
+        if key_filter is not None:
+            if "nwb_file_name" in key_filter:
+                nwb_file_names = [x for x in nwb_file_names if x == key_filter["nwb_file_name"]]
+
+        for nwb_file_name in nwb_file_names:
 
             # Get single contingency epochs descriptions that are full length and without artifacts
             epochs_descriptions = EpochsDescription().get_single_contingency_descriptions(
@@ -445,6 +489,25 @@ class EpochsDescriptions(dj.Manual):
 
                 # Insert into parts tables
                 self._insert_parts(key, nwb_file_name, epochs_description)
+
+        # CASE 4: For single epochs for testing, insert single contingency run
+        nwb_file_name_epochs_descriptions = _get_single_epoch_testing_metadata()
+
+        # Restrict nwb_file_name if indicated
+        if key_filter is not None:
+            if "nwb_file_name" in key_filter:
+                nwb_file_name_epochs_descriptions = [
+                    x for x in nwb_file_name_epochs_descriptions if x[0] == key_filter["nwb_file_name"]]
+
+        for nwb_file_name, epochs_description in nwb_file_name_epochs_descriptions:
+
+            # Insert into main table
+            key = {
+                "nwb_file_name": nwb_file_name, "epochs_descriptions_name": epochs_description}
+            self.insert1({**key, **{"epochs_descriptions": [epochs_description]}}, skip_duplicates=True)
+
+            # Insert into parts tables
+            self._insert_parts(key, nwb_file_name, epochs_description)
 
     def get_nwb_file_name_epochs_map(self, nwb_file_names=None):
 
@@ -461,6 +524,25 @@ class EpochsDescriptions(dj.Manual):
                     "nwb_file_name": nwb_file_name, "epochs_description": epochs_description}).get_epoch())
             nwb_file_name_epochs_map[nwb_file_name] = epochs
         return nwb_file_name_epochs_map
+
+    def get_epochs(self, nwb_file_name=None, epochs_descriptions_name=None):
+        # Get epochs for a given nwb_file_name and epochs_description_name
+
+        # Get inputs if not passed
+        if nwb_file_name is None:
+            nwb_file_name = self.fetch1("nwb_file_name")
+        if epochs_descriptions_name is None:
+            epochs_descriptions_name = self.fetch1("epochs_descriptions_name")
+
+        # Get epochs descriptions
+        epochs_descriptions = (self & {
+            "nwb_file_name": nwb_file_name, "epochs_descriptions_name": epochs_descriptions_name}).fetch1(
+            "epochs_descriptions")
+
+        # Return epochs
+        return [
+            (EpochsDescription & {"nwb_file_name": nwb_file_name, "epochs_description": epochs_description}).get_epoch()
+            for epochs_description in epochs_descriptions]
 
 
 class NwbfSetBase(dj.Manual):
@@ -480,9 +562,19 @@ class NwbfSetBase(dj.Manual):
         return f"{format_nwb_file_name(nwb_file_name)}_{epochs_name}"
 
     @staticmethod
-    def get_Haight_single_contingency_rotation_set_name(subject_ids):
+    def get_Haight_single_contingency_rotation_set_name(subject_ids, contingency=None):
+
+        # Get subject ID text
         subject_id_text = "_".join(subject_ids)
-        return f"{subject_id_text}_Haight_single_contingency_rotation"
+
+        # Get contingency text
+        contingency_text = ""
+        if contingency is not None:
+            Contingency().check_valid_contingency(contingency)
+            contingency_text = "_" + contingency
+
+        # Return recording set name
+        return f"{subject_id_text}_Haight_single_contingency_rotation{contingency_text}"
 
     @staticmethod
     def get_single_epochs_description_set_name(nwb_file_name, epochs_description):
@@ -547,8 +639,17 @@ class RecordingSet(NwbfSetBase):
 
         # Run sessions during HR/HL post learning days for SINGLE RATS
         epochs_descriptions_name = "valid_single_contingency_runs"
+
         for subject_id, nwb_file_names in get_reliability_paper_nwb_file_names(as_dict=True).items():
             recording_set_name = self.get_Haight_single_contingency_rotation_set_name([subject_id])
+            epochs_descriptions_names = [epochs_descriptions_name]*len(nwb_file_names)
+            self._insert_tables(recording_set_name, nwb_file_names, epochs_descriptions_names)
+
+        # Run sessions during HR/HL post learning days for SINGLE RATS -- handle alternation only
+        epochs_descriptions_name = "valid_handleAlternation_runs"
+        contingency = "handleAlternation"
+        for subject_id, nwb_file_names in get_reliability_paper_nwb_file_names(as_dict=True).items():
+            recording_set_name = self.get_Haight_single_contingency_rotation_set_name([subject_id], contingency)
             epochs_descriptions_names = [epochs_descriptions_name]*len(nwb_file_names)
             self._insert_tables(recording_set_name, nwb_file_names, epochs_descriptions_names)
 
@@ -581,6 +682,11 @@ class RecordingSet(NwbfSetBase):
             for epochs_description in epochs_descriptions:
                 recording_set_name = self.get_single_epochs_description_set_name(nwb_file_name, epochs_description)
                 self._insert_tables(recording_set_name, [nwb_file_name], [epochs_description])
+
+        # 3) Brief testing with one epoch of data
+        for nwb_file_name, epochs_description in _get_single_epoch_testing_metadata():
+            recording_set_name = self.get_single_epochs_description_set_name(nwb_file_name, epochs_description)
+            self._insert_tables(recording_set_name, [nwb_file_name], [epochs_description])
 
     def get_matching_nwb_file_names(self, key):
         # Get matching nwb file names based on key
@@ -643,8 +749,9 @@ class RecordingSet(NwbfSetBase):
         # Check that default recording set names are valid. Default recording set names are used if
         # no information to define recording set names in key_filter
         valid_recording_set_names_types = [
-            "Haight_rotation", "Haight_rotation_single_nwb_files", "Haight_rotation_rat_cohort",
-            "first_day_learning_single_epoch"]
+            "Haight_rotation", "Haight_rotation_handleAlternation", "Haight_rotation_single_nwb_files",
+            "Haight_rotation_rat_cohort",
+            "first_day_learning_single_epoch", "single_epoch_testing"]
         check_membership(recording_set_names_types, valid_recording_set_names_types)
 
         # Include types based on recording_set_names_types:
@@ -655,30 +762,45 @@ class RecordingSet(NwbfSetBase):
         recording_set_names = []
 
         if "Haight_rotation" in recording_set_names_types:
-            # 1) Haight rotation, across days, within rats
+            # Haight rotation, across days, within rats
             recording_set_names += [
                 self.get_Haight_single_contingency_rotation_set_name([subject_id]) for subject_id in
                 get_reliability_paper_nwb_file_names(as_dict=True).keys()]
 
+        if "Haight_rotation_handleAlternation" in recording_set_names_types:
+            # Haight rotation, across days, within rats, handle alternation only
+            recording_set_names += [
+                self.get_Haight_single_contingency_rotation_set_name(
+                    [subject_id], "handleAlternation") for subject_id in
+                get_reliability_paper_nwb_file_names(as_dict=True).keys()]
+
         if "Haight_rotation_single_nwb_files" in recording_set_names_types:
-            # 2) Haight rotation, within days, within rats
+            # Haight rotation, within days, within rats
             epochs_descriptions_name = "valid_single_contingency_runs"
             recording_set_names += [
             self.get_single_nwbf_set_name(
                 nwb_file_name, epochs_descriptions_name) for nwb_file_name in get_reliability_paper_nwb_file_names()]
 
         if "Haight_rotation_rat_cohort" in recording_set_names_types:
-            # 3) Haight rotation, across days, across rats
+            # Haight rotation, across days, across rats
             recording_set_names += [self.lookup_rat_cohort_set_name()]
 
         if "first_day_learning_single_epoch" in recording_set_names_types:
-            nwb_file_names = ["J1620210529_.nwb"]
+            nwb_file_names = [
+                "J1620210529_.nwb",
+                # "mango20211129_.nwb", "june20220412_.nwb", "peanut20201101_.nwb", "fig20211101_.nwb",
+            ]
             for nwb_file_name in nwb_file_names:
                 epochs_descriptions = EpochsDescription().get_single_contingency_descriptions(
                     nwb_file_name, exclude_non_full_len=True, exclude_artifact=True)
                 for epochs_description in epochs_descriptions:
                     recording_set_names.append(self.get_single_epochs_description_set_name(
                             nwb_file_name, epochs_description))
+
+        if "single_epoch_testing" in recording_set_names_types:
+            for nwb_file_name, epochs_description in _get_single_epoch_testing_metadata():
+                recording_set_names.append(
+                    self.get_single_epochs_description_set_name(nwb_file_name, epochs_description))
 
         # Limit to recording set name if passed in key filter
         if "recording_set_name" in key_filter:
@@ -693,15 +815,34 @@ class RecordingSet(NwbfSetBase):
         # Return recording set names
         return recording_set_names
 
+    def get_nwb_file_name_single_epoch_keys(self):
+        # Get a list of keys with nwb file name and epoch information in cases where only one epoch per
+        # epochs_description
+        nwb_file_name_epoch_keys = []
+        recording_set_name = self.fetch1("recording_set_name")
+        nwb_file_names, epochs_descriptions_names = (
+                self & {"recording_set_name": recording_set_name}).fetch1(
+            "nwb_file_names", "epochs_descriptions_names")
+        for nwb_file_name, epochs_descriptions_name in zip(nwb_file_names, epochs_descriptions_names):
+            epochs_descriptions = (EpochsDescriptions() & {
+                "nwb_file_name": nwb_file_name, "epochs_descriptions_name": epochs_descriptions_name}).fetch1(
+                "epochs_descriptions")
+            for epochs_description in epochs_descriptions:
+                epochs_id = (EpochsDescription() & {"nwb_file_name": nwb_file_name,
+                                                    "epochs_description": epochs_description}).fetch1("epochs_id")
+                epoch = (EpochCohort() & {"nwb_file_name": nwb_file_name,
+                                          "epochs_id": epochs_id}).get_epoch()
 
-def populate_jguidera_epoch(key=None, tolerate_error=False):
-    for table_name in get_schema_table_names_from_file(schema_name):
-        table = eval(table_name)
-        populate_insert(table, key=key, tolerate_error=tolerate_error)
+                nwb_file_name_epoch_keys.append(
+                    {"recording_set_name": recording_set_name,
+                     "nwb_file_name": nwb_file_name,
+                     "epochs_description": epochs_description,
+                     "epoch": epoch, "epochs_id": epochs_id})
+        return nwb_file_name_epoch_keys
 
 
-def drop_jguidera_epoch():
-    schema.drop()
+def _get_single_epoch_testing_metadata():
+    return [("J1620210606_.nwb", "run1"), ("mango20211207_.nwb", "run3"), ("june20220419_.nwb", "run1")]
 
 
 @schema
@@ -723,10 +864,10 @@ class TrainTestEpoch(dj.Manual):
 
     def insert_defaults(self, **kwargs):
         # Insert defaults for decoding analysis for paper 1: same epoch for train and test
-        epochs_description_name = "valid_single_contingency_runs"
+        epochs_descriptions_name = "valid_single_contingency_runs"
         for nwb_file_name in get_reliability_paper_nwb_file_names():
             epochs_descriptions = (EpochsDescriptions & {
-                "nwb_file_name": nwb_file_name, "epochs_description_name": epochs_description_name}).fetch1(
+                "nwb_file_name": nwb_file_name, "epochs_descriptions_name": epochs_descriptions_name}).fetch1(
                 "epochs_descriptions")
             for epochs_description in epochs_descriptions:
                 epoch = (EpochsDescription & {
@@ -925,3 +1066,13 @@ class TrainTestEpochSet(NwbfSetBase):
                 {"nwb_file_name": key_filter["nwb_file_name"]})]
 
         return train_test_epoch_set_names
+
+
+def populate_jguidera_epoch(key=None, tolerate_error=False):
+    for table_name in get_schema_table_names_from_file(schema_name):
+        table = eval(table_name)
+        populate_insert(table, key=key, tolerate_error=tolerate_error)
+
+
+def drop_jguidera_epoch():
+    schema.drop()

@@ -10,7 +10,7 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import unique_
     delete_, get_epochs_id
 from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription, EpochCohort, RunEpoch
+from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription, EpochCohort, RunEpoch, EpochsDescriptions
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
 from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmDs, populate_jguidera_res_spikes
 from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits, populate_jguidera_unit, \
@@ -21,7 +21,7 @@ from src.jguides_2024.utils.df_helpers import unpack_single_df, df_filter_column
 from src.jguides_2024.utils.dict_helpers import check_equality, dict_comprehension
 from src.jguides_2024.utils.list_helpers import check_single_element
 from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_vector
+from src.jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_vector, unpack_single_element
 
 # Needed for table definitions:
 TaskIdentification
@@ -80,6 +80,9 @@ class FRVecSel(SelBase):
         return False
 
     def _get_potential_keys(self, key_filter=None):
+
+        print(f"Getting potential keys for FRVecSel...")
+
         # Get inputs if not passed
         if key_filter is None:
             key_filter = dict()
@@ -102,12 +105,43 @@ class FRVecSel(SelBase):
         brup_epd_map = dict_comprehension(
             *BrainRegionUnitsParams().fetch("brain_region_units_param_name", "epochs_description"))
 
-        # Get map from (nwb_file_name, epochs_description) to epoch, in case of single epochs
-        nwb_file_names, epochs_descriptions, epochs = EpochsDescription().fetch(
+        # Get map from (nwb_file_name, epochs_description) to epoch, in case of valid single epochs
+
+        # Get map that indicates which epochs are valid for which nwb files
+        # ...define valid epochs as valid single contingency runs
+        epochs_descriptions_name = "valid_single_contingency_runs"
+        key = {"epochs_descriptions_name": epochs_descriptions_name}
+        valid_nwb_file_name_epochs_map = (EpochsDescriptions & key).get_nwb_file_name_epochs_map()
+        # ...Get starting nwb files / epochs
+        nwb_file_names, epochs_descriptions, epochs_list = EpochsDescription().fetch(
             "nwb_file_name", "epochs_description", "epochs")
-        valid_bool = [len(x) == 1 for x in epochs]
+        # ...Add nwb file names with empty epochs list to avoid error below
+        for nwb_file_name in nwb_file_names:
+            if nwb_file_name not in valid_nwb_file_name_epochs_map:
+                valid_nwb_file_name_epochs_map[nwb_file_name] = []  # indicate no valid epochs
+        # ...add select other epochs
+        # add within session contingency switch sessions from first day where this is introduced
+        nwb_file_name = "J1620210607_.nwb"
+        for epochs_description in ["run7", "run8"]:
+            valid_nwb_file_name_epochs_map[nwb_file_name] += (EpochsDescription & {
+                    "nwb_file_name": nwb_file_name, "epochs_description": epochs_description}).fetch1("epochs")
+        nwb_file_name = "mango20211207_.nwb"
+        for epochs_description in ["run7", "run8"]:
+            valid_nwb_file_name_epochs_map[nwb_file_name] += (EpochsDescription & {
+                "nwb_file_name": nwb_file_name, "epochs_description": epochs_description}).fetch1("epochs")
+        nwb_file_name = "june20220421_.nwb"
+        for epochs_description in ["run7", "run8"]:
+            valid_nwb_file_name_epochs_map[nwb_file_name] += (EpochsDescription & {
+                "nwb_file_name": nwb_file_name, "epochs_description": epochs_description}).fetch1("epochs")
+        # ...Print valid epochs so user aware
+        print("valid_nwb_file_name_epochs_map: ", valid_nwb_file_name_epochs_map)
+
+        valid_bool = [
+            np.logical_and(
+                len(epochs) == 1, epochs[0] in valid_nwb_file_name_epochs_map[nwb_file_name])
+            for nwb_file_name, epochs in zip(nwb_file_names, epochs_list)]
         nwbf_epd_ep_map = {k: v for k, v in zip(list(zip(nwb_file_names[valid_bool], epochs_descriptions[valid_bool])),
-                                                [x[0] for x in epochs[valid_bool]])}
+                                                [x[0] for x in epochs_list[valid_bool]])}
 
         # Loop through keys of BrainRegionUnits which has implicit epoch information in 'brain_region_units_param_name',
         # and find consistent entries in the intersection of ResTimeBinsPoolSel and TaskIdentification,
@@ -380,8 +414,8 @@ class FRVec(ComputedBase):
             for brain_region in brain_regions]))
         return pd.concat(firing_rate_dfs), unpack_single_df(time_vector_dfs)
 
-    def get_mua(self):
-        fr_df, time_vector = self.firing_rate_across_sort_groups()
+    def get_mua(self, key):
+        fr_df, time_vector = self.firing_rate_across_sort_groups(key)
         return pd.Series(np.sum(np.vstack(fr_df["firing_rate"]), axis=0) / len(fr_df), index=time_vector)
 
     def delete_(self, key, safemode=True):
@@ -389,7 +423,9 @@ class FRVec(ComputedBase):
         from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import FRVecEucDistSel
         from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import PathFRVecSel
         from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import TimeRelWAFRVecSel
-        delete_(self, [FRDiffVecCosSimSel, FRVecEucDistSel, PathFRVecSel, TimeRelWAFRVecSel], key, safemode)
+        from src.jguides_2024.firing_rate_vector.jguidera_post_delay_firing_rate_vector import RelPostDelFRVecSel
+        delete_(self, [
+            FRDiffVecCosSimSel, FRVecEucDistSel, PathFRVecSel, TimeRelWAFRVecSel, RelPostDelFRVecSel], key, safemode)
 
 
 def populate_jguidera_firing_rate_vector(

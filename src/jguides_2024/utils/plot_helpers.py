@@ -55,7 +55,7 @@ def format_ax(ax,
     :param xticks: list. x ticks.
     :param xticklabels: list. x tick labels.
     :param xticklabels_rotation: float, rotation of x tick labels in degrees
-    :param ticklabels_fontsize: float, font size for x tick labels
+    :param ticklabels_fontsize: float, font size for tick labels
     :param yticks: list. y ticks.
     :param yticklabels: list. y tick labels.
     :param zticks: list. z ticks.
@@ -370,8 +370,30 @@ def plot_spanning_line(
 
 
 def path_name_to_plot_string(path_name):
-    well1, well2 = path_name.split("_to_")
+    from src.jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
+    well1, well2 = path_name.split(RewardWellPath._join_well_char())
     return f"{well1.split('_well')[0]}-{well2.split('_well')[0]}"
+
+
+def plot_true_ranges(ax, valid_bool, x_vals=None, y_val=None, **kwargs):
+    from src.jguides_2024.utils.vector_helpers import find_spans_increasing_list
+
+    # If x values passed, check that same length as valid bool
+    if x_vals is not None:
+        if len(x_vals) != len(valid_bool):
+            raise Exception(f"x_vals must be same length as valid_bool")
+    # Otherwise define
+    else:
+        x_vals = np.arange(0, len(valid_bool))
+
+    # Define y val as y axis maximum value if not passed
+    if y_val is None:
+        y_val = ax.get_ylim()[-1]
+
+    span_idxs = find_spans_increasing_list(np.where(valid_bool)[0])[0]
+
+    for x1, x2 in span_idxs:
+        ax.plot([x_vals[x1], x_vals[x2]], [y_val] * 2, **kwargs)
 
 
 def plot_intervals(interval_list, ax=None, val_list=None, interval_axis="x", color="black", label=None):

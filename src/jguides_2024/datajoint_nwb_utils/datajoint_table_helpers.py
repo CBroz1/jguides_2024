@@ -68,9 +68,9 @@ def fetch1_tolerate_no_entry(table, attribute=None):
         return None
 
 
-def fetch_nwb(table):
+def fetch_nwb(table, **kwargs):
 
-    return fetch_nwb_(table, (nd.common.AnalysisNwbfile, 'analysis_file_abs_path'))
+    return fetch_nwb_(table, (nd.common.AnalysisNwbfile, 'analysis_file_abs_path'), **kwargs)
 
 
 def fetch1_dataframe_tolerate_no_entry(table_subset, object_name=None):
@@ -400,7 +400,7 @@ def create_analysis_nwbf(key, nwb_objects, nwb_object_names):
 
 
 def insert_analysis_table_entry(table, nwb_objects, key, nwb_object_names=None, convert_empty_nwb_object=True,
-                                reset_index=False, replace_none_col_names=None):
+                                reset_index=False, replace_none_col_names=None, skip_insertion=False):
 
     # Reset index in any dfs in nwb_objects if indicated (useful because currently index does not get stored
     # in analysis nwb file). Default is not True because if reset index when there is none, adds column called "index"
@@ -422,10 +422,15 @@ def insert_analysis_table_entry(table, nwb_objects, key, nwb_object_names=None, 
     if convert_empty_nwb_object:
         nwb_objects = [handle_empty_nwb_object(x, from_empty=True) for x in nwb_objects]
 
-    # Insert into table
+    # Create analysis nwbf
     key = create_analysis_nwbf(key=key, nwb_objects=nwb_objects, nwb_object_names=nwb_object_names)
-    table.insert1(key, skip_duplicates=True)  # insert into table
+
+    # Insert into table if indicated, otherwise return key (e.g. so can insert using super)
+    if skip_insertion:
+        return key
+    table.insert1(key, skip_duplicates=True)
     print(f'Populated {table.table_name} for {key}')
+
 
 
 def check_nwb_file_inserted(nwb_file_name):
@@ -449,8 +454,9 @@ def trial_duration_from_params_table(trials_table, column_name, param_name):
 
 
 def format_path_name(path_name):
-
-    return path_name.replace("_to_", "-").replace("_well", "")
+    from src.jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
+    split_char = RewardWellPath._join_well_char()
+    return path_name.replace(split_char, "-").replace("_well", "")
 
 
 def abbreviate_path_name(path_name):
@@ -516,7 +522,7 @@ def delete_multiple_flexible_key(tables, key):
         delete_flexible_key(table, key)
 
 
-def populate_flexible_key(table, key=None, tolerate_error=False, error_message=None, verbose=False):
+def populate_flexible_key(table, key=None, tolerate_error=False, error_message=None, verbose=False, processes=20):
 
     # Get inputs if not passed
     if error_message is None:
@@ -533,24 +539,36 @@ def populate_flexible_key(table, key=None, tolerate_error=False, error_message=N
         # Tolerate error
         if tolerate_error:
             try:
-                table.populate()
+                if processes is None:
+                    table.populate()
+                else:
+                    table.populate(processes=processes)
             except:
                 print(error_message)
         # Do not tolerate error
         else:
-            table.populate()
+            if processes is None:
+                table.populate()
+            else:
+                table.populate(processes=processes)
 
     # Otherwise populate subset of table with key
     else:
         # Tolerate error
         if tolerate_error:
             try:
-                table.populate(key)
+                if processes is None:
+                    table.populate(key)
+                else:
+                    table.populate(key, processes=processes)
             except:
                 print(error_message)
         # Do not tolerate error
         else:
-            table.populate(key)
+            if processes is None:
+                table.populate(key)
+            else:
+                table.populate(key, processes=processes)
 
 
 def populate_multiple_flexible_key(tables, key=None, tolerate_error=False, error_message=None):
@@ -925,12 +943,13 @@ def get_schema_table_names_from_file(schema_name, schema_path=None):
     # Get tables in a schema, not including parts tables
     # Get from file. Here, tables listed in order of file. Useful if want this ordering
 
-    # Change to directory with schema if passed
-    if schema_path is not None:
-        os.chdir(schema_path)
+    # Get jguidera schema path if not passed
+    if schema_path is None:
+        schema_path = get_jguidera_schema_dir(schema_name)
 
     # Get contents of file with schema
-    file_contents = np.asarray(get_file_contents(f"{schema_name.replace('.', '/')}.py").split("\n"))  # split lines
+    file_contents = np.asarray(get_file_contents(
+        f"{schema_name.replace('.', '/')}.py", schema_path).split("\n"))  # split lines
 
     # Identify lines with table definitions as those below lines with the schema decorator. Exclude comments
     table_idxs = [idx + 1 for idx, x in enumerate(file_contents) if "@schema" in x and x[0] != "#"]
@@ -944,21 +963,54 @@ def get_project_dir():
     return "/home/jguidera/Src/jguides_2024/"
 
 
+def get_module_dir():
+    return "src/jguides_2024"
+
+
+def get_module_path():
+    return os.path.join(get_project_dir(), get_module_dir())
+
+
+def get_module_subdirs():
+    module_path = get_module_path()
+    return [x for x in os.listdir(module_path) if not x.startswith("_")
+                  and os.path.isdir(os.path.join(module_path, x))]
+
+
 def get_schema_names():
 
-    project_dir = get_project_dir()
-    module_dir = "src/jguides_2024"
-    module_path = f"{project_dir}/{module_dir}"
-    child_dirs = [x for x in os.listdir(module_path) if not x.startswith("_")
-                  and os.path.isdir(os.path.join(module_path, x))]
+    # Get schema names
+    # IMPORTANT NOTE: only set up to get schema names with "one level of nesting", i.e.
+    # in a subfolder of the module path
+
+    module_path = get_module_path()
+    module_dir = get_module_dir()
+    subdirs = get_module_subdirs()
     target_start_string = "jguidera"
 
     schema_names = [
-        f"{module_dir.replace('/', '.')}.{child_dir}.{x}".replace("..", ".") for child_dir in child_dirs
+        f"{module_dir.replace('/', '.')}.{child_dir}.{x}".replace("..", ".") for child_dir in subdirs
         for x in os.listdir(f"{module_path}/{child_dir}")
         if x[:len(target_start_string)] == target_start_string]
 
+    # Ignore schema names with ___jb_old___
+    schema_names = [x for x in schema_names if "___jb_old___" not in x]
+
     return [x.replace(".py", "") for x in schema_names]
+
+
+def get_jguidera_schema_dir(schema_name):
+    # Get directory in which a jguidera schema lives
+    # IMPORTANT NOTE: only set up to get schema names with "one level of nesting", i.e.
+    # in a subfolder of the module path
+
+    module_path = get_module_path()
+    subdirs = [
+        x for x in os.listdir(module_path) if not x.startswith("_") and os.path.isdir(os.path.join(module_path, x))]
+
+    return unpack_single_element(
+        [os.path.join(module_path, child_dir) for child_dir in subdirs for x in os.listdir(
+            f"{module_path}/{child_dir}") if x == f"{schema_name}.py"])
 
 
 def get_import_statements(schema_names=None):
@@ -995,7 +1047,7 @@ def get_param_defaults_map():
           "curation_id": default_curation_id,
           "eps_units_param_name": EpsUnitsParams().lookup_param_name([.1]),
             "brain_region_cohort_name": "all_targeted",
-            "curation_set_name": "runs_analysis_v1",
+            "curation_set_name": "runs_analysis_v2",
           "ppt_param_name": PptParams().get_default_param_name(),
             # "unit_subset_type": "all",  # TODO: remove if can; ideally use defaults stored with fns.
             "zscore_fr": 0,
@@ -1021,18 +1073,12 @@ def get_valid_position_info_param_names():
 
 
 def get_curation_name(sort_interval_name, curation_id):
-    return make_param_name([sort_interval_name, curation_id], "_")
+    return make_param_name([sort_interval_name, curation_id], "_", tolerate_non_unique=True)
 
 
 def split_curation_name(curation_name):
-
     split_curation_name = curation_name.split("_")
-    # Check that only two components separated by underscore (first will be taken as sort_interval_name,
-    # second as curation_id)
-    if len(split_curation_name) > 2:
-        raise Exception(f"curation_name should have a single underscore")
-
-    return split_curation_name[0], int(split_curation_name[1])
+    return "_".join(split_curation_name[:-1]), int(split_curation_name[-1])
 
 
 def populate_insert(table, **kwargs):
@@ -1066,10 +1112,61 @@ def convert_path_name(path_name):
     :return: path name in string form (if tuple form passed), or in tuple form (if string form passed)
     """
 
+    from src.jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
+    split_char = RewardWellPath._join_well_char()
+
     if isinstance(path_name, tuple):
-        return "_to_".join(path_name)
+        return split_char.join(path_name)
     elif isinstance(path_name, str):
-        return tuple(path_name.split("_to_"))
+        return tuple(path_name.split(split_char))
+
+
+def extract_from_path_name(path_name, extract_name=False, verbose=False):
+    """
+    Get name of destination well from a path name
+    :param path_name: str. Should be of form {start well}_to_{end well}{possibly other descriptors}
+    :param extract_name: str. Describes what to extract from path name.
+    :return: str, end well name
+    """
+
+    valid_extract_names = ["end_well", "end_well_plus_descriptor", "descriptor"]
+    check_membership([extract_name], valid_extract_names)
+
+    path_name_tuple = convert_path_name(path_name)
+
+    if len(path_name_tuple) != 2:
+        raise Exception(f"path_name should have exactly one '_to_' but has {len(path_name_tuple)}")
+
+    end_well_plus_descriptor = path_name_tuple[1]
+
+    # Get end well name and check whether valid (helpful check no matter what quantity is being returned)
+
+    split_char = "_well"
+
+    end_well_plus_descriptor_tuple = end_well_plus_descriptor.split(split_char)
+
+    end_well_name = end_well_plus_descriptor_tuple[0] + split_char
+
+    # ...Check that end well name valid
+    from src.jguides_2024.position_and_maze.jguidera_maze import RewardWell
+    check_membership([end_well_name], (
+            RewardWell & {"universal_track_graph_name": "fork_maze_universal"}).fetch1("well_names"))
+
+    # Return specified quantity
+    if extract_name == "end_well_plus_descriptor":
+        val = end_well_plus_descriptor
+    elif extract_name == "end_well":
+        val = "end_well"
+    elif extract_name == "descriptor":
+        val = split_char.join(end_well_plus_descriptor_tuple[1:])
+        # Remove leading underscore if present
+        if val.startswith("_"):
+            val = val[1:]
+
+    if verbose:
+        print(f"identified {extract_name} as: {val}")
+
+    return val
 
 
 def make_table_param_names(table, secondary_key_splits):
@@ -1288,7 +1385,7 @@ def get_table_curation_names_for_key(table, key):
 
 
 # TODO (feature): move to class
-def get_boot_params(boot_set_name):
+def get_boot_params(boot_set_name, bonferroni_num_tests=None):
     # Return parameters for bootstrapping
 
     if boot_set_name in [
@@ -1299,18 +1396,29 @@ def get_boot_params(boot_set_name):
         "same_different_outbound_path_correct_diff", "same_different_outbound_path_correct_diff_rat_cohort",
         "same_different_outbound_path_correct_diff_brain_region_diff",
         "same_different_outbound_path_correct_diff_brain_region_diff_rat_cohort",
+        "low_speed_non_low_speed_diff",
+        "low_speed_non_low_speed_diff_rat_cohort",
+        "low_speed_non_low_speed_diff_brain_region_diff",
+        "low_speed_non_low_speed_diff_brain_region_diff_rat_cohort"
     ]:
         num_bootstrap_samples = 1000
         average_fn = np.mean
-        alphas = (.05, .01, .001, .0001)
+        alphas = (.05, .01, .001, .0001, .00001, .000001, .0000001, .00000001)
 
     elif boot_set_name in ["relationship_div_median", "relationship_div_rat_cohort_median"]:
         num_bootstrap_samples = 1000
         average_fn = np.median
-        alphas = (.05, .01, .001, .0001)
+        alphas = (.05, .01, .001, .0001, .00001, .000001, .0000001, .00000001)
 
     else:
         raise Exception(f"boot_set_name {boot_set_name} not accounted for in code")
+
+    # Add bonferroni corrected value (with significance level of 0.05) if indicated
+    if bonferroni_num_tests is not None:
+        alpha = 0.05/bonferroni_num_tests
+        alphas = list(alphas)
+        alphas.append(alpha)
+        alphas = tuple(np.sort(alphas))
 
     return namedtuple("boot_params", "num_bootstrap_samples average_fn alphas")(
             num_bootstrap_samples, average_fn, alphas)

@@ -5,25 +5,27 @@ import matplotlib.patches as patches
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import multiprocessing as mp
 
 from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, \
     plot_junction_fractions, get_val_pairs, plot_horizontal_lines, \
-    get_subject_id_shorthand
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, SecKeyParamsBase
+    get_subject_id_shorthand, get_ordered_subject_ids
+from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, SecKeyParamsBase, \
+    ParamsBase
 from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     unique_table_column_sets, \
     insert1_print, get_relationship_texts, format_nwb_file_name, get_default_param, get_table_name, \
-    fetch1_tolerate_no_entry, delete_, get_boot_params
+    fetch1_tolerate_no_entry, delete_, get_boot_params, get_table_secondary_key_names
 from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_nwb_file_name_epochs_description
 from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionColor, BrainRegionCohort, CurationSet
 from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription, RunEpoch, EpochsDescriptions, \
     RecordingSet
 from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell
+from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell, get_n_junction_path_junction_fractions
 from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnitsCohortType, \
-    EpsUnitsParams, BrainRegionUnitsFail
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrials
+    EpsUnitsParams, BrainRegionUnitsFail, BrainRegionUnits
+from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrials, DioWellTrials
 from src.jguides_2024.task_event.jguidera_task_performance import strip_performance_outcomes
 from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigSingleAxisParams
 from src.jguides_2024.utils.array_helpers import array_to_tuple_list, on_off_diagonal_ratio
@@ -31,7 +33,7 @@ from src.jguides_2024.utils.df_helpers import df_filter_columns, dfs_same_values
     df_from_data_list, df_pop, \
     df_filter1_columns_symmetric, unique_df_column_sets
 from src.jguides_2024.utils.dict_helpers import add_defaults, dict_comprehension, check_return_single_dict, \
-    return_shared_key_value
+    return_shared_key_value, check_same_values_at_shared_keys, check_shared_key_value
 from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
 from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
 from src.jguides_2024.utils.list_helpers import zip_adjacent_elements, check_return_single_element
@@ -99,6 +101,84 @@ def get_metadata(metric_name, vector_type):
         raise Exception(f"No case coded for metric name {metric_name} and vector type {vector_type}")
 
 
+class CovariateFRVecParamsBase(SecKeyParamsBase):
+    """Base class for firing rate vector as a function of a covariate params table"""
+
+    def get_labels_description(self):
+
+        # Single covariate tables (e.g. PathFRVec)
+        if "labels_description" in get_table_secondary_key_names(self):
+            return fetch1_tolerate_no_entry(self, "labels_description")
+
+        # Multiple covariate table
+        elif self.table_name == "multi_cov_f_r_vec_params":
+            labels_descriptions = []
+            multi_cov_fr_vec_params = self.fetch1("multi_cov_fr_vec_params")
+            for sub_table_name, sub_key in zip(multi_cov_fr_vec_params["table_names"], multi_cov_fr_vec_params["keys"]):
+                sub_params_table = get_table(sub_table_name)()._get_params_table()
+                labels_description = fetch1_tolerate_no_entry(
+                    sub_params_table & sub_key, "labels_description")
+                labels_descriptions.append(labels_description)
+            return check_return_single_element(labels_descriptions).single_element
+        else:
+            raise Exception(f"case not accounted for in getting labels description")
+
+    def update_labels(self, labels):
+
+        # Update labels to have even/odd, stay/leave, even/odd stay, correct/incorrect, low speed/non-low speed
+        # text if indicated
+
+        # Get labels description
+        labels_description = self.get_labels_description()
+
+        if labels_description == "none":
+            pass
+
+        elif labels_description in ["stay_leave_trials", "stay_leave_trials_pre_departure"]:
+            labels = np.concatenate(
+                [[MazePathWell.get_stay_leave_trial_path_name(x, trial_text=trial_text) for x in labels]
+                 for trial_text in MazePathWell.stay_leave_trial_text()])
+
+        elif labels_description in [
+            "correct_incorrect_trials", "correct_incorrect_stay_trials", "correct_incorrect_stay_trials_pdaw",
+            "even_odd_trials", "even_odd_stay_trials", "even_odd_correct_incorrect_stay_trials"]:
+
+            # Add stay
+            if "stay_trials" in labels_description:
+                labels = [MazePathWell.get_stay_leave_trial_path_name(
+                    x, trial_text=MazePathWell.stay_leave_trial_text("stay")) for x in labels]
+            # Add correct/incorrect
+            if "correct_incorrect" in labels_description:
+                labels = np.concatenate([[MazePathWell.get_correct_incorrect_trial_text(
+                    x, correct_incorrect_text=correct_incorrect_trial_text) for x in labels]
+                    for correct_incorrect_trial_text in MazePathWell.correct_incorrect_trial_text()])
+            # Add even/odd
+            if "even_odd" in labels_description:
+                labels = np.concatenate(
+                    [[MazePathWell.get_even_odd_trial_name(x, even_odd_text=even_odd_text) for x in labels]
+                     for even_odd_text in MazePathWell.even_odd_trial_text()])
+
+        elif "low_speed" in labels_description:
+
+            # Add low_speed / non_low_speed
+            labels = np.concatenate([[MazePathWell.get_low_speed_trial_label_name(
+                    x, trial_text=trial_text) for x in labels]
+                    for trial_text in MazePathWell.low_speed_trial_text()])
+
+        else:
+            raise Exception(f"{labels_description} not accounted for")
+
+        # Remove leading underscore
+        new_labels = []
+        for label in labels:
+            if label.startswith("_"):
+                label = label[1:]
+            new_labels.append(label)
+        labels = new_labels
+
+        return labels
+
+
 class CovariateFRVecSelBase(SelBase):
     """Base class for firing rate vector as a function of a covariate selection table"""
 
@@ -141,6 +221,10 @@ class CovariateFRVecBase(ComputedBase):
         # Return axis
         return ax
 
+    # Override in child class to store additional table specific quantities
+    def _store_table_specific_quantities(self, inputs, main_table_key):
+        return main_table_key
+
     def make(self, key):
 
         # Reset tracker for upstream tiles (important so does not carry over from one populate command to next)
@@ -155,6 +239,8 @@ class CovariateFRVecBase(ComputedBase):
         # Insert into table
         # ...Add names of unit that compose firing rate vectors
         main_table_key = {**key, **{"unit_names": inputs.unit_names}}
+        # ...Add additional table dependent items if present
+        self._store_table_specific_quantities(inputs, main_table_key)
         insert_analysis_table_entry(
             self, [obj.vector_df, obj.ave_vector_df, obj.diff_vector_df, obj.ave_diff_vector_df], key=main_table_key)
 
@@ -177,15 +263,43 @@ class CovariateFRVecBase(ComputedBase):
 
         dfs = []
         for epoch in (EpochsDescription & key).fetch1("epochs"):
+
+            # Get df for epoch
             df = (self & {**key, **{"epoch": epoch}}).fetch1_dataframe(object_id_name)
+
+            # Add epoch to df
             df["epoch"] = [epoch] * len(df)
+
+            # Add trial numbers within the epoch if indicated
+
+            # ...define relevant column name
+            bout_idxs_name = None
+            if object_id_name == "diff_vector_df":
+                bout_idxs_name = "bout_pair_idxs"
+            elif object_id_name == "vector_df":
+                bout_idxs_name = "bout_idxs"
+
+            # ...add epoch trial numbers if indicated
+            if bout_idxs_name is not None:
+                bout_idxs_midpoints = np.mean(np.vstack(df[bout_idxs_name]), axis=1)
+                dio_well_trials_key = {"nwb_file_name": key["nwb_file_name"], "epoch": epoch}
+                epoch_trial_numbers = (DioWellTrials & dio_well_trials_key).get_time_epoch_trial_nums(bout_idxs_midpoints)
+                df["epoch_trial_number"] = epoch_trial_numbers
+
+            # Append to list
             dfs.append(df)
 
+        # Return concatenated dfs
         return pd.concat(dfs, axis=0)
 
     def get_bin_centers(self):
-
         raise Exception(f"This method must be overwritten in child class")
+
+    def get_valid_covariate_bin_nums(self, key):
+        raise Exception(f"This method should be implemented in child class")
+
+    def get_bin_centers_map(self, **kwargs):
+        raise Exception(f"This method should be implemented in child class")
 
     def metric_across_epochs(self, key, metric_name, vector_type):
 
@@ -232,32 +346,37 @@ class CovariateFRVecBase(ComputedBase):
     def alter_input_labels_even_odd(labels):
         # Alter labels to indicate whether trials even or odd
 
-        # Get map from label to a list with trials with the label
+        # Get map from each passed label to a list with trials with the label
         unique_labels = set(labels.values)
         trials_map = {label: find_spans_increasing_list(np.where(labels == label)[0])[0] for label in
                       unique_labels}
+
         # Add even or odd trials status to labels
-        # ...initial vector with None so can check whether all samples assigned to even/odd
-        # first check that no None in labels
+        # Initialize vector with None so can check whether all samples assigned to even/odd
+        # ...first check that no None in labels
         if any([x is None for x in labels]):
             raise Exception(f"Code expects no None in labels to be able to check whether "
                             f"even/odd assigned to all labels. Must make changes to code if "
                             f"want to allow None in labels")
-
+        # ...now initialize vector with None
         new_labels = np.asarray([None]*len(labels))
+
+        # Make new label names
         for context_name, trial_spans in trials_map.items():
             for path_trial_num, (i1, i2) in enumerate(trial_spans):
                 # must add one in index because trial span ends reflect true endpoint, but indexing
                 # leaves out endpoint
                 new_labels[i1:i2 + 1] = MazePathWell().get_even_odd_trial_name(context_name, path_trial_num)
+
+        # Raise error if could not assign even/odd to all labels
         if any([x is None for x in new_labels]):
             raise Exception(f"could not assign even/odd to all labels")
 
         # Return labels
         return pd.Series(new_labels, index=labels.index)
 
-    def alter_input_labels_correct_incorrect(self, labels, key):
-        # Alter labels to indicate whether trials correct or incorrect
+    def alter_input_labels_correct_incorrect(self, labels, key, previous_trial=False):
+        # Alter labels to indicate whether trials correct or incorrect on current or previous trial
 
         if not isinstance(labels, pd.Series):
             raise Exception(f"labels must be a series but is {type(labels)}")
@@ -267,10 +386,16 @@ class CovariateFRVecBase(ComputedBase):
             labels.index, ["trial_end_epoch_trial_numbers"])["trial_end_epoch_trial_numbers"]
 
         # Get map from departure to departure trial end epoch trial numbers (epoch trial number corresponding to
-        # destination well) to trial end performance outcomes
+        # destination well) to performance outcomes
+        # Default is outcomes on CURRENT trial
+        outcomes_name = "trial_end_performance_outcomes"
+        # Set to outcomes on PREVIOUS trial if indicated
+        if previous_trial:
+            outcomes_name = "trial_start_performance_outcomes"
+        # Get the map
         performance_outcomes_map = dict_comprehension(*(DioWellDDTrials & key).fetch1(
-            "trial_end_epoch_trial_numbers", "trial_end_performance_outcomes"))
-        # ...update upstream entries tracker
+            "trial_end_epoch_trial_numbers", outcomes_name))
+        # Update upstream entries tracker
         self._update_upstream_entries_tracker(DioWellDDTrials, key)
 
         # Get performance outcomes corresponding to labels, via epoch trial numbers
@@ -288,7 +413,8 @@ class CovariateFRVecBase(ComputedBase):
         # Get path names with correct/incorrect
         valid_outcomes = ["correct", "incorrect"]
         correct_incorrect_trial_path_names = [
-            MazePathWell().get_correct_incorrect_trial_text(x, MazePathWell().correct_incorrect_trial_text(y))
+            MazePathWell().get_correct_incorrect_trial_text(
+                x, MazePathWell().correct_incorrect_trial_text(y, previous_trial), previous_trial)
             if y in valid_outcomes else "none"
             for x, y in zip(labels, performance_outcomes_)]
 
@@ -300,7 +426,7 @@ class CovariateFRVecBase(ComputedBase):
         return pd.Series(
             np.asarray(correct_incorrect_trial_path_names)[valid_bool], index=labels.index[valid_bool]), valid_bool
 
-    def plot_labels(self, ax=None):
+    def plot_labels(self, ax=None, plot_dd_trials_labels=False):
 
         # Get results
         dfs = self.fetch1_dataframes()
@@ -319,6 +445,180 @@ class CovariateFRVecBase(ComputedBase):
         xlims = [np.min(bout_idxs), np.max(bout_idxs)]
         path_names = np.unique(vector_df.label)
         plot_horizontal_lines(xlims, path_names, ax)
+
+        # Plot departure to departure trials labels (to check against prior data source) if indicated
+        if plot_dd_trials_labels:
+            (DioWellDDTrials & self.fetch1("KEY")).plot_results(ax=ax)
+
+        return ax
+
+    def get_keys_across_entries(self, **kwargs):
+        # Get keys to df entries across entries. Facilitates parallelization of pulling data from table
+
+        # Declare variable values if not passed
+        # subject IDs
+        # Get map from subject ID to Haight single contingency rotation recording set name
+        subject_ids = get_ordered_subject_ids()  # default
+        subject_id = kwargs.pop("subject_id", None)
+        if subject_id is not None:
+            subject_ids = [subject_id]
+        # contingencies
+        contingencies = kwargs.pop("contingencies", None)
+        # unit subset iterations
+        unit_subset_iterations = kwargs.pop("unit_subset_iterations", np.arange(0, 10))
+        # min epoch mean firing rate
+        min_epoch_mean_firing_rate = kwargs.pop("min_epoch_mean_firing_rate", .1)
+        # unit subset type
+        unit_subset_type = kwargs.pop("unit_subset_type", "rand_target_region")
+        # unit subset size
+        unit_subset_size = kwargs.pop("unit_subset_size", 50)
+        # curation name
+        curation_set_name = kwargs.pop("curation_set_name", "runs_analysis_v1")
+
+        # Define starting key
+        meta_param_name = self.meta_param_name()
+        check_membership([meta_param_name], kwargs)
+        key = copy.deepcopy(kwargs)  # define starting key as all remaining kwargs
+        default_key = {
+            "res_epoch_spikes_sm_param_name": "0.1", "zscore_fr": 0, "brain_region_cohort_name": "all_targeted"}
+        for k, default_val in default_key.items():
+            val = kwargs.pop(k, None)
+            if val is None:
+                val = default_key[k]
+            key[k] = val
+
+        # Get map from subject ID to Haight single contingency rotation recording set name
+        recording_set_names_map = {
+            subject_id: RecordingSet().get_Haight_single_contingency_rotation_set_name([subject_id])
+            for subject_id in subject_ids}
+
+        print(f"Getting keys across entries for table {self.table_name}...")
+
+        keys = []  # initialize list for keys
+        for subject_id, recording_set_name in recording_set_names_map.items():
+
+            key.update({"subject_id": subject_id})
+
+            nwb_file_names, epochs_descriptions_names = (
+                    RecordingSet & {"recording_set_name": recording_set_name}).fetch1(
+                "nwb_file_names", "epochs_descriptions_names")
+
+            for nwb_file_name, epochs_descriptions_name in zip(nwb_file_names, epochs_descriptions_names):
+
+                print(f"On nwb_file_name {nwb_file_name}...")
+
+                key.update({"nwb_file_name": nwb_file_name})
+
+                epochs_descriptions = (EpochsDescriptions & {
+                    "nwb_file_name": nwb_file_name,
+                    "epochs_descriptions_name": epochs_descriptions_name}).fetch1("epochs_descriptions")
+
+                epochs = [(EpochsDescription() & {
+                    "nwb_file_name": nwb_file_name,
+                    "epochs_description": epochs_description}).get_epoch() for epochs_description in
+                                epochs_descriptions]
+
+                # Restrict to epochs with contingencies if indicated
+                if contingencies is not None:
+                    # Do not use key to query below, since that has epoch which will prevent pulling all epochs
+                    # with current contingency
+                    contingency_epochs = np.concatenate([(TaskIdentification & {
+                        "contingency": contingency, "nwb_file_name": nwb_file_name}).fetch(
+                        "epoch") for contingency in contingencies])
+
+                    # Narrow to epochs with contingencies
+                    epochs = [x for x in contingency_epochs if x in epochs]
+
+                # Get brain regions for this nwb file name
+                brain_regions = (BrainRegionCohort & key).fetch1("brain_regions")
+
+                # Loop through epochs
+                for epoch in epochs:
+
+                    epochs_description = EpochsDescription().lookup_epochs_description(nwb_file_name, [epoch])
+
+                    # Update key with epoch and epochs_description
+                    key.update({"epoch": epoch, "epochs_description": epochs_description})
+
+                    # Loop through unit subset iterations
+                    for unit_subset_iteration in unit_subset_iterations:
+
+                        brain_region_units_param_name = BrainRegionUnitsParams().lookup_single_epoch_param_name(
+                            nwb_file_name, epoch, min_epoch_mean_firing_rate, unit_subset_type,
+                            unit_subset_size, unit_subset_iteration)
+
+                        key.update({"brain_region_units_param_name": brain_region_units_param_name})
+
+                        # Loop through brain regions
+                        for brain_region in brain_regions:
+
+                            # Update key with brain region
+                            key.update({"brain_region": brain_region})
+
+                            # Update key with curation name
+                            curation_name = (CurationSet & {
+                                "nwb_file_name": nwb_file_name,
+                                "brain_region_cohort_name": key["brain_region_cohort_name"],
+                                "curation_set_name": curation_set_name}).get_curation_name(
+                                brain_region, epochs_description)
+                            key.update({"curation_name": curation_name})
+
+                            # Continue if no entry in BrainRegionUnits
+                            if len(BrainRegionUnits & key) == 0:
+                                continue
+
+                            # Otherwise update list of keys
+                            keys.append(copy.deepcopy(key))
+        return keys
+
+    def get_vector_df_across_entries(self, keys=None, use_multiprocessing=True, **kwargs):
+
+        if use_multiprocessing:
+            import multiprocessing as mp
+            from src.jguides_2024.utils.parallelization_helpers import show_error
+
+        if keys is None:
+            keys = self.get_keys_across_entries(**kwargs)
+
+        data_list = []
+
+        store_key_names = [
+            "subject_id", "nwb_file_name", "epoch", "brain_region_units_param_name", "brain_region"]
+
+        for key in keys:
+            check_membership(store_key_names, key)
+
+        def append_result(x):
+            data_list.append(x)
+
+        if use_multiprocessing:
+            pool = mp.Pool(mp.cpu_count())
+
+            for key in keys:
+                pool.apply_async(
+                    _get_vector_df, args=(self, key, store_key_names), callback=append_result, error_callback=show_error)
+
+            pool.close()
+            pool.join()  # waits until all processes done before running next line
+
+        else:
+            for key_idx, key in enumerate(keys):
+                print_iteration_progress(key_idx, len(keys), 20)
+                data_list.append(_get_vector_df(self, key, store_key_names))
+
+        return df_from_data_list(data_list, store_key_names + ["vector_df"])
+
+
+def _get_vector_df(table, entry_key, store_key_names):
+    dfs = (table & entry_key).fetch1_dataframes().vector_df
+    metadata_vals = [entry_key[k] for k in store_key_names]
+    return metadata_vals + [dfs]
+
+
+def _get_df(table, entry_key, store_key_names):
+    df = (table & entry_key).fetch1_dataframe()
+    metadata_vals = [entry_key[k] for k in store_key_names]
+    return metadata_vals + [df]
 
 
 def _default_metric_vector_type():
@@ -354,7 +654,10 @@ class CovariateFRVecAveSelBase(SelBase):
 
         # By default, return all covariate firing rate vector params. Can override in child class to restrict.
 
-        return set(self._fr_vec_table().fetch(self._get_main_table()().get_cov_fr_vec_meta_param_name()))
+        return set(self._fr_vec_table().fetch(self._get_cov_fr_vec_meta_param_name()))
+
+    def _get_cov_fr_vec_meta_param_name(self):
+        return self._fr_vec_table()()._get_params_table()().meta_param_name()
 
     def _get_potential_keys(self, key_filter=None, populate_tables=False):
 
@@ -365,7 +668,7 @@ class CovariateFRVecAveSelBase(SelBase):
         # Define covariate firing rate vector params
         cov_fr_vec_param_names = self._get_cov_fr_vec_param_names()
         # If param passed, restrict to this
-        cov_fr_vec_meta_param_name = self._get_main_table()().get_cov_fr_vec_meta_param_name()
+        cov_fr_vec_meta_param_name = self._get_cov_fr_vec_meta_param_name()
         if cov_fr_vec_meta_param_name in key_filter:
             cov_fr_vec_param_name = key_filter[cov_fr_vec_meta_param_name]
             check_membership([cov_fr_vec_param_name], cov_fr_vec_param_names)
@@ -376,6 +679,7 @@ class CovariateFRVecAveSelBase(SelBase):
         params_table = main_table._get_params_table()
         if params_table is None:
             raise Exception(f"params table not found for {main_table.table_name}")
+        params_table = (params_table & key_filter)
 
         # Define keys to loop through
         keys = np.concatenate(
@@ -394,15 +698,31 @@ class CovariateFRVecAveSelBase(SelBase):
             epoch = int(key.pop("epoch"))
             run_num = RunEpoch().get_run_num(key["nwb_file_name"], epoch)
             epochs_description = EpochsDescription().format_single_run_description(run_num)
+
+            # Continue if contingency not handle or center
+            contingency = TaskIdentification().get_contingency(key["nwb_file_name"], epoch)
+            if contingency not in ["handleAlternation", "centerAlternation"]:
+                continue
+
             key.update({"epochs_description": epochs_description})
             epochs = (EpochsDescription & key).fetch1("epochs")
             if all([len(fr_vec_table & {**key, **{"epoch": epoch}}) == 1 for epoch in epochs]):
                 for param_key in params_table.fetch("KEY"):
-                    key.update(param_key)
-                    potential_keys.append(copy.deepcopy(key))
+
+                    # Only continue if matching params across sources
+                    params_1 = (params_table & param_key).fetch1()
+                    params_2 = (params_table & param_key).get_params()
+                    check_same_values_at_shared_keys([params_1, params_2])
+                    if not check_same_values_at_shared_keys([key, {**params_1, **params_2}], tolerate_error=True):
+                        continue
+
+                    potential_keys.append({**key, **param_key})
+
             else:
                 if populate_tables:
                     fr_vec_table().populate(key)
+
+        print(f"Returning {len(potential_keys)} potential keys...")
 
         return potential_keys
 
@@ -425,8 +745,9 @@ class CovariateFRVecAveBase(ComputedBase):
 
         # Get map from epoch to potentially rewarded paths
         rewarded = True
-        pairs_map = MazePathWell().get_path_name_pair_types_map(
-            nwb_file_name, valid_epochs, rewarded, include_reversed_pairs)
+        pairs_map = {epoch: MazePathWell().get_path_name_pair_types_map(
+            nwb_file_name, epoch, rewarded_paths=rewarded, include_reversed_pairs=include_reversed_pairs)
+        for epoch in valid_epochs}
 
         return valid_epochs, pairs_map
 
@@ -510,9 +831,10 @@ class CovariateFRVecAveBase(ComputedBase):
 
         return df_subset  # TODO (feature): return another df with num_samples
 
+    # TODO: if remake tables that depend on this, change split character to ^
+    #  then use common eps_labels functions across all cases
     @staticmethod
     def _eps_labels_split_char():
-
         return "_"
 
     @classmethod
@@ -547,11 +869,14 @@ class CovariateFRVecAveBase(ComputedBase):
         # Use map to get comprising labels for joined labels
         return epoch_1, epoch_2, label_1, label_2
 
-    def get_label_relationship_metric_map(self, relationships=None):
+    def get_label_relationship_metric_map(self, relationships=None, verbose=False):
         # Get map from label (e.g. path) pair relationship to df with instances of metric on average
         # difference vectors with same element pair, same epoch, same or different label
 
         valid_epochs, pairs_map = self._get_label_relationship_inputs()
+
+        if verbose:
+            print(f"\nGetting label relationship metric map. Available relationships (in pairs_map): {pairs_map}\n")
 
         # Get relationships if not passed
         if relationships is None:
@@ -631,17 +956,25 @@ class CovariateFRVecAveBase(ComputedBase):
                 arr = np.zeros((max_x_1 - min_x_1 + 1, max_x_2 - min_x_2 + 1
                                 ))  # add one to account for zero, e.g. from -9 to 20 there are 30 values (20 + 9 + 1)
                 arr[:] = np.nan
+
                 # Populate array with metric
                 for i, j, z in list(zip_df_columns(df_subset, x_names + [self._metric_column_name(metric_name)])):
-                    # Order x1 and x2. Rationale:
-                    # x1 and x2 not consistently ordered in metric_df (though note we do not expect duplicates of
-                    # data, and checked there were none above if current code allowed), but we want all the values
-                    # for a single x1 / x2 combination in one place
-                    i1, i2 = min_max([i, j])
-                    # ...shift x values (one indexed) to get indices
+
+                    # If label_1 and label_2 are the same, and epoch_1 and epoch_2 are the same,
+                    # order x1 and x2. Rationale: the order of x1 and x2 is
+                    # arbitrary in this case, so choose an interpretable ordering with x1 <= x2
+                    if label_1 == label_2:
+                        i1, i2 = min_max([i, j])
+                    else:
+                        i1, i2 = [i, j]
+
+                    # Shift x values (one indexed) to get indices
                     i1 -= min_x_1
                     i2 -= min_x_2
+
+                    # Store value in array
                     arr[int(i1), int(i2)] = z
+
                 arrs.append(arr)  # store array
 
             # Take first array if only one
@@ -682,17 +1015,19 @@ class CovariateFRVecAveBase(ComputedBase):
         # Get upstream covariate firing rate vector table param name (e.g. PathFRVecParams param name)
         return self.get_cov_fr_vec_params_table().meta_param_name()
 
-    def get_labels_description(self, kwargs):
+    def get_labels_description(self, **kwargs):
 
-        # Get upstream covariate firing rate vector table (e.g. PathFRVec)
-        params_table = self.get_cov_fr_vec_params_table()
-
+        # Get from upstream covariate firing rate vector table (e.g. PathFRVec)
         # Get param name for the table
         meta_param_name = self.get_cov_fr_vec_meta_param_name()
         cov_fr_vec_param_name = copy.deepcopy(kwargs).pop(meta_param_name, None)
 
-        return fetch1_tolerate_no_entry(
-            params_table & {meta_param_name: cov_fr_vec_param_name}, "labels_description")
+        if cov_fr_vec_param_name is None:
+            cov_fr_vec_param_name = self.fetch1(meta_param_name)
+
+        # Make key for querying params table
+        params_table_key = {meta_param_name: cov_fr_vec_param_name}
+        return (self.get_cov_fr_vec_params_table() & params_table_key).get_labels_description()
 
     def _get_df_outer_loop(self, inner_fn, nwb_file_names, epochs_descriptions_names, verbose,
                            res_epoch_spikes_sm_param_name, zscore_fr,
@@ -727,7 +1062,9 @@ class CovariateFRVecAveBase(ComputedBase):
         # TODO (feature): define programmatically based on upstream table
         for k in ["ppt_dig_param_name", "path_ave_fr_vec_param_name", "path_fr_vec_st_ave_param_name",
                   "time_rel_wa_dig_single_axis_param_name", "time_rel_wa_dig_param_name",
-                  "time_rel_wa_ave_fr_vec_param_name", "time_rel_wa_fr_vec_st_ave_param_name"]:
+                  "time_rel_wa_ave_fr_vec_param_name", "time_rel_wa_fr_vec_st_ave_param_name",
+                  "multi_cov_ave_fr_vec_param_name", "multi_cov_fr_vec_st_ave_param_name"
+                  ]:
             if k in kwargs:
                 key.update({k: kwargs[k]})
 
@@ -826,58 +1163,36 @@ class CovariateFRVecAveBase(ComputedBase):
 
         return kwargs
 
-    def get_concat_metric_df(
-            self, nwb_file_names, epochs_descriptions_names, brain_region_cohort_name,
-            brain_regions=None, curation_set_name=None, min_epoch_mean_firing_rate=.1,
-            res_epoch_spikes_sm_param_name=None, unit_subset_type=None, unit_subset_size=None,
-            unit_subset_iterations=None, zscore_fr=None, verbose=True, tolerate_missing=True,
-            **kwargs):
+    def get_concat_metric_df(self, keys, debug_mode=False, **kwargs):
 
         # Helper function for getting metric values across table entries. Return in a df
 
-        # Add default relationships to kwargs if not present
-        kwargs = self._add_default_relationships(kwargs)
+        print(f"Concatenating table entries from {self.table_name} across {len(keys)} keys...")
 
-        def unpack_df(table_subset, vals_index_name_list, data_list, subject_id, nwb_file_name, epochs_description,
-                      brain_region_units_param_name, brain_region, **kwargs):
+        # Iterate over restriction conditions and units
+        # If want to debug, do in for loop
+        if debug_mode:
+            df_list = []
+            for key in keys:
+                df_list.append(_get_dfs((self, key, kwargs)))
 
-            # Get map from label pair relationship to df with results
-            relationships = kwargs["relationships"]
-            metric_map = table_subset.get_label_relationship_metric_map(relationships)
+        # Otherwise do using parallelization
+        else:
+            import multiprocessing as mp
 
-            # Loop through relationships, conditions, and value index and add tuples that will correspond to
-            # df entries
-            for relationship, df in metric_map.items():
+            tables_keys = [(self, key, kwargs) for key in keys]
 
-                # note that eps_labels below is a combination of epoch pair and label (e.g. path)
-                for eps_labels, vals in df.items():
+            pool = mp.Pool(mp.cpu_count())
+            df_list = pool.map(_get_dfs, tables_keys)
+            pool.close()
+            pool.join()
 
-                    # Store name of index. will then check that same across instances and take the
-                    # single instance to define df column
-                    vals_index_name_list.append(vals.index.name)
-
-                    # Get x vals reflecting covariate (rough example: 10th of 10 total path fraction bins
-                    # corresponds to .95 path fraction)
-                    x_vals = table_subset._metric_index_as_bin_centers(vals.index)
-
-                    for (val_index, val), x_val in zip(vals.items(), x_vals):
-
-                        # Append to list that will be used to construct df
-                        # Note: store brain_region_units_param_name just for convenience. e.g. helpful for
-                        # finding unit information corresponding to entries
-                        data_list.append(
-                            (brain_region, subject_id, nwb_file_name, epochs_description,
-                             val_index, x_val, val, brain_region_units_param_name,
-                             relationship, eps_labels, get_nwb_file_name_epochs_description(
-                                nwb_file_name, epochs_description)))
-
-        extra_column_names = ["relationship", "eps_labels", "nwb_file_name_epochs_description"]
-
-        return self._get_df_outer_loop(
-            unpack_df, nwb_file_names, epochs_descriptions_names, verbose, res_epoch_spikes_sm_param_name, zscore_fr,
-            brain_region_cohort_name, brain_regions, curation_set_name,
-                           min_epoch_mean_firing_rate, unit_subset_type, unit_subset_size,
-                           unit_subset_iterations, tolerate_missing, extra_column_names, **kwargs)
+        # Return concatenated entries
+        print(f"Returning df with concatenated entries...")
+        df_concat = None
+        if len(df_list) > 0:
+            return pd.concat(df_list)
+        return df_concat
 
     def get_concat_same_diff_x_ratio_df(
             self, nwb_file_names, epochs_descriptions_names, brain_region_cohort_name,
@@ -910,7 +1225,7 @@ class CovariateFRVecAveBase(ComputedBase):
                 vals_index_name_list.append(vals.index.name)
                 # get x vals reflecting covariate (rough example: 10th of 10 total path fraction bins
                 # corresponds to .95 path fraction)
-                x_vals = table_subset._metric_index_as_bin_centers(vals.index)
+                x_vals = table_subset._metric_index_as_bin_centers(vals.index, table_subset.fetch1("KEY"))
                 for (val_index, val), x_val in zip(vals.items(), x_vals):
                     # note: store brain_region_units_param_name just for convenience. e.g. helpful for
                     # finding unit information corresponding to entries
@@ -962,31 +1277,10 @@ class CovariateFRVecAveBase(ComputedBase):
         valid_epochs = (EpochsDescription & key).fetch1("epochs")
         valid_labels = MazePathWell().get_rewarded_path_names_across_epochs(key["nwb_file_name"], valid_epochs, True)
 
-        # ...Update valid_labels to have even/odd, stay/leave, even/odd stay, or correct/incorrect text if indicated
-        labels_description = self.get_labels_description(kwargs)
-        if labels_description == "none":
-            pass
-        elif labels_description == "even_odd_trials":
-            valid_labels = np.concatenate(
-                [[MazePathWell.get_even_odd_trial_name(x, even_odd_text=even_odd_text) for x in valid_labels]
-                    for even_odd_text in MazePathWell.even_odd_trial_text()])
-        elif labels_description in ["stay_leave_trials", "stay_leave_trials_pre_departure"]:
-            valid_labels = np.concatenate(
-                [[MazePathWell.get_stay_leave_trial_path_name(x, trial_text=trial_text) for x in valid_labels]
-                    for trial_text in MazePathWell.stay_leave_trial_text()])
-        elif labels_description == "even_odd_stay_trials":
-            valid_labels = [MazePathWell.get_stay_leave_trial_path_name(
-                x, trial_text=MazePathWell.stay_leave_trial_text("stay")) for x in valid_labels]
-            valid_labels = np.concatenate(
-                [[MazePathWell.get_even_odd_trial_name(x, even_odd_text=even_odd_text) for x in valid_labels]
-                    for even_odd_text in MazePathWell.even_odd_trial_text()])
-        elif labels_description == "correct_incorrect_trials":
-            valid_labels = np.concatenate([[MazePathWell.get_correct_incorrect_trial_text(
-                x, correct_incorrect_text=correct_incorrect_trial_text) for x in valid_labels]
-                for correct_incorrect_trial_text in MazePathWell.correct_incorrect_trial_text()])
-        else:
-            raise Exception(f"{labels_description} not valid labels_description")
+        # ...Update labels with correct/incorrect, even/odd, etc. based on labels_description
+        valid_labels = (self._fr_vec_table()()._get_params_table()() & key).update_labels(valid_labels)
 
+        # ...Get boolean indicting valid labels
         valid_labels_bool = np.logical_and(diag_ratio_df["label_1"].isin(valid_labels),
                                            diag_ratio_df["label_2"].isin(valid_labels))
 
@@ -996,11 +1290,15 @@ class CovariateFRVecAveBase(ComputedBase):
         labels_bool = [True]*len(diag_ratio_df)  # initialize
 
         # Case 1: No further restriction
+        labels_description = self.get_labels_description()
         if labels_description in [
-            "none", "stay_leave_trials", "stay_leave_trials_pre_departure", "correct_incorrect_trials"]:
+            "none", "stay_leave_trials", "stay_leave_trials_pre_departure", "correct_incorrect_trials",
+            "correct_incorrect_stay_trials", "correct_incorrect_stay_trials_pdaw",
+            "low_speed_5_ppt_0.2_0.3887090246863618", "low_speed_10_ppt_0.2_0.3887090246863618"]:
             pass
         # Case 2: Restrict to across even and odd trials
-        elif labels_description in ["even_odd_trials", "even_odd_stay_trials"]:
+        elif labels_description in [
+            "even_odd_trials", "even_odd_stay_trials", "even_odd_correct_incorrect_stay_trials"]:
             labels_bool = [
                 MazePathWell.even_odd(df_row.label_1, df_row.label_2) for idx, df_row in diag_ratio_df.iterrows()]
         else:
@@ -1012,7 +1310,10 @@ class CovariateFRVecAveBase(ComputedBase):
 
         # ...Add label relationships
         valid_epochs, pairs_map = self._get_label_relationship_inputs()
-        valid_relationships = kwargs["relationships"]  # potential relationships
+        if "relationships" not in kwargs:
+            valid_relationships = self.get_default_relationships()
+        else:
+            valid_relationships = kwargs["relationships"]  # potential relationships
         # check that epochs same; current code assumes this
         if not all(df.epoch_1 == df.epoch_2):
             raise Exception(f"Code currently only set up for case where epoch_1 equals epoch_2")
@@ -1059,19 +1360,43 @@ class CovariateFRVecAveBase(ComputedBase):
 
         return (BrainRegionColor & self.fetch1("KEY")).fetch1("color")
 
-    def _metric_index_as_bin_centers(self, metric_index, key=None):
-        # Convert metric index to bin centers units
+    def get_df_across_entries(self, keys=None, fn=_get_df, store_key_names=None, use_multiprocessing=True, **kwargs):
 
-        if key is None:
-            key = dict()
+        if use_multiprocessing:
+            import multiprocessing as mp
+            from src.jguides_2024.utils.parallelization_helpers import show_error
 
-        # x vals varies depending on whether we are dealing with metric as a function of x, or as a function
-        # of x pair
-        bin_centers_name_map = {"x_1": "x", "x_pair_int_1": "x_pair"}
-        bin_centers_name = bin_centers_name_map[metric_index.name]
-        bin_centers_map = (self & key).get_bin_centers_map()[bin_centers_name]
+        if keys is None:
+            raise Exception(f"Not yet coded")
 
-        return bin_centers_map.loc[metric_index]
+        data_list = []
+
+        if store_key_names is None:
+            store_key_names = [
+                "subject_id", "nwb_file_name", "epoch", "brain_region_units_param_name", "brain_region"]
+
+        for key in keys:
+            check_membership(store_key_names, key)
+
+        def append_result(x):
+            data_list.append(x)
+
+        if use_multiprocessing:
+            pool = mp.Pool(mp.cpu_count())
+
+            for key in keys:
+                pool.apply_async(
+                    fn, args=(self, key, store_key_names), callback=append_result, error_callback=show_error)
+
+            pool.close()
+            pool.join()  # waits until all processes done before running next line
+
+        else:
+            for key_idx, key in enumerate(keys):
+                print_iteration_progress(key_idx, len(keys), 20)
+                data_list.append(fn(self, key, store_key_names))
+
+        return df_from_data_list(data_list, store_key_names + ["df"])
 
     def plot_x_relationship_metric_arr(
             self, label_1, label_2, epoch_1, epoch_2, fig_ax_list=None, save_fig=False,
@@ -1083,7 +1408,7 @@ class CovariateFRVecAveBase(ComputedBase):
             "label_1": label_1, "label_2": label_2, "epoch_1": epoch_1, "epoch_2": epoch_2}, "metric_arr")
 
         # Convert to bin centers units
-        x_vals = self._metric_index_as_bin_centers(metric_arr.index).values
+        x_vals = self._metric_index_as_bin_centers(metric_arr.index, key=self.fetch1("KEY")).values
         metric_arr = pd.DataFrame(metric_arr.to_numpy(), columns=x_vals, index=x_vals)
 
         # Unpack figure / axis if passed, otherwise initialize
@@ -1093,7 +1418,10 @@ class CovariateFRVecAveBase(ComputedBase):
 
         # Plot heatmap with metric
         # Here, transpose so data in left upper half of plot
-        kwargs = {"spines_off_list": ["right", "bottom"]}
+        kwargs = dict()
+        clim = format_kwargs.pop("clim", None)
+        if clim is not None:
+            kwargs.update({"clim": clim})
         metric_arr = metric_arr.T
         plot_heatmap(metric_arr, fig_ax_list=fig_ax_list, zorder=0, plot_color_bar=plot_color_bar, **kwargs)
         ax.xaxis.tick_top()  # x ticks on top
@@ -1102,8 +1430,8 @@ class CovariateFRVecAveBase(ComputedBase):
         label_every_n = format_kwargs.pop("label_every_n", 2)
         ticklabels = get_ticklabels([np.round(x, 3) for x in metric_arr.index], idxs=np.arange(0, len(metric_arr), label_every_n))
         ticks = np.arange(0, len(ticklabels)) + .5  # place ticks in center of each bin
-        # ...update passed format params with those defined above
-        format_kwargs.update(kwargs)
+        # ...update passed format params
+        format_kwargs.update({"spines_off_list": ["right", "bottom"]})
         format_ax(ax=ax, xticks=ticks, yticks=ticks, xticklabels=ticklabels, yticklabels=ticklabels, **format_kwargs)
         ax.xaxis.set_label_position("top")  # put x label (if passed) on top
 
@@ -1134,20 +1462,29 @@ class CovariateFRVecAveBase(ComputedBase):
                 f"sm{key['res_epoch_spikes_sm_param_name']}"
             save_figure(fig, file_name_save, save_fig=save_fig)
 
+    def _metric_index_as_bin_centers(self, metric_index, key=None):
+        # Convert metric index (specific to tables of this type) to bin centers units
+
+        if key is None:
+            key = dict()
+
+        # Convert from name of x in this table (where we have metric on pairs of values), to x in covariate
+        # firing rate vector table.
+        # x vals varies depending on whether we are dealing with metric as a function of x, or as a function
+        # of x pair.
+        bin_centers_name_map = {"x_1": "x", "x_pair_int_1": "x_pair"}
+        bin_centers_name = bin_centers_name_map[metric_index.name]
+        bin_centers_map = (self._fr_vec_table() & key).get_bin_centers_map()[bin_centers_name]
+
+        return bin_centers_map.loc[metric_index]
+
     @staticmethod
     def _flatten_metric_map_vals(metric_map):
         return np.hstack([np.ndarray.flatten(x.values) for x in metric_map.values()])
 
-    @staticmethod
-    def get_valid_covariate_bin_nums(key):
-        raise Exception(f"This method should be implemented in child class")
-
-    def get_bin_centers_map(self, **kwargs):
-        raise Exception(f"This method should be implemented in child class")
-
     def exclude_invalid_bins(self, df):
 
-        valid_bin_nums = self.get_valid_covariate_bin_nums(self.fetch1("KEY"))
+        valid_bin_nums = self._fr_vec_table()().get_valid_covariate_bin_nums(self.fetch1("KEY"))
         valid_bool = [True] * len(df)
         for column_name in ["x_pair", "x_pair_partner_1", "x_pair_partner_2", "x_1", "x_2"]:
             if column_name in df:
@@ -1171,6 +1508,101 @@ class CovariateFRVecAveBase(ComputedBase):
             df = self.exclude_invalid_bins(df)
 
         return df
+
+
+def _get_vector_df(table, entry_key, store_key_names):
+    dfs = (table & entry_key).fetch1_dataframes().vector_df
+    metadata_vals = [entry_key[k] for k in store_key_names]
+    return metadata_vals + [dfs]
+
+
+def _get_df(table, entry_key, store_key_names):
+    df = (table & entry_key).fetch1_dataframe()
+    metadata_vals = [entry_key[k] for k in store_key_names]
+    return metadata_vals + [df]
+
+
+def _get_same_diff_x_ratio_df(table, entry_key, store_key_names):
+    df = (table & entry_key).get_same_diff_x_ratio_df()
+    metadata_vals = [entry_key[k] for k in store_key_names]
+    return metadata_vals + [df]
+
+
+
+# This function must be defined in module and not be a method of a class in order for parallelization to work
+def _get_dfs(table_key):
+    # Accept single argument as input instead of multiple so that can use multiprocessing "map function",
+    # which only works with one input
+
+    table, key, kwargs = table_key
+
+    kwargs = (table & key)._add_default_relationships(kwargs)
+    relationships = kwargs["relationships"]
+
+    # Get data for this table entry
+    subject_id = get_subject_id(key["nwb_file_name"])
+    nwb_file_name_epochs_description = get_nwb_file_name_epochs_description(
+        key["nwb_file_name"], key["epochs_description"])
+
+    table_subset = (table & key)
+
+    metric_processing_name = None
+    if "metric_processing_name" in kwargs:  # do not pop from kwargs
+        metric_processing_name = kwargs["metric_processing_name"]
+
+    vals_index_name_list = []
+    data_list = []
+
+    if metric_processing_name == "one_minus_on_off_diagonal_ratio":
+        df = table_subset.get_same_diff_x_ratio_df(**kwargs)
+
+        # Loop through conditions and value index and add tuples that will correspond to df entries
+        # note that eps_labels below is a combination of epoch pair and label (e.g. path)
+        for _, df_row in df.iterrows():
+            vals = getattr(df_row, "one_minus_on_off_diagonal_ratio")
+            # store name of index. will then check that same across instances and take the
+            # single instance to define df column
+            vals_index_name_list.append(vals.index.name)
+            # get x vals reflecting covariate (rough example: 10th of 10 total path fraction bins
+            # corresponds to .95 path fraction)
+            x_vals = table_subset._metric_index_as_bin_centers(vals.index, table_subset.fetch1("KEY"))
+            for (val_index, val), x_val in zip(vals.items(), x_vals):
+                data_list.append(
+                    (key["brain_region"], subject_id, key["nwb_file_name"], key["epochs_description"], val_index,
+                     x_val, val, key["brain_region_units_param_name"],
+                     df_row.relationship, df_row.eps_labels, nwb_file_name_epochs_description))
+
+    else:
+        metric_map = table_subset.get_label_relationship_metric_map(relationships)
+
+        # Loop through relationships, conditions, and value index and add tuples that will correspond to
+        # df entries
+        for relationship, df in metric_map.items():
+
+            # note that eps_labels below is a combination of epoch pair and label (e.g. path)
+            for eps_labels, vals in df.items():
+
+                # # Store name of index. will then check that same across instances and take the
+                # # single instance to define df column
+                vals_index_name_list.append(vals.index.name)
+
+                # Get x vals reflecting covariate (rough example: 10th of 10 total path fraction bins
+                # corresponds to .95 path fraction)
+                x_vals = table_subset._metric_index_as_bin_centers(vals.index, table_subset.fetch1("KEY"))
+
+                for (val_index, val), x_val in zip(vals.items(), x_vals):
+                    data_list.append((key["brain_region"], subject_id, key["nwb_file_name"],
+                                      key["epochs_description"],
+                                      val_index, x_val, val, key["brain_region_units_param_name"],
+                                      relationship, eps_labels, nwb_file_name_epochs_description))
+
+    # Get name of vals index
+    vals_index_name = check_return_single_element(vals_index_name_list).single_element
+
+    return df_from_data_list(
+        data_list, ["brain_region", "subject_id", "nwb_file_name", "epochs_description",
+                    "val_index", vals_index_name, "val", "brain_region_units_param_name",
+                    "relationship", "eps_labels", "nwb_file_name_epochs_description"])
 
 
 class CovariateFRVecSTAveBase(CovariateFRVecAveBase):
@@ -1239,7 +1671,7 @@ class CovariateFRVecSTAveBase(CovariateFRVecAveBase):
         df = parse_matrix(
             fr_vec_table().concat_across_epochs(key, metadata.vector_df_name), characteristics,
             fr_vec_table().metric_across_epochs(key, metric_name, vector_type),
-            _get_mask_across_epochs(metadata.vector_df_name), metric_name=metric_name, debug_mode=False,
+            _get_mask_across_epochs(metadata.vector_df_name), metric_name=metric_name, debug_mode=True,
             verbose=True)
 
         # Add x_pair_partner as column if working with difference vectors so can query df using this if desired. This
@@ -1269,7 +1701,7 @@ class CovariateFRVecSTAveBase(CovariateFRVecAveBase):
         # Get relationships depending on labels description
 
         # Get labels description
-        labels_description = self.get_labels_description(kwargs)
+        labels_description = self.get_labels_description(**kwargs)
 
         # Stay/leave trials by path
         if labels_description in ["stay_leave_trials", "stay_leave_trials_pre_departure"]:
@@ -1279,14 +1711,33 @@ class CovariateFRVecSTAveBase(CovariateFRVecAveBase):
         elif labels_description == "correct_incorrect_trials":
             return [
                 "same_path_correct_correct_trials", "same_path_correct_incorrect_trials",
-                "same_path_incorrect_incorrect_trials", "outbound_correct_correct_trials",
-                "outbound_correct_incorrect_trials", "outbound_correct_incorrect_trials",
+                "same_path_incorrect_incorrect_trials",
+
+                "outbound_correct_correct_trials", "outbound_correct_incorrect_trials",
+                "outbound_correct_incorrect_trials",
+
                 "same_path_outbound_correct_correct_trials",
+            ]
+
+        # Correct/incorrect trials by path
+        elif labels_description in ["correct_incorrect_stay_trials", "correct_incorrect_stay_trials_pdaw"]:
+            return [
+                "same_path_correct_correct_stay_trials", "same_path_correct_incorrect_stay_trials",
+                "same_path_incorrect_incorrect_stay_trials",
+
+                "outbound_correct_correct_stay_trials", "outbound_correct_incorrect_stay_trials",
+                "outbound_correct_incorrect_stay_trials",
+
+                "same_path_outbound_correct_correct_stay_trials",
             ]
 
         # Same path comparison
         elif labels_description == "none":
             return ["same_path"]
+
+        elif "low_speed" in labels_description:
+            return ["same_path_low_speed_non_low_speed_trials", "same_path_non_low_speed_non_low_speed_trials",
+                    "same_path_low_speed_low_speed_trials"]
 
         # Raise error if labels description not accounted for
         else:
@@ -1376,9 +1827,21 @@ class CovariateFRVecTrialAveBase(CovariateFRVecAveBase):
             elif label_name == "end_well":
                 return ["same_end_well_even_odd_stay_trials", "different_end_well_even_odd_stay_trials"]
 
+        elif labels_description == "even_odd_correct_incorrect_stay_trials":
+            # By path
+            if label_name == "path":
+                return [
+                    "same_path_even_odd_correct_stay_trials", "same_turn_even_odd_correct_stay_trials",
+                    "different_turn_well_even_odd_correct_stay_trials"]
+            # By end well
+            elif label_name == "end_well":
+                return [
+                    "same_end_well_even_odd_correct_stay_trials", "different_end_well_even_odd_correct_stay_trials"]
+
         # Otherwise return same / different turn comparison
         elif labels_description == "none":
             return ["same_turn", "different_turn_well"]
+
         else:
             raise Exception(f"default relationships not defined for labels_description {labels_description}")
 
@@ -1398,6 +1861,9 @@ class PathWellPopSummBase(ComputedBase):
         raise Exception(f"Must be implemented in child class")
 
     def _get_vals_index_name(self, **kwargs):
+
+        # Default is to get vals index name from upstream table (can overwrite this method
+        # if different)
 
         if "key" not in kwargs:
             key = self.fetch1("KEY")
@@ -1447,11 +1913,18 @@ class PathWellPopSummBase(ComputedBase):
     def _get_same_different_outbound_path_correct_order_for_pairs(self):
         return ("outbound_correct_correct_trials", "same_path_outbound_correct_correct_trials")
 
+    def _get_non_low_speed_low_speed_order_for_pairs(self):
+        return ("same_path_low_speed_non_low_speed_trials",
+                "same_path_non_low_speed_non_low_speed_trials",
+                "same_path_low_speed_low_speed_trials")
+
     @classmethod
     def get_paired_metric_df(
             cls, metric_df, target_column_name, target_column_pairs, metric_pair_fn, resample_quantity="val",
-            exclude_columns=None):
+            exclude_columns=None, tolerate_nonoverlapping_column_sets=False):
         # Convert metric in df to paired metric
+
+        print("Getting paired metric df...")
 
         # Get inputs if not passed
         if exclude_columns is None:
@@ -1464,16 +1937,26 @@ class PathWellPopSummBase(ComputedBase):
             x for x in metric_df.columns if x not in [target_column_name, resample_quantity] + exclude_columns]
 
         common_column_sets_map = dict()  # store settings of columns (as dictionary) present for both values in pair
+        print(f"len(target_column_pairs): {len(target_column_pairs)}")
+
         for x1, x2 in target_column_pairs:
             concat_df_subset = df_filter_columns(metric_df, {target_column_name: x1})
             column_sets_1 = unique_df_column_sets(concat_df_subset, column_names, as_dict=True)
             concat_df_subset = df_filter_columns(metric_df, {target_column_name: x2})
             column_sets_2 = unique_df_column_sets(concat_df_subset, column_names, as_dict=True)
+
+            # Raise error if nonoverlapping column sets (and not tolerating this)
             if len([x for x in column_sets_1 if x in column_sets_2]) == 0:
-                raise Exception(f"No overlapping column sets; this is not expected")
+                if tolerate_nonoverlapping_column_sets:
+                    continue
+                else:
+                    raise Exception(f"No overlapping column sets; this is not expected")
+
+            print(f"len(column_sets_2): {len(column_sets_2)}")
+
             common_column_sets_map[(x1, x2)] = [x for x in column_sets_1 if x in column_sets_2]
 
-        # Make new df with difference in values for brain region pairs
+        # Make new df with difference in values for pairs
 
         # Define column names in new df
         # ...Define new df columns, one for each member of pair
@@ -1485,15 +1968,29 @@ class PathWellPopSummBase(ComputedBase):
 
         # Define new df
         data_list = []
+        print(f"Making new df with difference in values of brain region pairs...")
+        print(f"len(common_column_sets_map): {len(common_column_sets_map)}")
         for pair, common_column_sets in common_column_sets_map.items():
-            for column_set in common_column_sets:
+            print(f"len(common_column_sets): {len(common_column_sets)}")
+            joint_column_pair_name = cls._get_joint_column_val(pair)
+            arg_sets = [(metric_pair_fn, metric_df, pair, column_set, target_column_name, resample_quantity, \
+            joint_column_pair_name) for column_set in common_column_sets]
+            pool = mp.Pool(mp.cpu_count())
+            data_list += pool.map(_get_metric_on_column_set, arg_sets)
+            pool.close()
+            pool.join()  # waits until all processes done before running next line
 
-                # Get metric on pairs of value at target column
-                val = metric_pair_fn(metric_df, pair, column_set, target_column_name, resample_quantity)
-
-                # Append to list
-                data_list.append(tuple(
-                    list(column_set.values()) + [cls._get_joint_column_val(pair)] + list(pair) + [val]))
+            # TODO: delete below
+            # data_list =
+            # for column_set_idx, column_set in enumerate(common_column_sets):
+            #     print_iteration_progress(column_set_idx, len(common_column_sets), 100)
+            #
+            #     # Get metric on pairs of value at target column
+            #     val = metric_pair_fn(metric_df, pair, column_set, target_column_name, resample_quantity)
+            #
+            #     # Append to list
+            #     data_list.append(tuple(
+            #         list(column_set.values()) + [joint_column_pair_name] + list(pair) + [val]))
 
         # Return new df
         # if empty df, return with column names
@@ -1519,11 +2016,12 @@ class PathWellPopSummBase(ComputedBase):
 
     def _get_brain_region_meta_name(self):
 
+        params_table = self._get_params_table()()
         boot_set_name = self.get_upstream_param("boot_set_name")
-        params_table = self._get_params_table()
         if boot_set_name in params_table._valid_brain_region_diff_boot_set_names() + \
                             params_table._valid_stay_leave_diff_brain_region_diff_boot_set_names() + \
-                params_table._valid_same_different_outbound_path_correct_diff_brain_region_diff_boot_set_names():
+                params_table._valid_same_different_outbound_path_correct_diff_brain_region_diff_boot_set_names() + \
+                params_table._valid_low_speed_non_low_speed_diff_brain_region_diff_boot_set_names():
             return self._get_joint_column_name("brain_region")
 
         return "brain_region"
@@ -1538,21 +2036,41 @@ class PathWellPopSummBase(ComputedBase):
 
         # ...Path and well relationships: colors correspond to brain regions
         relationship_vals_list = [[
+
             # Darkest tint
-            "same_path", "same_path_stay_stay_trials", "same_path_even_odd_trials", "same_well",
-            "same_end_well_even_odd_stay_trials",
-            "same_path_correct_correct_trials",
+            "same_path", "same_path_stay_stay_trials", "same_path_even_odd_trials",
+            "same_path_even_odd_correct_stay_trials",
+            "same_well", "same_end_well_even_odd_stay_trials",
+            "same_path_correct_correct_trials", "same_path_correct_correct_stay_trials",
+
+            "same_path_correct_incorrect_stay_trials",
+            "same_path_prev_correct_incorrect_trials",
+
             "same_path_outbound_correct_correct_trials",
-            ], [
+            "same_path_outbound_correct_correct_stay_trials",
+            "outbound_correct_correct_stay_trials",
+
+            "same_path_low_speed_non_low_speed_trials", "same_path_low_speed_low_speed_trials",
+            "same_path_non_low_speed_non_low_speed_trials",
+        ], [
+
             # Intermediate tint
-            "same_turn", "same_turn_even_odd_trials", "same_path_stay_leave_trials",
-            "same_path_correct_incorrect_trials"], [
+            "same_turn", "same_turn_even_odd_trials", "same_turn_even_odd_correct_stay_trials",
+            "same_turn_correct_correct_stay_trials",
+            "same_path_stay_leave_trials", "same_path_correct_incorrect_trials",
+        ], [
+
             # Lightest tint
             "different_turn_well", "different_turn_well_even_odd_trials", "different_turn_well_even_odd_stay_trials",
+            "different_turn_well_even_odd_correct_stay_trials",
+            "different_turn_well_correct_correct_stay_trials",
             "different_well", "different_end_well_even_odd_stay_trials",
             "same_path_leave_leave_trials",
             "same_path_incorrect_incorrect_trials",
-            "outbound_correct_correct_trials"
+            "same_path_incorrect_incorrect_stay_trials",
+            "inbound_correct_correct_stay_trials",
+            "outbound_correct_correct_trials",
+            "outbound_correct_incorrect_stay_trials",
             ]]
 
         colors_map = BrainRegionColor().tint_colors(brain_regions, num_tints=3)
@@ -1561,18 +2079,13 @@ class PathWellPopSummBase(ComputedBase):
                 for relationship_val in relationship_vals:
                     data_list.append((brain_region_val, relationship_val, color))
 
-        # ...Same path correct and outbound correct difference: colors correspond to brain regions
+        # ...Colors correspond to brain regions:
+        # Same path correct and outbound correct difference
+        # Stay/leave difference
         relationship_vals = [
             "outbound_correct_correct_trials_same_path_outbound_correct_correct_trials",
-        ]
-        for brain_region in brain_regions:
-            for relationship_val in relationship_vals:
-                data_list.append(
-                    (brain_region, relationship_val, BrainRegionColor().get_brain_region_color(brain_region)))
-
-        # ...Stay/leave difference: colors correspond to brain regions
-        relationship_vals = [
             "same_path_stay_leave_trials_same_path_stay_stay_trials",
+            "none"
         ]
         for brain_region in brain_regions:
             for relationship_val in relationship_vals:
@@ -1586,15 +2099,34 @@ class PathWellPopSummBase(ComputedBase):
             "CA1_targeted_mPFC_targeted", "mPFC_targeted_CA1_targeted"]
         relationship_vals_list = [[
             # Darkest tint
+            "none",
             "same_path", "same_path_stay_stay_trials", "same_path_correct_correct_trials",
+            "same_path_correct_correct_stay_trials",
             "same_path_stay_stay_trials_same_path_stay_stay_trials",
             "same_path_stay_leave_trials_same_path_stay_stay_trials",
-            "same_path_leave_leave_trials_same_path_stay_stay_trials"
+            "same_path_leave_leave_trials_same_path_stay_stay_trials",
+            "outbound_correct_correct_stay_trials",
+
+            "same_path_stay_leave_trials",
+
+            "same_path_correct_incorrect_stay_trials",
+
+            "same_path_prev_correct_incorrect_trials",
+
+            "same_path_low_speed_non_low_speed_trials", "same_path_low_speed_low_speed_trials",
+            "same_path_non_low_speed_non_low_speed_trials",
+            "same_path_low_speed_non_low_speed_trials_same_path_non_low_speed_non_low_speed_trials"
+
         ], [
             # Medium tint
-            "same_path_stay_leave_trials", "same_path_correct_incorrect_trials"], [
+            "same_path_correct_incorrect_trials",
+            "same_turn_correct_correct_stay_trials"
+        ], [
+
             # Lightest tint
             "same_path_leave_leave_trials", "same_path_incorrect_incorrect_trials",
+            "inbound_correct_correct_stay_trials",
+            "different_turn_well_correct_correct_stay_trials"
         ]]
         color_vals = [.1, .4, .7]
         for relationship_vals, color_val in zip(relationship_vals_list, color_vals):
@@ -1619,10 +2151,13 @@ class PathWellPopSummBase(ComputedBase):
         # ...Relationship ratio: gray scale, colors correspond to path or well pairs
         relationship_vals_list = [[
             # Darkest tint
-            "same_turn_even_odd_trials_same_path_even_odd_trials"], [
+            "same_turn_even_odd_trials_same_path_even_odd_trials",
+            "same_turn_correct_correct_stay_trials_same_path_correct_correct_stay_trials"], [
             # Lightest tint
             "different_turn_well_even_odd_trials_same_path_even_odd_trials",
-            "different_end_well_even_odd_stay_trials_same_end_well_even_odd_stay_trials"]]
+            "different_end_well_even_odd_stay_trials_same_end_well_even_odd_stay_trials",
+            "different_turn_well_correct_correct_stay_trials_same_path_correct_correct_stay_trials"
+        ]]
         color_vals = [.1, .7]
         for brain_region_val in brain_regions:
             for relationship_vals, color_val in zip(relationship_vals_list, color_vals):
@@ -1740,6 +2275,11 @@ class PathWellPopSummBase(ComputedBase):
         if ax is None:
             _, ax = plt.subplots(figsize=(5, 2))
 
+        # Get type of x val to plot if not passed
+        x_val_type = plot_params.pop("x_val_type", None)
+        if x_val_type is None:
+            x_val_type = "x_val"
+
         # Get x label if not passed
         xlabel = plot_params.pop("xlabel", None)
         if xlabel is None:
@@ -1815,7 +2355,7 @@ class PathWellPopSummBase(ComputedBase):
 
         # Get additional quantities based on key
 
-        # Get name of index from upstream table
+        # Get name of index
         vals_index_name = self._get_vals_index_name()
 
         # Get metric_df if plotting single epoch data
@@ -1839,7 +2379,7 @@ class PathWellPopSummBase(ComputedBase):
                 ave_conf_df, {**condition_key, **{"alpha": alpha}}).set_index(
                 vals_index_name).sort_index().reset_index()
 
-            # Continue if no entry
+            # Handle case of no entry
             if len(df_subset) == 0:
                 continue
 
@@ -1859,7 +2399,7 @@ class PathWellPopSummBase(ComputedBase):
 
                 # Plot average and confidence bounds
                 label = " ".join(list(condition_key.values()))
-                plot_ave_conf(ax, df_subset.x_val, df_subset.ave_val, conf_bounds, color=color, label=label)
+                plot_ave_conf(ax, df_subset[x_val_type], df_subset.ave_val, conf_bounds, color=color, label=label)
 
             # Plot epoch average if indicated
             if show_single_epoch:
@@ -1870,7 +2410,7 @@ class PathWellPopSummBase(ComputedBase):
 
                 epoch_group_by_cols = [x for x in epoch_group_by_cols if x in metric_df.columns]
 
-                metric_epoch_df = metric_df.groupby(epoch_group_by_cols).mean().reset_index()
+                metric_epoch_df = metric_df.groupby(epoch_group_by_cols).mean(numeric_only=True).reset_index()
 
                 for subject_id in np.unique(metric_epoch_df["subject_id"]):
 
@@ -1894,14 +2434,24 @@ class PathWellPopSummBase(ComputedBase):
                             # Plot
                             ax.plot(df_filter_columns(metric_epoch_df_subset_, {
                                     "epochs_description": epochs_description}).set_index(
-                                "x_val").val, linewidth=.5, linestyle=linestyle, color=color, zorder=10,
+                                x_val_type).val, linewidth=.5, linestyle=linestyle, color=color, zorder=10,
                                     alpha=line_alpha)
 
-        # If brain region difference for one pair of brain regions, add rectangles to denote brain region colors
+        # If brain region difference for one pair of brain regions, 1) add rectangles to denote brain region colors
+        # and 2) add marker to denote significance
         if len(brain_region_vals) == 1 and brain_region_meta_name == "joint_brain_region" and not empty_plot:
+
+            # Get brain region pair name
             brain_region_val = unpack_single_element(brain_region_vals)
+
+            # Get subset of df with brain region pair name
             df_subset = df_filter_columns(ave_conf_df, {brain_region_meta_name: brain_region_val})
+
+            # Proceed if data
             if len(df_subset) > 0:
+
+                # 1) Add rectangles to denote brain region colors
+                # Get brain regions
                 brain_regions = [check_return_single_element(df_subset[x].values).single_element for x in [
                     "brain_region_1", "brain_region_2"]]
                 if ylim is None:
@@ -1918,6 +2468,96 @@ class PathWellPopSummBase(ComputedBase):
                     ax.add_patch(patches.Rectangle(
                         [xlim[0], y_start], np.diff(xlim), y_end - y_start, facecolor=color, alpha=.3, zorder=10))
 
+                # 2) Add markers to denote significance
+
+                alpha = 0.05
+                num_bonferroni_trials = len(set(df_subset.x_val))
+                # For considering only samples prior to choice point, get appropriate bonferroni correct alpha
+                boot_set_name = self.get_upstream_param("boot_set_name")
+                params_table = self._get_params_table()
+                if boot_set_name in  params_table._valid_same_different_outbound_path_correct_diff_boot_set_names() + \
+                    params_table._valid_same_different_outbound_path_correct_diff_brain_region_diff_boot_set_names() + \
+                        params_table._valid_low_speed_non_low_speed_diff_boot_set_names() + \
+                        params_table._valid_low_speed_non_low_speed_diff_brain_region_diff_boot_set_names():
+                    choice_point_fraction = get_n_junction_path_junction_fractions(2)[0]
+                    num_bonferroni_trials = np.sum(np.unique(df_subset.x_val) < choice_point_fraction)
+
+                bonferroni_val = alpha/num_bonferroni_trials
+
+                y_vals = [.15, .1]
+
+                for sig_val, color, y_scale_factor in zip(
+                        [alpha, bonferroni_val], ["black", "gray"], y_vals):
+
+                    if sig_val not in set(df_subset.alpha):
+                        raise Exception(f"alpha {alpha} not in df_subset")
+
+                    df_key = {"alpha": sig_val, "joint_brain_region": unpack_single_element(brain_region_vals)}
+
+                    if relationship_vals is not None:
+                        relationship_val = unpack_single_element(relationship_vals)
+                        df_key.update({relationship_meta_name: relationship_val})
+
+                    ave_conf_df_subset = df_filter_columns(df_subset, df_key).set_index("x_val").sort_index()
+
+                    # Define y value
+                    y_val = ylim[1] - (ylim[1] - ylim[0])*y_scale_factor
+
+                    # Check all indxs unique
+                    check_all_unique(ave_conf_df_subset.index.values)
+
+                    plot_sig_type = "bars"
+
+                    if plot_sig_type == "bars":
+
+                        # Get ranges where significant difference
+                        significant_idxs = np.where(ave_conf_df_subset.significant)[0]
+                        significant_spans, _ = find_spans_increasing_list(significant_idxs)
+
+                        significant_spans_list = []
+                        for start_idx, stop_idx in significant_spans:
+
+                            if start_idx == 0:
+                                x_start = ave_conf_df_subset.index[start_idx]
+                            else:
+                                x_start = ave_conf_df_subset.index[start_idx] - (
+                                    ave_conf_df_subset.index[start_idx] - ave_conf_df_subset.index[start_idx - 1])/10
+                            if stop_idx == len(ave_conf_df_subset) - 1:
+                                x_stop = ave_conf_df_subset.index[stop_idx]
+                            else:
+                                x_stop = ave_conf_df_subset.index[stop_idx] - (
+                                    ave_conf_df_subset.index[stop_idx] - ave_conf_df_subset.index[stop_idx + 1])/10
+                            x_vals = [x_start, x_stop]
+
+                            # Store significant x vals so can print
+                            significant_spans_list.append(ave_conf_df_subset.index[start_idx])
+
+                            ax.plot(x_vals, [y_val]*2, color=color, linewidth=1.5)
+
+                        # Print significant values
+                        print(f"ALPHA: {sig_val}")
+                        print("SIGNIFICANT VALUES:")
+                        print(ave_conf_df_subset.index[significant_idxs].values)
+                        print("\n")
+
+                        # Print significant spans
+                        print("SIGNIFICANT SPANS:")
+                        print(significant_spans_list)
+                        print("\n")
+
+                    elif plot_sig_type  == "stars":
+
+                        # Get samples where significant difference
+                        significant_idxs = np.where(ave_conf_df_subset.significant)[0]
+                        x_vals = ave_conf_df_subset.index[significant_idxs]
+                        ax.plot(x_vals, [y_val] * len(x_vals), "*", color=color, linewidth=1.5)
+
+                        # Print significant values
+                        print(f"ALPHA: {sig_val}")
+                        print("SIGNIFICANT VALUES:")
+                        print(x_vals.values)
+                        print("\n")
+
         # If plot empty, remove axis if indicated
         if empty_plot and remove_axis_empty_plot:
             ax.axis("off")
@@ -1932,6 +2572,10 @@ class PathWellPopSummBase(ComputedBase):
         # Legend if indicated
         if legend:
             ax.legend()
+
+        # Horizontal line if indicated
+        if "plot_horizontal_line" in kwargs:
+            plot_spanning_line(ax.get_xlim(), kwargs["plot_horizontal_line"], ax, "x")
 
         # Extend method in optionally table specific manner
         extension_params = {"ax": ax, "empty_plot": empty_plot, "xlim": xlim}
@@ -1963,43 +2607,42 @@ class PathWellPopSummBase(ComputedBase):
                 "brain_region_units_cohort_type": brain_region_units_cohort_type}
 
     @staticmethod
-    def get_default_plot_params(brain_regions_separate=None):
+    def get_default_plot_params(**kwargs):
         # Define default params
 
-        if brain_regions_separate is None:
-            brain_regions_separate = False
+        smaller_plot = kwargs.pop("smaller_plot", False)
 
         # Subplot width
-        subplot_width = 2.2
-        if brain_regions_separate:
-            subplot_width = .875
+        subplot_width = 2
+        if smaller_plot:
+            subplot_width *= .75
 
         # Subplot height
-        subplot_height = 1.8
-        # ...Smaller plot if brain regions separate
-        if brain_regions_separate:
-            subplot_height = 1.25
+        subplot_height = 1.5
+        # ...Smaller plot
+        if smaller_plot:
+            subplot_height *= .75
 
         # Gaps between plots
         # ...rows
-        mega_row_gap_factor = .15
-        if brain_regions_separate:
+        mega_row_gap_factor = .2
+        if smaller_plot:
             mega_row_gap_factor = .2
         # ...columns
-        mega_column_gap_factor = .04
-        if brain_regions_separate:
-            mega_column_gap_factor = .05
+        mega_column_gap_factor = .12
+        if smaller_plot:
+            mega_column_gap_factor = .07
         wspace = .15
         hspace = .05
 
         # Fontsize
-        fontsize = 15
-        if brain_regions_separate:
-            fontsize = 11.2
+        fontsize = 10
+        if smaller_plot:
+            fontsize = 9
 
-        ticklabels_fontsize = 13
-        if brain_regions_separate:
-            ticklabels_fontsize = 10.4
+        ticklabels_fontsize = 10
+        if smaller_plot:
+            ticklabels_fontsize = 9
 
         # Figure type
         figure_type = ".svg"
@@ -2008,13 +2651,11 @@ class PathWellPopSummBase(ComputedBase):
         dpi = 300
 
         # Define whether to remove axis on empty plot
-        remove_axis_empty_plot = False
-        if brain_regions_separate:
-            remove_axis_empty_plot = True
+        remove_axis_empty_plot = True
 
         # Return default params
         return {
-            "brain_regions_separate": brain_regions_separate, "subplot_width": subplot_width,
+            "subplot_width": subplot_width,
             "subplot_height": subplot_height,
             "mega_row_gap_factor": mega_row_gap_factor, "mega_column_gap_factor": mega_column_gap_factor,
         "wspace": wspace, "hspace": hspace, "fontsize": fontsize, "ticklabels_fontsize": ticklabels_fontsize,
@@ -2025,15 +2666,22 @@ class PathWellPopSummBase(ComputedBase):
         # Initialize plot. Have rats in rows and tables in columns.
 
         # Add default plot params
-        default_params = self.get_default_plot_params(brain_regions_separate)
+        default_params = self.get_default_plot_params(**params)
         # Add default params to passed params if not present
         params = add_defaults(params, default_params, add_nonexistent_keys=True)
 
         # Define what variables are in rows and which are in columns
-        row_iterables = [0]
-        # ...put brain regions in columns if indicated
+
+        row_iterables = [0]  # default
+        if params["row_iterable_name"] is not None:
+            raise Exception(f"must code this condition")
+
         column_iterables = [0]  # default
-        if brain_regions_separate:
+        if params["column_iterable_name"] == "relationship_vals":
+            column_iterables = params["relationship_vals"]
+        elif params["column_iterable_name"] == "table_name":
+            column_iterables = params["table_names"]
+        elif brain_regions_separate:
             column_iterables = params["brain_region_vals"]
 
         gs_map, ax_map, fig = get_gridspec_ax_maps(
@@ -2042,6 +2690,7 @@ class PathWellPopSummBase(ComputedBase):
             mega_row_gap_factor=params["mega_row_gap_factor"],
             mega_column_gap_factor=params["mega_column_gap_factor"], wspace=params["wspace"],
             hspace=params["hspace"], sharey=True)
+
         plot_idx_map = get_plot_idx_map(mega_row_iterables, mega_column_iterables, row_iterables, column_iterables)
 
         return namedtuple("PlotObjs", "gs_map ax_map fig plot_idx_map")(gs_map, ax_map, fig, plot_idx_map)
@@ -2052,11 +2701,23 @@ class PathWellPopSummBase(ComputedBase):
         check_membership(
             ["brain_regions_separate", "brain_region_val", "table_name", "recording_set_name"], kwargs.keys())
 
+        mega_column_iterable = kwargs["table_name"]
+        if kwargs["mega_column_iterable_name"] == "brain_region_val":
+            mega_column_iterable = kwargs["brain_region_val"]
+
         column_iterable = 0
-        if kwargs["brain_regions_separate"]:
+        if kwargs["column_iterable_name"] == "relationship_vals":
+            column_iterable = kwargs["relationship_val"]
+        elif kwargs["column_iterable_name"] == "table_name":
+            column_iterable = kwargs["table_name"]
+        elif kwargs["brain_regions_separate"]:
             column_iterable = kwargs["brain_region_val"]
 
-        return (kwargs["recording_set_name"], kwargs["table_name"], 0, column_iterable)
+        row_iterable = 0
+        if kwargs["row_iterable_name"] is not None:
+            raise Exception(f"must code this condition")
+
+        return (kwargs["recording_set_name"], mega_column_iterable, row_iterable, column_iterable)
 
     def _get_multiplot_fig_name(self, brain_region_vals, keys, plot_name):
         raise Exception(f"Must overwrite in child class")
@@ -2080,6 +2741,18 @@ class PathWellPopSummBase(ComputedBase):
             self, mega_row_iterables, mega_column_iterables, brain_regions_separate, brain_region_vals, keys,
             rat_cohort, **kwargs):
 
+        # Get defaults if not passed
+        if "mega_column_iterable_name" not in kwargs:
+            kwargs["mega_column_iterable_name"] = None
+
+        if "row_iterable_name" not in kwargs:
+            kwargs["row_iterable_name"] = None
+
+        if "column_iterable_name" not in kwargs:
+            kwargs["column_iterable_name"] = None
+            if brain_regions_separate:
+                kwargs["column_iterable_name"] = "brain_regions"
+
         # Plot
         for key_idx, key in enumerate(keys):
 
@@ -2097,7 +2770,7 @@ class PathWellPopSummBase(ComputedBase):
 
             # Populate table if indicated
             if populate_tables:
-                table().populate(key)
+                table().populate_(key=key)
 
             # Get table subset
             table_key = {k: key[k] for k in table.primary_key if k in key}
@@ -2111,10 +2784,19 @@ class PathWellPopSummBase(ComputedBase):
             # Plot sample mean and confidence bounds
             for brain_region_val in brain_region_vals:
 
-                # Get subplot
-                ax_key = {**key, **{
-                    "brain_region_val": brain_region_val, "brain_regions_separate": brain_regions_separate}}
+                # Define axis key
+
+                ax_key = {"brain_regions_separate": brain_regions_separate}
+                ax_key.update(key)
+                ax_key.update({
+                    k: kwargs[k] for k in ["row_iterable_name", "column_iterable_name", "mega_column_iterable_name"]})
+                ax_key.update({"brain_region_val": brain_region_val})
+                if kwargs["column_iterable_name"] == "relationship_vals":
+                    ax_key.update({"relationship_val": unpack_single_element(key["relationship_vals"])})
                 ax_key = table_subset._get_multiplot_ax_key(**ax_key)
+
+                # Get subplot
+
                 ax = plot_objs.ax_map[ax_key]
                 plot_idx_obj = plot_objs.plot_idx_map[ax_key]
 
@@ -2133,8 +2815,8 @@ class PathWellPopSummBase(ComputedBase):
                     ylabel = None
 
                 # y tick labels
-                if "yticklabels" in kwargs:
-                    yticklabels = kwargs["yticklabels"]
+                if "yticklabels" in key:
+                    yticklabels = key["yticklabels"]
                 else:
                     yticklabels = []
                     if all([getattr(plot_idx_obj, x) == 0 for x in [
@@ -2151,18 +2833,17 @@ class PathWellPopSummBase(ComputedBase):
                 plot_params = {k: v for k, v in kwargs.items() if k in [
                     "show_ave_conf", "show_single_epoch", "remove_axis_empty_plot", "fontsize",
                     "ticklabels_fontsize", "subplot_width", "subplot_height", "hspace", "wspace",
-                    "mega_row_gap_factor", "mega_column_gap_factor", "xticklabels"]}
+                    "mega_row_gap_factor", "mega_column_gap_factor", "xticklabels", "plot_horizontal_line"]}
 
                 plot_params.update({
-                    "ax": ax, "brain_region_vals": [brain_region_val], "legend": False,
-                    "xlabel": xlabel, "ylabel": ylabel, "title": title,
-                    "yticklabels": yticklabels, "ylim": None})
+                    "ax": ax, "brain_region_vals": [brain_region_val], "legend": False, "xlabel": xlabel,
+                    "ylabel": ylabel, "title": title, "yticklabels": yticklabels, "ylim": None, })
 
                 for param_name in ["relationship_vals", "xticks", "yticks", "xlim", "ylim", ]:
                     if param_name in key:
                         plot_params[param_name] = key[param_name]
 
-                default_plot_params = table_subset.get_default_plot_params(brain_regions_separate)
+                default_plot_params = table_subset.get_default_plot_params(**kwargs)
                 plot_params = add_defaults(plot_params, default_plot_params, add_nonexistent_keys=True)
 
                 # Plot data
@@ -2173,6 +2854,22 @@ class PathWellPopSummBase(ComputedBase):
         plot_name = kwargs.pop("plot_type", "")
         if save_fig:
             table_subset._save_multiplot_fig(brain_region_vals, keys, plot_objs.fig, plot_name)
+
+    def _get_multiplot_params(self):
+        # Define params for plotting multiple table entries. One param set per table entry.
+        raise Exception(f"Must overwrite in child class")
+
+
+def _get_metric_on_column_set(arg_set):
+
+        metric_pair_fn, metric_df, pair, column_set, target_column_name, resample_quantity, \
+        joint_column_pair_name = arg_set
+
+        # Get metric on pairs of value at target column
+        val = metric_pair_fn(metric_df, pair, column_set, target_column_name, resample_quantity)
+
+        return tuple(
+            list(column_set.values()) + [joint_column_pair_name] + list(pair) + [val])
 
 
 class PathWellFRVecSummBase(PathWellPopSummBase):
@@ -2217,6 +2914,19 @@ class PathWellFRVecSummBase(PathWellPopSummBase):
         # Text to denote which brain regions are plotted
         brain_regions_text = f"_{len(brain_region_vals)}areas"
 
+        # Text to denote number of relationships
+        relationships_text = ""
+        relationship_vals = []
+        for key in keys:
+            if "relationship_vals" in key:
+                relationship_vals.append(key["relationship_vals"])
+        if len(relationship_vals) > 0:
+            num_relationships = np.unique([len(key["relationship_vals"]) for key in keys])
+            if len(num_relationships) == 1:
+                relationships_text = f"_rel{num_relationships[0]}"
+            else:
+                raise Exception(f"have not accounted for case with multiple numbers of relationships across keys")
+
         # Define map to abbreviate parts of param names so that can meet file name character limit
         replace_char_map = self._get_replace_char_map()
 
@@ -2256,66 +2966,90 @@ class PathWellFRVecSummBase(PathWellPopSummBase):
 
         # Return name of saved figure
         return f"fr_vec{plot_name}{smooth_text}{zscore_text}{upstream_param_text}{summ_param_text}" + \
-         f"{show_single_epoch_text}{brain_regions_text}"
+         f"{show_single_epoch_text}{brain_regions_text}{relationships_text}"
+
+    def _get_boot_diff_params(
+            self, target_column_name, metric_df, pairs_order, vals_index_name, boot_set_name,
+            eps_labels_resample_col_name="eps_labels", exclude_columns=None, debug_mode=False):
+        """
+        Get bootstrap parameters in cases where taking difference between values
+        :param target_column_name: str, column in metric_df that takes on different values for the entries with which
+        we find difference in values
+        :param metric_df: pandas df. Subtract values for pairs of entries for which all columns in metric_df take on
+        the same value, except for the column given by target_column_name, which takes on different values across
+        pairs of entries
+        :param pairs_order: desired order of values in target_column_name for subtraction
+        (e.g. mPFC_targeted - OFC_targeted for the column brain_region)
+        :param vals_index_name: str
+        :param boot_set_name: str, name of bootstrap parameter set
+        :param eps_labels_resample_col_name: str, name of eps_labels column for resampling
+        :param exclude_columns: list, names of columns to exclude when getting paired metric df (values at these
+        columns are allowed to differ across members of pair)
+        :return: df with metric
+        :return resample_levels: resample_levels_ in function hierarchical_bootstrap in hierarchical_bootstrap.py
+        :return ave_group_column_names: ave_group_column_names_ in function hierarchical_bootstrap in
+        hierarchical_bootstrap.py
+        """
+
+        print(f"Getting bootstrap difference parameters...")
+
+        # Define inputs if not passed
+        if exclude_columns is None:
+            exclude_columns = []
+
+        # Define parameters for bootstrap
+        # ...Define columns at which to resample during bootstrap, in order
+        eps_labels_list = []
+        if eps_labels_resample_col_name not in exclude_columns and eps_labels_resample_col_name is not None:
+            eps_labels_list = [eps_labels_resample_col_name]
+        resample_levels = [
+            "nwb_file_name_epochs_description"] + eps_labels_list + ["brain_region_units_param_name"]
+        # ...Define columns whose values to keep constant (no resampling across these)
+        col_name = unpack_single_element(
+            [x for x in ["relationship", "joint_relationship", "brain_region"] if x != target_column_name and
+             x in metric_df.columns])
+        x_names = [vals_index_name]
+        if "x_val" not in x_names:
+            x_names.append("x_val")
+        ave_group_column_names = x_names + [
+            self._get_joint_column_name(target_column_name), f"{target_column_name}_1",
+            f"{target_column_name}_2"] + [col_name]
+        # ...Alter params based on whether rat cohort
+        resample_levels, ave_group_column_names = self._alter_boot_params_rat_cohort(
+            boot_set_name, resample_levels, ave_group_column_names)
+
+        # Redefine metric_df to reflect difference between val for pair of conditions
+        # ...Define pairs of variable
+        target_column_pairs = get_val_pairs(np.unique(metric_df[target_column_name]), pairs_order)
+        # ...Define function for computing metric on brain region pairs
+        metric_pair_fn = self.metric_pair_diff
+        # ...Get df with paired metric
+        metric_df = self.get_paired_metric_df(metric_df, target_column_name, target_column_pairs, metric_pair_fn,
+                                              exclude_columns=exclude_columns)
+
+        if debug_mode and len(metric_df) == 0:
+            raise Exception
+
+        # Return parameters
+        return metric_df, resample_levels, ave_group_column_names
 
 
 class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
 
     def make(self, key):
 
-        verbose = True
-        tolerate_missing = False
+        print(f"Populating {self.table_name} for key {key}...")
 
         # Get params
-        metric_processing_name, label_name, brain_region_units_cohort_type, boot_set_name = (
-                self._get_params_table() & key).fetch1(
-            "metric_processing_name", "label_name", "brain_region_units_cohort_type", "boot_set_name")
-        brain_region_cohort_name = key["brain_region_cohort_name"]
-        zscore_fr = key["zscore_fr"]
-        res_epoch_spikes_sm_param_name = key["res_epoch_spikes_sm_param_name"]
-        unit_params = (BrainRegionUnitsCohortType & {
-            "brain_region_units_cohort_type": brain_region_units_cohort_type}).fetch1()
-        unit_subset_type = unit_params["unit_subset_type"]
-        unit_subset_size = unit_params["unit_subset_size"]
-        unit_subset_iterations = unit_params["unit_subset_iterations"]
-        min_epoch_mean_firing_rate = (EpsUnitsParams & unit_params).fetch1("min_epoch_mean_firing_rate")
+        boot_set_name = (self._get_params_table() & key).fetch1("boot_set_name")
 
-        # Get table
-        table = self._upstream_table()
+        print(f"Fetching metric_df...")
+        metric_df = (self._get_selection_table() & key).fetch1_dataframe()
 
-        # Get nwb file names and epochs_descriptions_names
-        nwb_file_names, epochs_descriptions_names = (RecordingSet & key).fetch1(
-            "nwb_file_names", "epochs_descriptions_names")
+        print(f"Getting bootstrap parameters...")
 
-        # Define kwargs
-        # TODO (feature): define programmatically based on upstream table
-        kwargs = {k: key[k] for k in [
-            "time_rel_wa_fr_vec_param_name", "time_rel_wa_dig_param_name",
-            "time_rel_wa_dig_single_axis_param_name",
-            "time_rel_wa_ave_fr_vec_param_name", "time_rel_wa_fr_vec_st_ave_param_name",
-            "path_fr_vec_param_name", "ppt_dig_param_name", "path_ave_fr_vec_param_name",
-            "path_fr_vec_st_ave_param_name"] if k in key}
-        kwargs.update({"label_name": label_name})
-
-        # Get metric values
-        nwb_file_names = nwb_file_names
-        if metric_processing_name == "one_minus_on_off_diagonal_ratio":
-            kwargs.update({"ratio_name": metric_processing_name})
-            metric_df = table().get_concat_same_diff_x_ratio_df(
-                nwb_file_names, epochs_descriptions_names, brain_region_cohort_name,
-                min_epoch_mean_firing_rate=min_epoch_mean_firing_rate, zscore_fr=zscore_fr,
-                res_epoch_spikes_sm_param_name=res_epoch_spikes_sm_param_name,
-                unit_subset_type=unit_subset_type, unit_subset_size=unit_subset_size,
-                unit_subset_iterations=unit_subset_iterations, verbose=verbose,
-                tolerate_missing=tolerate_missing, **kwargs)
-        else:
-            metric_df = table().get_concat_metric_df(
-                nwb_file_names, epochs_descriptions_names, brain_region_cohort_name,
-                min_epoch_mean_firing_rate=min_epoch_mean_firing_rate, zscore_fr=zscore_fr,
-                res_epoch_spikes_sm_param_name=res_epoch_spikes_sm_param_name,
-                unit_subset_type=unit_subset_type, unit_subset_size=unit_subset_size,
-                unit_subset_iterations=unit_subset_iterations, verbose=verbose,
-                tolerate_missing=tolerate_missing, **kwargs)
+        # Define name of value index
+        vals_index_name = self._get_vals_index_name(key=key)
 
         # Restrict to non-nan samples
         valid_bool = np.invert(np.isnan(metric_df.val))
@@ -2323,14 +3057,14 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
 
         # Hierarchical bootstrap and sample mean
         # Define bootstrap params as indicated
-        boot_params = (self._get_params_table()() & key).get_boot_params()
-
-        # Define name of value index
-        vals_index_name = self._get_vals_index_name(key=key)
+        bonferroni_num_tests = len(np.unique(metric_df[vals_index_name]))
+        boot_params = (self._get_params_table()() & key).get_boot_params(bonferroni_num_tests)
 
         # Define bootstrap parameters
         # NOTE: even though x_val is redundant with vals_index_name, we include it in ave_group_column_names
         # and ave_diff_group_column_names_ for convenience: so we can access in df when plotting
+        if "x_val" not in metric_df:
+            metric_df["x_val"] = metric_df[vals_index_name]
 
         # Params for all
         resample_quantity = "val"
@@ -2381,19 +3115,20 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
             # ...Get upstream table
             upstream_table = self._upstream_table()()
             # ...Initialize map
+            print("Getting split_eps_labels_map...")
             split_eps_labels_map = dict()
-            for upstream_key in (self._get_selection_table() & key).fetch1("upstream_keys"):
-                filter_key = {k: v for k, v in upstream_key.items() if k in metric_df.columns}
-                metric_df_subset = df_filter_columns(metric_df, filter_key)
-
-                for eps_labels in np.unique(metric_df_subset["eps_labels"]):
-                    epoch_1, epoch_2, label_1, label_2 = upstream_table._split_eps_labels(
-                        eps_labels, upstream_key["nwb_file_name"], include_reversed_pairs)
-                    label_1 = MazePathWell().split_stay_leave_trial_path_name(label_1)
-                    label_2 = MazePathWell().split_stay_leave_trial_path_name(label_2)
-                    split_eps_labels_map[eps_labels] = upstream_table._get_eps_labels(
-                        epoch_1, epoch_2, label_1, label_2)
-
+            eps_labels_list = np.unique(metric_df.eps_labels)
+            for idx, eps_labels in enumerate(eps_labels_list):
+                print_iteration_progress(idx, len(eps_labels_list), 20)
+                # can use any nwb file name so just take first
+                nwb_file_name = df_filter_columns(
+                    metric_df, {"eps_labels": eps_labels})["nwb_file_name"].values[0]
+                epoch_1, epoch_2, label_1, label_2 = upstream_table._split_eps_labels(
+                    eps_labels, nwb_file_name, include_reversed_pairs)
+                label_1 = MazePathWell().split_stay_leave_trial_path_name(label_1)
+                label_2 = MazePathWell().split_stay_leave_trial_path_name(label_2)
+                split_eps_labels_map[eps_labels] = upstream_table._get_eps_labels(
+                    epoch_1, epoch_2, label_1, label_2)
             # Remove stay/leave information from labels
             eps_labels_resample_col_name = "eps_labels_no_stay_leave_info"
             metric_df[eps_labels_resample_col_name] = [split_eps_labels_map[x] for x in metric_df["eps_labels"]]
@@ -2451,6 +3186,13 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
                 params_table._valid_same_different_outbound_path_correct_diff_boot_set_names() + \
                 params_table._valid_same_different_outbound_path_correct_diff_brain_region_diff_boot_set_names():
 
+            # For considering only samples prior to choice point, add appropriate bonferroni correct alpha
+            choice_point_fraction = get_n_junction_path_junction_fractions(2)[0]
+            num_samples_pre_choice_point = np.sum(np.unique(metric_df[vals_index_name]) < choice_point_fraction)
+            new_alpha = .05/num_samples_pre_choice_point
+            new_alphas = np.sort(list(boot_params.alphas) + [new_alpha])
+            boot_params = boot_params._replace(alphas=new_alphas)
+
             # We want to take difference of values for the same outbound path across correct/correct trials and
             # and different outbound paths across correct/correct trials.
             # The function _get_boot_diff_params takes a df with values to be subtracted. Entries with pairs of
@@ -2482,6 +3224,74 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
                     target_column_name, metric_df, pairs_order, vals_index_name, boot_set_name,
                     eps_labels_resample_col_name, debug_mode=False)
 
+        # 7) Average difference of non low speed / non low speed values (metric computed for pairs of non low speed
+        # trials) and non low speed / low speed values (metric computed for pairs of non low speed and low speed trials)
+        # 8) Average difference of non low speed / non low speed values and non low speed / low speed
+        # values across brain regions
+        elif boot_set_name in params_table._valid_low_speed_non_low_speed_diff_boot_set_names() + \
+               params_table._valid_low_speed_non_low_speed_diff_brain_region_diff_boot_set_names():
+
+            # For considering only samples prior to choice point, add appropriate bonferroni correct alpha
+            choice_point_fraction = get_n_junction_path_junction_fractions(2)[0]
+            num_samples_pre_choice_point = np.sum(np.unique(metric_df[vals_index_name]) < choice_point_fraction)
+            new_alpha = .05/num_samples_pre_choice_point
+            new_alphas = np.sort(list(boot_params.alphas) + [new_alpha])
+            boot_params = boot_params._replace(alphas=new_alphas)
+
+            # We want to take difference of values for the same path or well, across non low speed / non low speed
+            # and non low speed / low speed cases.
+            # The function _get_boot_diff_params takes a df with values to be subtracted. Entries with pairs of
+            # values to be subtracted differ at only a target column (here, the column 'relationship' which indicates
+            # whether the metric is on non low speed / non low speed or non low speed / low speed trials).
+            # All other columns should have the same values across the pair.
+            # To achieve this, we must remove from information about trial types (non low speed or low speed)
+            # from eps_labels. eps_labels contains information about the pair of epochs, trial types
+            # (non low speed or low speed) and path names on which the metric was computed.
+
+            target_column_name = "relationship"
+            pairs_order = self._get_non_low_speed_low_speed_order_for_pairs()
+
+            # Get map from eps_labels to a version where label_1 and label_2 have non low speed / low speed
+            # information removed
+            # ...Include pairs of labels in either order ((label_1, label_2) or (label_2, label_1)) since either order
+            # can be encountered.
+            include_reversed_pairs = True
+            # ...Get upstream table
+            upstream_table = self._upstream_table()()
+            # ...Initialize map
+            split_eps_labels_map = dict()
+            eps_labels_list = np.unique(metric_df.eps_labels)
+            for idx, eps_labels in enumerate(eps_labels_list):
+                print_iteration_progress(idx, len(eps_labels_list), 20)
+                # can use any nwb file name so just take first
+                nwb_file_name = df_filter_columns(
+                    metric_df, {"eps_labels": eps_labels})["nwb_file_name"].values[0]
+                epoch_1, epoch_2, label_1, label_2 = upstream_table._split_eps_labels(
+                    eps_labels, nwb_file_name, include_reversed_pairs)
+                label_1 = MazePathWell().split_non_low_speed_low_speed_trial_path_name(label_1)
+                label_2 = MazePathWell().split_non_low_speed_low_speed_trial_path_name(label_2)
+                split_eps_labels_map[eps_labels] = upstream_table._get_eps_labels(
+                    epoch_1, epoch_2, label_1, label_2)
+
+            # Remove non low speed / low speed information from labels
+            eps_labels_resample_col_name = "eps_labels_no_non_low_speed_low_speed_info"
+            metric_df[eps_labels_resample_col_name] = [split_eps_labels_map[x] for x in metric_df["eps_labels"]]
+            exclude_columns = ["eps_labels", "label_1", "label_2"]
+
+            metric_df, resample_levels, ave_group_column_names = self._get_boot_diff_params(
+                target_column_name, metric_df, pairs_order, vals_index_name, boot_set_name,
+                eps_labels_resample_col_name=eps_labels_resample_col_name, exclude_columns=exclude_columns,
+                debug_mode=False)
+
+            # Now take brain region difference if indicated
+            if boot_set_name in params_table._valid_low_speed_non_low_speed_diff_brain_region_diff_boot_set_names():
+
+                target_column_name = "brain_region"
+                pairs_order = self._get_brain_region_order_for_pairs()
+                metric_df, resample_levels, ave_group_column_names = self._get_boot_diff_params(
+                    target_column_name, metric_df, pairs_order, vals_index_name, boot_set_name,
+                    eps_labels_resample_col_name, debug_mode=False)
+
         # Raise error if boot set name not accounted for
         else:
             raise Exception(f"Have not written code for boot_set_name {boot_set_name}")
@@ -2504,13 +3314,11 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
         # Insert into main table
         insert_analysis_table_entry(self, list(results_dict.values()), key)
 
-        # Insert into parts tables
-        for upstream_key in (self._get_selection_table() & key).fetch1("upstream_keys"):
-            insert1_print(self.Upstream, {**key, **upstream_key})
-
     def _get_eps_labels_ave_metric_df(self, metric_df, resample_quantity):
         # Average across eps_labels in metric_df. Meant to be used in cases where comparing relationships
         # whose eps_labels dont have a direct correspondence (e.g. same path vs. outbound paths)
+
+        print(f"Averaging across eps_labels in metric_df...")
 
         # Get unique settings of columns within which we want to average
         column_sets = unique_df_column_sets(metric_df, [
@@ -2518,79 +3326,17 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
                 "eps_labels", "label_1", "label_2", resample_quantity]], as_dict=True)
 
         # Assemble df
-        data_list = []
-        for column_set in column_sets:
-            # Find average across eps_labels
-            df_subset = df_filter_columns(metric_df, column_set)
-            ave_val = np.mean(df_subset.val)
-            df_entry = list(column_set.values()) + ["^".join(df_subset.eps_labels), ave_val]
-            data_list.append(df_entry)
+        pool = mp.Pool(mp.cpu_count())
+        data_list = pool.map(_average_across, [(metric_df, x) for x in column_sets])
+        pool.close()
+        pool.join()  # waits until all processes done before running next line
+
         eps_labels_resample_col_name = "eps_labels_joined"
-        eps_labels_ave_metric_df = df_from_data_list(data_list, list(column_set.keys()) + [
+        eps_labels_ave_metric_df = df_from_data_list(data_list, list(column_sets[0].keys()) + [
             eps_labels_resample_col_name, resample_quantity])
         exclude_columns = [eps_labels_resample_col_name]
         return namedtuple("EpsLabelsAve", "eps_labels_ave_metric_df exclude_columns eps_labels_resample_col_name")(
             eps_labels_ave_metric_df, exclude_columns, eps_labels_resample_col_name)
-
-    def _get_boot_diff_params(
-            self, target_column_name, metric_df, pairs_order, vals_index_name, boot_set_name,
-            eps_labels_resample_col_name="eps_labels", exclude_columns=None, debug_mode=False):
-        """
-        Get bootstrap parameters in cases where taking difference between values
-        :param target_column_name: str, column in metric_df that takes on different values for the entries with which
-        we find difference in values
-        :param metric_df: pandas df. Subtract values for pairs of entries for which all columns in metric_df take on
-        the same value, except for the column given by target_column_name, which takes on different values across
-        pairs of entries
-        :param pairs_order: desired order of values in target_column_name for subtraction
-        (e.g. mPFC_targeted - OFC_targeted for the column brain_region)
-        :param vals_index_name: str
-        :param boot_set_name: str, name of bootstrap parameter set
-        :param eps_labels_resample_col_name: str, name of eps_labels column for resampling
-        :param exclude_columns: list, names of columns to exclude when getting paired metric df (values at these
-        columns are allowed to differ across members of pair)
-        :return: df with metric
-        :return resample_levels: resample_levels_ in function hierarchical_bootstrap in hierarchical_bootstrap.py
-        :return ave_group_column_names: ave_group_column_names_ in function hierarchical_bootstrap in
-        hierarchical_bootstrap.py
-        """
-
-        # Define inputs if not passed
-        if exclude_columns is None:
-            exclude_columns = []
-
-        # Define parameters for bootstrap
-        # ...Define columns at which to resample during bootstrap, in order
-        eps_labels_list = []
-        if eps_labels_resample_col_name not in exclude_columns and eps_labels_resample_col_name is not None:
-            eps_labels_list = [eps_labels_resample_col_name]
-        resample_levels = [
-            "nwb_file_name_epochs_description"] + eps_labels_list + ["brain_region_units_param_name"]
-        # ...Define columns whose values to keep constant (no resampling across these)
-        col_name = unpack_single_element(
-            [x for x in ["relationship", "joint_relationship", "brain_region"] if x != target_column_name and
-             x in metric_df.columns])
-        ave_group_column_names = [
-            vals_index_name, "x_val", self._get_joint_column_name(target_column_name), f"{target_column_name}_1",
-            f"{target_column_name}_2"] + [col_name]
-        # ...Alter params based on whether rat cohort
-        resample_levels, ave_group_column_names = self._alter_boot_params_rat_cohort(
-            boot_set_name, resample_levels, ave_group_column_names)
-
-        # Redefine metric_df to reflect difference between val for pair of conditions
-        # ...Define pairs of variable
-        target_column_pairs = get_val_pairs(np.unique(metric_df[target_column_name]), pairs_order)
-        # ...Define function for computing metric on brain region pairs
-        metric_pair_fn = self.metric_pair_diff
-        # ...Get df with paired metric
-        metric_df = self.get_paired_metric_df(metric_df, target_column_name, target_column_pairs, metric_pair_fn,
-                                              exclude_columns=exclude_columns)
-
-        if debug_mode and len(metric_df) == 0:
-            raise Exception
-
-        # Return parameters
-        return metric_df, resample_levels, ave_group_column_names
 
     def cleanup(self):
         # Delete orphaned part table entries (not sure why orphaned entries are able to be made)
@@ -2606,13 +3352,15 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
 
     def _get_relationship_meta_name(self):
 
-        boot_set_name = self.get_upstream_param("boot_set_name")
-        params_table = self._get_params_table()
+        params_table = self._get_params_table()()
+        boot_set_name = (params_table & self.fetch1("KEY")).get_params()["boot_set_name"]
         if boot_set_name in params_table._valid_relationship_div_boot_set_names() + \
             params_table._valid_stay_leave_diff_boot_set_names() + \
             params_table._valid_stay_leave_diff_brain_region_diff_boot_set_names() + \
             params_table._valid_same_different_outbound_path_correct_diff_boot_set_names() + \
-            params_table._valid_same_different_outbound_path_correct_diff_brain_region_diff_boot_set_names():
+            params_table._valid_same_different_outbound_path_correct_diff_brain_region_diff_boot_set_names() + \
+            params_table._valid_low_speed_non_low_speed_diff_boot_set_names() + \
+            params_table._valid_low_speed_non_low_speed_diff_brain_region_diff_boot_set_names():
             return self._get_joint_column_name("relationship")
 
         return "relationship"
@@ -2706,8 +3454,7 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
 
         param_sets = []
         # Loop through table names (and corresponding label names and relationship vals)
-        for table_name, label_name, relationship_vals in zip(
-                table_names, label_names, relationship_vals_list):
+        for table_name, label_name, relationship_vals in zip(table_names, label_names, relationship_vals_list):
 
             # Make copy of kwargs so that updates dont carry over from one for loop iteration to the next
             key = copy.deepcopy(kwargs)
@@ -2739,6 +3486,14 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
 
         # Return param sets
         return param_sets
+
+
+def _average_across(metric_df_column_set):
+    metric_df, column_set = metric_df_column_set
+    # Find average across eps_labels
+    df_subset = df_filter_columns(metric_df, column_set)
+    ave_val = np.mean(df_subset.val)
+    return list(column_set.values()) + ["^".join(df_subset.eps_labels), ave_val]
 
 
 class CovariateAveFRVecSummBase(CovariateFRVecAveSummBase):
@@ -2846,6 +3601,10 @@ class PathFRVecSummBase(CovariateFRVecAveSummBase):
             "same_path_incorrect_incorrect_trials", "outbound_correct_correct_trials",
             "outbound_correct_incorrect_trials", "outbound_incorrect_incorrect_trials",
             "outbound_correct_correct_trials_same_path_outbound_correct_correct_trials",
+            'same_path_low_speed_low_speed_trials',
+            'same_path_low_speed_non_low_speed_trials',
+            'same_path_non_low_speed_non_low_speed_trials',
+            "same_path_non_low_speed_non_low_speed_trials_same_path_low_speed_low_speed_trials"
         ]
 
     def _get_x_lims(self):
@@ -2878,6 +3637,7 @@ class PathFRVecSummBase(CovariateFRVecAveSummBase):
         # Return default params
         return params
 
+
 class TimeRelWAFRVecSummBase(CovariateFRVecAveSummBase):
 
     def get_ordered_relationships(self):
@@ -2887,7 +3647,14 @@ class TimeRelWAFRVecSummBase(CovariateFRVecAveSummBase):
             "different_end_well_even_odd_stay_trials_same_end_well_even_odd_stay_trials",
             "same_path_stay_stay_trials", "same_path_stay_leave_trials", "same_path_leave_leave_trials",
             "same_path_stay_leave_trials_same_path_stay_stay_trials",
-            "outbound_correct_correct_trials_same_path_outbound_correct_correct_trials"
+            "outbound_correct_correct_trials_same_path_outbound_correct_correct_trials",
+
+            'outbound_correct_correct_stay_trials',
+            'outbound_correct_incorrect_stay_trials',
+            'same_path_correct_correct_stay_trials',
+            'same_path_correct_incorrect_stay_trials',
+            'same_path_incorrect_incorrect_stay_trials',
+            'same_path_outbound_correct_correct_stay_trials'
         ]
 
     def _get_x_lims(self):
@@ -2896,7 +3663,7 @@ class TimeRelWAFRVecSummBase(CovariateFRVecAveSummBase):
     def _get_x_text(self):
         # Get name of x value as friendly text
 
-        return "Time in delay (s)"
+        return "Time from well arrival (s)"
 
     def extend_plot_results(self, **kwargs):
 
@@ -2921,18 +3688,67 @@ class TimeRelWAFRVecSummBase(CovariateFRVecAveSummBase):
         return params
 
 
+class MultiCovFRVecSummBase(CovariateFRVecAveSummBase):
+
+    def get_ordered_relationships(self):
+
+        return [
+            "same_path_even_odd_correct_stay_trials",
+            "same_turn_even_odd_correct_stay_trials", "different_turn_well_even_odd_stay_trials",
+
+            "same_path_correct_correct_trials", "same_path_correct_incorrect_trials",
+            "same_path_incorrect_incorrect_trials", "outbound_correct_correct_trials",
+            "outbound_correct_incorrect_trials", "outbound_incorrect_incorrect_trials",
+            "outbound_correct_correct_trials_same_path_outbound_correct_correct_trials",
+
+            "same_path_correct_correct_stay_trials", "same_path_correct_incorrect_stay_trials",
+            "same_path_incorrect_incorrect_stay_trials", "outbound_correct_correct_stay_trials",
+            "outbound_correct_incorrect_stay_trials", "outbound_incorrect_incorrect_stay_trials",
+        ]
+
+    def _get_x_lims(self):
+        # TODO: code this
+        return None
+
+    def _get_xticks(self):
+        return self._get_x_lims()
+
+    def _get_x_text(self):
+        # Get name of x value as friendly text
+        return ""
+
+    def extend_plot_results(self, **kwargs):
+
+        super().extend_plot_results(**kwargs)
+
+        ax = kwargs["ax"]
+
+        # Vertical lines to denote track segments
+        if not kwargs["empty_plot"]:
+            plot_junction_fractions(ax)
+
+    # Override parent class method so can add params specific to path fr vec tables
+    def get_default_table_entry_params(self):
+
+        params = super().get_default_table_entry_params()
+
+        # Return default params
+        return params
+
+
 def format_metric_name(metric_name):
     metric_name_map = {"cosine_similarity": "Cosine similarity", "euclidean_distance": "Euclidean distance"}
     return metric_name_map[metric_name]
 
 
-class PopulationAnalysisParamsBase(SecKeyParamsBase):
+class PopulationAnalysisParamsBase(ParamsBase):
 
     @staticmethod
     def _default_brain_region_units_cohort_types():
 
         eps_units_param_name = EpsUnitsParams().lookup_param_name([.1])
-        param_sets = [[eps_units_param_name, 0, "target_region", None, [None]],
+        param_sets = [
+            # [eps_units_param_name, 0, "target_region", None, [None]],
             [eps_units_param_name, 1, "rand_target_region", 50, [0]],
             [eps_units_param_name, 1, "rand_target_region", 50, np.arange(0, 10)]]
 
@@ -2977,16 +3793,35 @@ class PopulationAnalysisParamsBase(SecKeyParamsBase):
         param_name = "same_different_outbound_path_correct_diff_brain_region_diff"
         return [param_name, f"{param_name}_rat_cohort"]
 
+    @staticmethod
+    def _valid_low_speed_non_low_speed_diff_boot_set_names():
+        # All valid low speed vs. non low speed correct trial boot set names
+        param_name = "low_speed_non_low_speed_diff"
+        return [param_name, f"{param_name}_rat_cohort"]
+
+    @staticmethod
+    def _valid_low_speed_non_low_speed_diff_brain_region_diff_boot_set_names():
+        param_name = "low_speed_non_low_speed_diff_brain_region_diff"
+        return [param_name, f"{param_name}_rat_cohort"]
+
     def _boot_set_names(self):
         # Boot set names to populate table with. Use different set depending on child class.
         return self._valid_default_boot_set_names()
 
-    def get_boot_params(self):
-        boot_set_name = self.fetch1("boot_set_name")
-        return get_boot_params(boot_set_name)
+    def get_params(self):
+        raise Exception(f"Must be overwritten in child class")
+
+    def get_boot_params(self, bonferroni_num_tests):
+        return get_boot_params(self.get_params()["boot_set_name"], bonferroni_num_tests=bonferroni_num_tests)
 
 
-class CovariateFRVecAveSummParamsBase(PopulationAnalysisParamsBase):
+# TODO: if delete all tables relying on PopulationAnalysisSecKeyParamsBase, convert summ param tables to have
+#  diciontary with params, rather than classic params table setup
+class PopulationAnalysisSecKeyParamsBase(SecKeyParamsBase, PopulationAnalysisParamsBase):
+    pass
+
+
+class CovariateFRVecAveSummSecKeyParamsBase(PopulationAnalysisSecKeyParamsBase):
 
     @staticmethod
     def _default_label_names():
@@ -3006,11 +3841,16 @@ class CovariateFRVecAveSummParamsBase(PopulationAnalysisParamsBase):
         return [x + [y] for x in self._default_processing_params() for y in
                 self._default_brain_region_units_cohort_types()]
 
+    def get_params(self):
+        return {k: self.fetch1(k) for k in get_table_secondary_key_names(self)}
+
 
 class PopulationAnalysisSelBase(SelBase):
 
     def _recording_set_name_types(self):
-        return ["Haight_rotation", "Haight_rotation_rat_cohort"]
+        return [
+            "Haight_rotation", "Haight_rotation_rat_cohort", "single_epoch_testing",
+            "Haight_rotation_handleAlternation", "first_day_learning_single_epoch"]
 
     def get_recording_set_names(self, key_filter):
         # Return list of recording set names for a given key_filter, for use in populating tables
@@ -3029,12 +3869,12 @@ class PopulationAnalysisSelBase(SelBase):
     def _get_param_name_map(self, key_filter, brain_region_units_cohort_types):
         raise Exception(f"Must be defined in child class")
 
-    def _get_param_name_map_key(self, key, brain_region_units_cohort_type):
+    def _format_param_name_map_key(self, **kwargs):
         # Make key to param name map given a set of parameters
         raise Exception(f"Must be defined in child class")
 
     # TODO (feature): limit search more fully with key_filter
-    def _get_potential_keys(self, key_filter=None, verbose=True, debug_text=False):
+    def _get_potential_keys(self, key_filter=None, verbose=True, debug_mode=False, populate_tables=True):
 
         # Define key filter if not passed
         if key_filter is None:
@@ -3088,6 +3928,9 @@ class PopulationAnalysisSelBase(SelBase):
                 if verbose:
                     print(f"\nOn recording_set_name {recording_set_name}...")
 
+                if "J1620210529" in recording_set_name:  # !!!!!!! temporary until process CA1 data
+                    brain_region_cohort_name = "mPFC_targeted_OFC_targeted"
+
                 # Get nwb file names and epochs descriptions for this recording set
                 nwb_file_names, epochs_descriptions_names = (
                         RecordingSet & {"recording_set_name": recording_set_name}).fetch1(
@@ -3106,7 +3949,7 @@ class PopulationAnalysisSelBase(SelBase):
                     upstream_keys = []
                     for nwb_file_name, epochs_descriptions_name in zip(nwb_file_names, epochs_descriptions_names):
 
-                        if debug_text:
+                        if debug_mode:
                             print(nwb_file_name, epochs_descriptions_name)
 
                         # Get epochs descriptions
@@ -3134,7 +3977,7 @@ class PopulationAnalysisSelBase(SelBase):
 
                         for epochs_description in epochs_descriptions:
 
-                            if debug_text:
+                            if debug_mode:
                                 print(epochs_description)
 
                             curation_names_df_subset = df_filter_columns(
@@ -3143,7 +3986,7 @@ class PopulationAnalysisSelBase(SelBase):
                             for brain_region, curation_name in zip_df_columns(
                                     curation_names_df_subset, ["brain_region", "curation_name"]):
 
-                                if debug_text:
+                                if debug_mode:
                                     print(brain_region, curation_name)
 
                                 curation_name = df_pop(curation_names_df_subset, {
@@ -3179,9 +4022,12 @@ class PopulationAnalysisSelBase(SelBase):
                                     populated_ = len(upstream_table & upstream_key) > 0
 
                                     # Print whether entry in table if indicated
-                                    if debug_text:
+                                    if debug_mode:
                                         print(f"{populated_} {upstream_table.table_name} {upstream_key}")
                                         # Raise error so can investigate no entry
+                                        if populated_ is False and populate_tables:
+                                            upstream_table.populate(upstream_key)
+                                            populated_ = len(upstream_table & upstream_key) > 0
                                         if populated_ is False:
                                             raise Exception
 
@@ -3210,13 +4056,19 @@ class PopulationAnalysisSelBase(SelBase):
                         # Add in summary table param name
 
                         # Get key to param name map
-                        param_name_map_key = self._get_param_name_map_key(key, brain_region_units_cohort_type)
+                        param_name_map_key = self._format_param_name_map_key(
+                            key=key, recording_set_name=recording_set_name,
+                            brain_region_units_cohort_type=brain_region_units_cohort_type)
+                        if debug_mode:
+                            print(f"\nparam_name_map_key: {param_name_map_key}")
+                            print(f"\nparam_name_map: {param_name_map}")
+                            print(f"\nparam_name_map_key in param_name_map: {param_name_map_key in param_name_map}")
 
                         # If key in param name map, add to table keys
                         if param_name_map_key in param_name_map:
                             for summ_param_name in param_name_map[param_name_map_key]:
                                 if verbose:
-                                    print(f"Adding keys...")
+                                    print(f"Adding keys including summary table param name: {summ_param_name}...")
                                 # Add summary table param name to key
                                 key.update({meta_param_name: summ_param_name})
                                 # Add key to keys
@@ -3226,65 +4078,84 @@ class PopulationAnalysisSelBase(SelBase):
 
 class CovariateFRVecAveSummSelBase(PopulationAnalysisSelBase):
 
+    # TODO: drop other tables dependent on CovariateFRVecAveSummSelBase and reinitialize with Upstream table as
+    #  part of the Sel table
+    def insert1(self, key, **kwargs):
+
+        # Only populate if no entry in main table. Alternative is to set skip_insertion to True for part table,
+        # but would prevent catching undesired duplicate entries
+        table_key = {k: v for k, v in key.items() if k in self.primary_key}  # just check for match at primary key
+
+        if len(self & table_key) == 0:
+
+            # Concatenate performance dfs across entries
+            metric_processing_name = (self._get_params_table() & table_key).fetch1("metric_processing_name")
+            kwargs = {"metric_processing_name": metric_processing_name}
+            df_concat = self._get_main_table()()._upstream_table()().get_concat_metric_df(
+                key["upstream_keys"], **kwargs)
+
+            # Raise error if df is empty and this is not expected
+            expected_empty_df_concat_keys = [
+            ]
+
+            if len(df_concat) == 0 and key not in expected_empty_df_concat_keys:
+                raise Exception(f"df_concat is empty. This is not expected")
+
+            # Insert into main table
+            key = insert_analysis_table_entry(self, [df_concat], key, skip_insertion=True)
+            super().insert1(key, skip_duplicates=True)
+
+            # Insert into part table
+            upstream_keys = key.pop("upstream_keys")
+            key_subset = {k: v for k, v in key.items() if k not in ["analysis_file_name", "df_concat_object_id"]}
+            for upstream_key in upstream_keys:
+                self.Upstream.insert1({**key_subset, **upstream_key})
+
     def _get_param_name_map(self, key_filter, brain_region_units_cohort_types):
 
         # Define summary table param name based on cov_fr_vec_param_name, distance metric, and recording set name.
         # To do this, define map from cov_fr_vec_param_name, distance metric, recording set name,
         # and brain_region_units_cohort_type to summary table param names
-        cov_fr_vec_param_names = self._default_cov_fr_vec_param_names()
 
         params_table = self._get_params_table()()
 
-        recording_set_names_boot_set_names = [
-
-         # Rat cohort
-         (RecordingSet().lookup_rat_cohort_set_name(), boot_set_name)
-         for boot_set_name in self._default_cohort_boot_set_names()] + [
-
-         # Non rat cohort
-         (recording_set_name, boot_set_name) for recording_set_name in
-         RecordingSet().get_recording_set_names(
-             key_filter, ["Haight_rotation", "first_day_learning_single_epoch"])
-         for boot_set_name in self._default_noncohort_boot_set_names()]
+        recording_set_names_boot_set_names_cov_fr_vec_param_names = \
+            self._default_recording_set_names_boot_set_names_cov_fr_vec_param_names()
 
         metric_names_metric_processing_names = [
             ("cosine_similarity", "none"), ("euclidean_distance", "one_minus_on_off_diagonal_ratio")]
 
         param_name_map = dict()
-        for recording_set_name, boot_set_name in recording_set_names_boot_set_names:
+        for recording_set_name, boot_set_name, cov_fr_vec_param_name in recording_set_names_boot_set_names_cov_fr_vec_param_names:
             for metric_name, metric_processing_name in metric_names_metric_processing_names:
-                # TODO: avoid pairing the following:
-                # 1) 'path_fr_vec_param_name': 'none',
-                # 2) 'path_fr_vec_st_ave_summ_param_name': 'one_minus_on_off_diagonal_ratio^path^same_different_outbound_path_correct_diff_brain_region_diff^0.1_1_rand_target_region_50_iterations_0to9'
-                for cov_fr_vec_param_name in cov_fr_vec_param_names:
-                    for brain_region_units_cohort_type in brain_region_units_cohort_types:
-                        param_name_map_key = (
-                            cov_fr_vec_param_name, metric_name, recording_set_name, brain_region_units_cohort_type)
-                        if param_name_map_key not in param_name_map:
-                            param_name_map[param_name_map_key] = []
-                        param_name_map[param_name_map_key] += [params_table.lookup_param_name(
-                            [metric_processing_name, label_name, boot_set_name, brain_region_units_cohort_type])
-                            for label_name in params_table._default_label_names()]
+                for brain_region_units_cohort_type in brain_region_units_cohort_types:
+                    param_name_map_key = self._format_param_name_map_key(
+                        cov_fr_vec_param_name=cov_fr_vec_param_name, metric_name=metric_name,
+                        recording_set_name=recording_set_name,
+                        brain_region_units_cohort_type=brain_region_units_cohort_type)
+                    if param_name_map_key not in param_name_map:
+                        param_name_map[param_name_map_key] = []
+                    param_name_map[param_name_map_key] += [params_table.lookup_param_name(
+                        [metric_processing_name, label_name, boot_set_name, brain_region_units_cohort_type])
+                        for label_name in params_table._default_label_names()]
 
         return param_name_map
 
-    @staticmethod
-    def _format_param_name_map_key(
-            cov_fr_vec_param_name, metric_name, recording_set_name, brain_region_units_cohort_type):
-        return (cov_fr_vec_param_name, metric_name, recording_set_name, brain_region_units_cohort_type)
+    def _format_param_name_map_key(self, **kwargs):
 
-    def _get_param_name_map_key(self, key, brain_region_units_cohort_type):
-        # Make key to param name map given a set of parameters
-
+        # Get cov_fr_vec_param_name and metric_name if not passed
         upstream_table = self._get_main_table()()._upstream_table()()
-        upstream_params_table = upstream_table._get_params_table()()
-        metric_name = (upstream_params_table & key).fetch1("metric_name")
-        cov_fr_vec_meta_param_name = \
-            upstream_table._fr_vec_table()()._get_params_table()().meta_param_name()
+        if "cov_fr_vec_param_name" not in kwargs:
+            cov_fr_vec_params_table = upstream_table._fr_vec_table()()._get_params_table()()
+            cov_fr_vec_meta_param_name = cov_fr_vec_params_table.meta_param_name()
+            kwargs["cov_fr_vec_param_name"] = kwargs["key"][cov_fr_vec_meta_param_name]
+        if "metric_name" not in kwargs:
+            upstream_params_table = upstream_table._get_params_table()()
+            kwargs["metric_name"] = (upstream_params_table & kwargs["key"]).fetch1("metric_name")
 
-        return self._format_param_name_map_key(
-            key[cov_fr_vec_meta_param_name], metric_name, key["recording_set_name"],
-            brain_region_units_cohort_type)
+        return tuple([kwargs[x] for x in [
+            "cov_fr_vec_param_name", "metric_name", "recording_set_name",
+            "brain_region_units_cohort_type"]])
 
     def _default_cov_fr_vec_param_names(self):
         raise Exception(f"Must overwrite in child class")
