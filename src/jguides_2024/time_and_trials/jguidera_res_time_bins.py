@@ -4,17 +4,36 @@ import spyglass as nd
 
 from spyglass.common import AnalysisNwbfile
 
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, delete_
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    SelBase,
+    ComputedBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    insert_analysis_table_entry,
+    delete_,
+)
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrialsParams, DioWellADTrialsParams
-from jguides_2024.time_and_trials.jguidera_res_set import ResSet, populate_jguidera_res_set, ResSetParams
-from jguides_2024.time_and_trials.jguidera_time_bins import (EpochTimeBins, DioWATrialsTimeBins,
-                                                                 populate_jguidera_time_bins,
-                                                                 EpochTimeBinsParams, DioWATrialsTimeBinsParams,
-                                                                 DioWellADTrialsTimeBins,
-                                                                 DioWellADTrialsTimeBinsParams)
-from jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolCohortParams
+from jguides_2024.task_event.jguidera_dio_trials import (
+    DioWellArrivalTrialsParams,
+    DioWellADTrialsParams,
+)
+from jguides_2024.time_and_trials.jguidera_res_set import (
+    ResSet,
+    populate_jguidera_res_set,
+    ResSetParams,
+)
+from jguides_2024.time_and_trials.jguidera_time_bins import (
+    EpochTimeBins,
+    DioWATrialsTimeBins,
+    populate_jguidera_time_bins,
+    EpochTimeBinsParams,
+    DioWATrialsTimeBinsParams,
+    DioWellADTrialsTimeBins,
+    DioWellADTrialsTimeBinsParams,
+)
+from jguides_2024.time_and_trials.jguidera_trials_pool import (
+    TrialsPoolCohortParams,
+)
 
 # Needed for table definitions:
 nd
@@ -33,9 +52,14 @@ def insert_res_time_bins_table(table, parent_table, key):
     time_bin_edges = time_bins_df["time_bin_edges"]
     # Apply restriction
     valid_time_bin_centers, valid_bool = ResSet().apply_restriction(
-        key, time_bin_centers, time_bin_edges)
-    res_time_bins_df = pd.DataFrame.from_dict({"time_bin_centers": valid_time_bin_centers,
-                                               "time_bin_edges": time_bin_edges[valid_bool]})
+        key, time_bin_centers, time_bin_edges
+    )
+    res_time_bins_df = pd.DataFrame.from_dict(
+        {
+            "time_bin_centers": valid_time_bin_centers,
+            "time_bin_edges": time_bin_edges[valid_bool],
+        }
+    )
     # Insert into table
     insert_analysis_table_entry(table, [res_time_bins_df], key)
 
@@ -70,7 +94,10 @@ class ResEpochTimeBins(ComputedBase):
         insert_res_time_bins_table(self, EpochTimeBins, key)
 
     def delete_(self, key, safemode=True):
-        from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool
+        from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+            ResTimeBinsPool,
+        )
+
         delete_(self, [ResTimeBinsPool], key, safemode)
 
 
@@ -106,13 +133,25 @@ class ResDioWATrialsTimeBinsSel(SelBase):
             DioWellArrivalTrialsParams().lookup_delay_param_name(),  # delay (0 to 2s after well arrival)
         ]
 
-        for dio_well_arrival_trials_param_name in dio_well_arrival_trials_param_names:
-            key = {"dio_well_arrival_trials_param_name": dio_well_arrival_trials_param_name}
+        for (
+            dio_well_arrival_trials_param_name
+        ) in dio_well_arrival_trials_param_names:
+            key = {
+                "dio_well_arrival_trials_param_name": dio_well_arrival_trials_param_name
+            }
             source_table_keys = [key]
-            trials_pool_cohort_param_name = TrialsPoolCohortParams().lookup_param_name(
-                [source_table_name], source_table_keys)
+            trials_pool_cohort_param_name = (
+                TrialsPoolCohortParams().lookup_param_name(
+                    [source_table_name], source_table_keys
+                )
+            )
             key.update(
-                {"res_set_param_name": ResSetParams().lookup_no_combination_param_name(trials_pool_cohort_param_name)})
+                {
+                    "res_set_param_name": ResSetParams().lookup_no_combination_param_name(
+                        trials_pool_cohort_param_name
+                    )
+                }
+            )
             for insert_key in (ResSet * DioWATrialsTimeBins & key).fetch("KEY"):
                 self.insert1(insert_key)
 
@@ -140,8 +179,13 @@ class ResDioWATrialsTimeBins(ComputedBase):
         return DioWATrialsTimeBinsParams
 
     def make(self, key):
-        key.update({"dio_well_arrival_trials_param_name": (ResDioWATrialsTimeBinsSel & key).fetch1(
-            "dio_well_arrival_trials_param_name")})
+        key.update(
+            {
+                "dio_well_arrival_trials_param_name": (
+                    ResDioWATrialsTimeBinsSel & key
+                ).fetch1("dio_well_arrival_trials_param_name")
+            }
+        )
         insert_res_time_bins_table(self, DioWATrialsTimeBins, key)
 
 
@@ -176,13 +220,25 @@ class ResDioWellADTrialsTimeBinsSel(SelBase):
         ]
 
         for dio_well_ad_trials_param_name in dio_well_ad_trials_param_names:
-            key = {"dio_well_ad_trials_param_name": dio_well_ad_trials_param_name}
+            key = {
+                "dio_well_ad_trials_param_name": dio_well_ad_trials_param_name
+            }
             source_table_keys = [key]
-            trials_pool_cohort_param_name = TrialsPoolCohortParams().lookup_param_name(
-                [source_table_name], source_table_keys)
+            trials_pool_cohort_param_name = (
+                TrialsPoolCohortParams().lookup_param_name(
+                    [source_table_name], source_table_keys
+                )
+            )
             key.update(
-                {"res_set_param_name": ResSetParams().lookup_no_combination_param_name(trials_pool_cohort_param_name)})
-            for insert_key in (ResSet * DioWellADTrialsTimeBins & key).fetch("KEY"):
+                {
+                    "res_set_param_name": ResSetParams().lookup_no_combination_param_name(
+                        trials_pool_cohort_param_name
+                    )
+                }
+            )
+            for insert_key in (ResSet * DioWellADTrialsTimeBins & key).fetch(
+                "KEY"
+            ):
                 self.insert1(insert_key)
 
 
@@ -209,8 +265,13 @@ class ResDioWellADTrialsTimeBins(ComputedBase):
         return DioWellADTrialsTimeBinsParams
 
     def make(self, key):
-        key.update({"dio_well_ad_trials_param_name": (ResDioWellADTrialsTimeBinsSel & key).fetch1(
-            "dio_well_ad_trials_param_name")})
+        key.update(
+            {
+                "dio_well_ad_trials_param_name": (
+                    ResDioWellADTrialsTimeBinsSel & key
+                ).fetch1("dio_well_ad_trials_param_name")
+            }
+        )
         insert_res_time_bins_table(self, DioWellADTrialsTimeBins, key)
 
 
@@ -230,14 +291,30 @@ if not (np.vstack(df.time_bin_edges) == np.vstack(res_df.time_bin_edges)).all():
 
 
 def populate_jguidera_res_time_bins(
-        key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_res_time_bins"
-    upstream_schema_populate_fn_list = [populate_jguidera_time_bins, populate_jguidera_res_set]
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+    upstream_schema_populate_fn_list = [
+        populate_jguidera_time_bins,
+        populate_jguidera_res_set,
+    ]
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_res_time_bins():
-    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import drop_jguidera_res_time_bins_pool
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+        drop_jguidera_res_time_bins_pool,
+    )
+
     drop_jguidera_res_time_bins_pool()
     schema.drop()

@@ -8,18 +8,27 @@ import numpy as np
 import pandas as pd
 import scipy as sp
 
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, PartBase, \
-    AcrossFRVecTypeTableSelBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
-    insert1_print, \
-    delete_
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
+    PartBase,
+    AcrossFRVecTypeTableSelBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    insert_analysis_table_entry,
+    insert1_print,
+    delete_,
+)
 from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec, \
-    populate_jguidera_firing_rate_vector
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import (
+    FRVec,
+    populate_jguidera_firing_rate_vector,
+)
 from jguides_2024.metadata.jguidera_epoch import EpochCohort
 from jguides_2024.spikes.jguidera_unit import BrainRegionUnits
-from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolCohortParams,
+)
 from jguides_2024.utils.plot_helpers import plot_heatmap
 from jguides_2024.utils.set_helpers import check_membership
 
@@ -84,30 +93,42 @@ class FRVecEucDist(ComputedBase):
     def make(self, key):
 
         # Find euclidean distance between firing rate vectors
-        dfs = FRVec().firing_rate_across_sort_groups_epochs(key, populate_tables=False)
+        dfs = FRVec().firing_rate_across_sort_groups_epochs(
+            key, populate_tables=False
+        )
         distance_vec = sp.spatial.distance.pdist(dfs.fr_concat_df)
 
         # Store distance in vector to save space (since symmetric matrix)
         distance_df = pd.DataFrame.from_dict({"fr_distance": distance_vec})
 
         # Store vector with concatenated time samples (corresponding to distance array columns and rows) in df
-        time_df = pd.DataFrame({dfs.fr_concat_df.index.name: dfs.fr_concat_df.index})
+        time_df = pd.DataFrame(
+            {dfs.fr_concat_df.index.name: dfs.fr_concat_df.index}
+        )
 
         # Since currently cannot make analysis nwbf with df index, remove index from dfs.epoch_vector
         column_name = "epoch"
-        epoch_df = pd.DataFrame({column_name: dfs.epoch_vector[column_name].values})
+        epoch_df = pd.DataFrame(
+            {column_name: dfs.epoch_vector[column_name].values}
+        )
 
         # Insert into main table
         insert_analysis_table_entry(self, [distance_df, time_df, epoch_df], key)
 
         # Insert into part table
-        for part_key in ResTimeBinsPoolCohortParams().get_keys_with_cohort_params(key):
+        for (
+            part_key
+        ) in ResTimeBinsPoolCohortParams().get_keys_with_cohort_params(key):
             insert1_print(self.Upstream, part_key)
 
     def fetch1_fr_euc_dist(self):
         # Return firing rate euclidean distance in matrix
-        dist_arr = sp.spatial.distance.squareform(self.fetch1_dataframe("fr_euc_dist").fr_distance.values)
-        time_vector = np.ndarray.flatten(self.fetch1_dataframe("time_vector").values)
+        dist_arr = sp.spatial.distance.squareform(
+            self.fetch1_dataframe("fr_euc_dist").fr_distance.values
+        )
+        time_vector = np.ndarray.flatten(
+            self.fetch1_dataframe("time_vector").values
+        )
         return pd.DataFrame(dist_arr, index=time_vector, columns=time_vector)
 
     def fetch1_masked_fr_euc_dist(self, mask_duration=0, mask_value=np.inf):
@@ -127,7 +148,9 @@ class FRVecEucDist(ComputedBase):
             raise Exception(f"mask_duration must be nonnegative")
 
         # Get time per index in array
-        time_bin_width = (ResTimeBinsPoolCohortParams & self.fetch1("KEY")).get_time_bin_width()
+        time_bin_width = (
+            ResTimeBinsPoolCohortParams & self.fetch1("KEY")
+        ).get_time_bin_width()
         # Get number of idxs to mask before and after current sample to mask
         mask_idxs_pre_post = int(np.ceil(mask_duration / time_bin_width))
 
@@ -141,7 +164,9 @@ class FRVecEucDist(ComputedBase):
 
         return distance_arr, distance_df.index
 
-    def get_nn_idxs(self, n_neighbors, nn_restrictions=None, state_restrictions=None):
+    def get_nn_idxs(
+        self, n_neighbors, nn_restrictions=None, state_restrictions=None
+    ):
         """
         Find indices that sort distance matrix within each column. The indices in the first n rows of a given column
         of the resulting sorted matrix are the n nearest neighbors of the state corresponding
@@ -176,14 +201,26 @@ class FRVecEucDist(ComputedBase):
             if restrictions["exclude_final_n_samples"] < 0:
                 raise Exception(f"exclude_final_n_samples must be nonnegative")
         # ...Check that nn restrictions are valid
-        check_membership(nn_restrictions, ["mask_duration", "exclude_final_n_samples"])
+        check_membership(
+            nn_restrictions, ["mask_duration", "exclude_final_n_samples"]
+        )
         # ...Check that state restrictions are valid
-        check_membership(list(state_restrictions.keys()), [
-            "exclude_final_n_samples", "potentially_rewarded_trial", "correct_trial", "stay_trial", "leave_trial"])
+        check_membership(
+            list(state_restrictions.keys()),
+            [
+                "exclude_final_n_samples",
+                "potentially_rewarded_trial",
+                "correct_trial",
+                "stay_trial",
+                "leave_trial",
+            ],
+        )
 
         # Get firing rate vector euclidean distance matrix. Mask samples from nearest neighbor determination
         # based on proximity as indicated
-        distance_arr, col_time_vector = self.fetch1_masked_fr_euc_dist(nn_restrictions["mask_duration"])
+        distance_arr, col_time_vector = self.fetch1_masked_fr_euc_dist(
+            nn_restrictions["mask_duration"]
+        )
 
         # Make copy of time vector for rows
         row_time_vector = copy.deepcopy(col_time_vector)
@@ -210,7 +247,12 @@ class FRVecEucDist(ComputedBase):
 
         # Potentially rewarded trials, correct trials, "stay" or "leave" delay period at wells
         for restriction in [
-            "potentially_rewarded_trial", "correct_trial", "incorrect_trial", "stay_trial", "leave_trial"]:
+            "potentially_rewarded_trial",
+            "correct_trial",
+            "incorrect_trial",
+            "stay_trial",
+            "leave_trial",
+        ]:
 
             if restriction in state_restrictions:
 
@@ -218,8 +260,12 @@ class FRVecEucDist(ComputedBase):
                 key = self.fetch1("KEY")
                 epoch = (EpochCohort & key).get_epoch()
                 key.update({"epoch": epoch})
-                restriction_table = get_table(state_restrictions[restriction]["table_name"])
-                valid_bool = (restriction_table & key).in_trial(col_time_vector, [restriction])
+                restriction_table = get_table(
+                    state_restrictions[restriction]["table_name"]
+                )
+                valid_bool = (restriction_table & key).in_trial(
+                    col_time_vector, [restriction]
+                )
                 # update upstream entries tracker
                 self._update_upstream_entries_tracker(restriction_table, key)
 
@@ -235,24 +281,37 @@ class FRVecEucDist(ComputedBase):
         # Restrict sorted distance matrix to just top n_neighbors (first n_neighbors rows within each column)
         sort_idxs = sort_idxs[:n_neighbors, :]
 
-        return namedtuple(
-            "Nn", "row_time_vector col_time_vector sort_idxs")(row_time_vector, col_time_vector, sort_idxs)
+        return namedtuple("Nn", "row_time_vector col_time_vector sort_idxs")(
+            row_time_vector, col_time_vector, sort_idxs
+        )
 
     def plot_results(self):
         fr_euc_dist_df = self.fetch1_fr_euc_dist()
-        plot_heatmap(fr_euc_dist_df, scale_clim=.8, figsize=(10, 10))
+        plot_heatmap(fr_euc_dist_df, scale_clim=0.8, figsize=(10, 10))
 
 
 def populate_jguidera_firing_rate_vector_euclidean_distance(
-        key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_firing_rate_vector_euclidean_distance"
     upstream_schema_populate_fn_list = [populate_jguidera_firing_rate_vector]
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_firing_rate_vector_euclidean_distance():
-    from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import \
-        drop_jguidera_firing_rate_difference_vector_similarity_ave
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import (
+        drop_jguidera_firing_rate_difference_vector_similarity_ave,
+    )
+
     drop_jguidera_firing_rate_difference_vector_similarity_ave()
     schema.drop()

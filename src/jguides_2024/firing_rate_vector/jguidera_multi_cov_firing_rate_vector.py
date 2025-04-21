@@ -8,26 +8,65 @@ import spyglass as nd
 
 from spyglass.common import AnalysisNwbfile
 
-from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
-    CovariateFRVecSelBase, CovariateFRVecBase, CovariateFRVecTrialAveBase, CovariateAveFRVecParamsBase, \
-    CovariateFRVecAveSelBase, CovariateFRVecSTAveBase, CovariateFRVecSTAveParamsBase, CovariateFRVecSTAveSummBase, \
-    CovariateFRVecAveSummSelBase, CovariateFRVecAveSummSecKeyParamsBase, MultiCovFRVecSummBase, CovariateAveFRVecSummBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import drop_, delete_
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
+    CovariateFRVecSelBase,
+    CovariateFRVecBase,
+    CovariateFRVecTrialAveBase,
+    CovariateAveFRVecParamsBase,
+    CovariateFRVecAveSelBase,
+    CovariateFRVecSTAveBase,
+    CovariateFRVecSTAveParamsBase,
+    CovariateFRVecSTAveSummBase,
+    CovariateFRVecAveSummSelBase,
+    CovariateFRVecAveSummSecKeyParamsBase,
+    MultiCovFRVecSummBase,
+    CovariateAveFRVecSummBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    drop_,
+    delete_,
+)
 from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+    get_jguidera_nwbf_names,
+)
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from jguides_2024.firing_rate_vector.jguidera_post_delay_firing_rate_vector import RelPostDelFRVec
-from jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
-from jguides_2024.metadata.jguidera_epoch import RunEpoch, EpochsDescription, RecordingSet
+from jguides_2024.firing_rate_vector.jguidera_post_delay_firing_rate_vector import (
+    RelPostDelFRVec,
+)
+from jguides_2024.metadata.jguidera_brain_region import (
+    BrainRegionCohort,
+    CurationSet,
+)
+from jguides_2024.metadata.jguidera_epoch import (
+    RunEpoch,
+    EpochsDescription,
+    RecordingSet,
+)
 from jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
 from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits, BrainRegionUnitsCohortType
-from jguides_2024.task_event.jguidera_dio_trials import DioWellTrials, DioWellDDTrials
-from jguides_2024.time_and_trials.jguidera_relative_time_at_well import RelTimeWellPostDelayDigParams
-from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
-from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigSingleAxisParams
+from jguides_2024.spikes.jguidera_unit import (
+    BrainRegionUnitsParams,
+    BrainRegionUnits,
+    BrainRegionUnitsCohortType,
+)
+from jguides_2024.task_event.jguidera_dio_trials import (
+    DioWellTrials,
+    DioWellDDTrials,
+)
+from jguides_2024.time_and_trials.jguidera_relative_time_at_well import (
+    RelTimeWellPostDelayDigParams,
+)
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolSel,
+)
+from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
+    TimeRelWADigSingleAxisParams,
+)
 from jguides_2024.utils.df_helpers import check_df_indices_close
-from jguides_2024.utils.state_evolution_estimation import AverageVectorDuringLabeledProgression
+from jguides_2024.utils.state_evolution_estimation import (
+    AverageVectorDuringLabeledProgression,
+)
 
 # Needed for table definitions:
 nd
@@ -55,43 +94,71 @@ class MultiCovFRVecParams(dj.Manual):
 
         # Path and delay, EVEN AND ODD or SINGLE TRIALS
         cov_fr_vec_param_names = [
-            "even_odd_correct_incorrect_stay_trials", "correct_incorrect_stay_trials",
-            "stay_leave_trials_pre_departure"]
+            "even_odd_correct_incorrect_stay_trials",
+            "correct_incorrect_stay_trials",
+            "stay_leave_trials_pre_departure",
+        ]
         for cov_fr_vec_param_name in cov_fr_vec_param_names:
 
-            multi_cov_fr_vec_param_name = "path_delay" + "^" + cov_fr_vec_param_name
+            multi_cov_fr_vec_param_name = (
+                "path_delay" + "^" + cov_fr_vec_param_name
+            )
             multi_cov_fr_vec_params = {
-                "table_names": ["PathFRVec", "TimeRelWAFRVec"], "keys": [
-                    {'ppt_param_name': "ppt_1",
-                     'ppt_dig_param_name': "0.0625",
-                     "path_fr_vec_param_name": cov_fr_vec_param_name
-                     },
-                    {'time_rel_wa_dig_param_name': "0.25",
-                     "time_rel_wa_dig_single_axis_param_name": "0^2",
-                     'time_rel_wa_fr_vec_param_name': cov_fr_vec_param_name},
-                ]}
-            params_list.append({
-                "multi_cov_fr_vec_param_name": multi_cov_fr_vec_param_name, "multi_cov_fr_vec_params":
-                    multi_cov_fr_vec_params})
+                "table_names": ["PathFRVec", "TimeRelWAFRVec"],
+                "keys": [
+                    {
+                        "ppt_param_name": "ppt_1",
+                        "ppt_dig_param_name": "0.0625",
+                        "path_fr_vec_param_name": cov_fr_vec_param_name,
+                    },
+                    {
+                        "time_rel_wa_dig_param_name": "0.25",
+                        "time_rel_wa_dig_single_axis_param_name": "0^2",
+                        "time_rel_wa_fr_vec_param_name": cov_fr_vec_param_name,
+                    },
+                ],
+            }
+            params_list.append(
+                {
+                    "multi_cov_fr_vec_param_name": multi_cov_fr_vec_param_name,
+                    "multi_cov_fr_vec_params": multi_cov_fr_vec_params,
+                }
+            )
 
             # Path, delay, and post delay, EVEN AND ODD or SINGLE TRIALS
             cov_fr_vec_param_name = "even_odd_correct_incorrect_stay_trials"
-            multi_cov_fr_vec_param_name = "path_delay_postdelay" + "^" + cov_fr_vec_param_name
+            multi_cov_fr_vec_param_name = (
+                "path_delay_postdelay" + "^" + cov_fr_vec_param_name
+            )
             multi_cov_fr_vec_params = {
-                "table_names": ["PathFRVec", "TimeRelWAFRVec", "RelPostDelFRVec"], "keys": [
-                    {'ppt_param_name': "ppt_1",
-                     'ppt_dig_param_name': "0.0625",
-                     "path_fr_vec_param_name": cov_fr_vec_param_name
-                     },
-                    {'time_rel_wa_dig_param_name': "0.25",
-                     "time_rel_wa_dig_single_axis_param_name": "0^2",
-                     'time_rel_wa_fr_vec_param_name': cov_fr_vec_param_name},
-                    {'rel_time_well_post_delay_dig_param_name': "0.1",
-                     'rel_post_del_fr_vec_param_name': cov_fr_vec_param_name},
-                ]}
-            params_list.append({
-                "multi_cov_fr_vec_param_name": multi_cov_fr_vec_param_name, "multi_cov_fr_vec_params":
-                    multi_cov_fr_vec_params})
+                "table_names": [
+                    "PathFRVec",
+                    "TimeRelWAFRVec",
+                    "RelPostDelFRVec",
+                ],
+                "keys": [
+                    {
+                        "ppt_param_name": "ppt_1",
+                        "ppt_dig_param_name": "0.0625",
+                        "path_fr_vec_param_name": cov_fr_vec_param_name,
+                    },
+                    {
+                        "time_rel_wa_dig_param_name": "0.25",
+                        "time_rel_wa_dig_single_axis_param_name": "0^2",
+                        "time_rel_wa_fr_vec_param_name": cov_fr_vec_param_name,
+                    },
+                    {
+                        "rel_time_well_post_delay_dig_param_name": "0.1",
+                        "rel_post_del_fr_vec_param_name": cov_fr_vec_param_name,
+                    },
+                ],
+            }
+            params_list.append(
+                {
+                    "multi_cov_fr_vec_param_name": multi_cov_fr_vec_param_name,
+                    "multi_cov_fr_vec_params": multi_cov_fr_vec_params,
+                }
+            )
 
         # Previous correct / incorrect trial
         cov_fr_vec_param_name = "prev_correct_incorrect_trials"
@@ -129,17 +196,24 @@ class MultiCovFRVecSel(CovariateFRVecSelBase):
         if verbose:
             print(f"getting potential keys for MultiCovFRVecSel...")
 
-        min_epoch_mean_firing_rate = .1
+        min_epoch_mean_firing_rate = 0.1
         brain_region_cohort_name = "all_targeted"
         curation_set_name = "runs_analysis_v1"
         primary_features = {
             "zscore_fr": 0,
-            "res_time_bins_pool_param_name": ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms")}
+            "res_time_bins_pool_param_name": ResTimeBinsPoolSel().lookup_param_name_from_shorthand(
+                "epoch_100ms"
+            ),
+        }
         unit_params = {
-            "unit_subset_type": "rand_target_region", "unit_subset_size": 50}
+            "unit_subset_type": "rand_target_region",
+            "unit_subset_size": 50,
+        }
         unit_subset_iterations = np.arange(0, 10)
-        multi_cov_fr_vec_param_names = MultiCovFRVecParams().fetch("multi_cov_fr_vec_param_name")
-        kernel_sds = [.1]
+        multi_cov_fr_vec_param_names = MultiCovFRVecParams().fetch(
+            "multi_cov_fr_vec_param_name"
+        )
+        kernel_sds = [0.1]
 
         # Define nwb file names
         nwb_file_names = get_jguidera_nwbf_names()
@@ -153,46 +227,84 @@ class MultiCovFRVecSel(CovariateFRVecSelBase):
                 print(f"\non {nwb_file_name}...")
             key = {"nwb_file_name": nwb_file_name}
             # Get brain regions for this nwb file name
-            brain_regions = (BrainRegionCohort & {
-                "nwb_file_name": nwb_file_name, "brain_region_cohort_name": brain_region_cohort_name}).fetch1(
-                "brain_regions")
+            brain_regions = (
+                BrainRegionCohort
+                & {
+                    "nwb_file_name": nwb_file_name,
+                    "brain_region_cohort_name": brain_region_cohort_name,
+                }
+            ).fetch1("brain_regions")
             for brain_region in brain_regions:
                 if verbose:
                     print(f"\non {brain_region}...")
                 key.update({"brain_region": brain_region})
 
-                for epoch in (RunEpoch & {"nwb_file_name": nwb_file_name}).fetch("epoch"):
+                for epoch in (
+                    RunEpoch & {"nwb_file_name": nwb_file_name}
+                ).fetch("epoch"):
                     if verbose:
                         print(f"on epoch {epoch}...")
 
                     # Add curation name to key
-                    epochs_description = EpochsDescription().get_single_run_description(nwb_file_name, epoch)
-                    curation_name = (CurationSet & {
-                        "nwb_file_name": nwb_file_name, "brain_region_cohort_name": brain_region_cohort_name,
-                        "curation_set_name": curation_set_name}).get_curation_name(brain_region, epochs_description)
+                    epochs_description = (
+                        EpochsDescription().get_single_run_description(
+                            nwb_file_name, epoch
+                        )
+                    )
+                    curation_name = (
+                        CurationSet
+                        & {
+                            "nwb_file_name": nwb_file_name,
+                            "brain_region_cohort_name": brain_region_cohort_name,
+                            "curation_set_name": curation_set_name,
+                        }
+                    ).get_curation_name(brain_region, epochs_description)
                     key.update({"curation_name": curation_name})
 
                     if verbose:
                         print(f"on unit subset cases...")
                     for unit_subset_iteration in unit_subset_iterations:
-                        unit_params.update({"unit_subset_iteration": unit_subset_iteration})
+                        unit_params.update(
+                            {"unit_subset_iteration": unit_subset_iteration}
+                        )
                         brain_region_units_param_name = BrainRegionUnitsParams().lookup_single_epoch_param_name(
-                            nwb_file_name, epoch, min_epoch_mean_firing_rate, **unit_params)
-                        key.update({
-                            "epoch": epoch, "brain_region_units_param_name": brain_region_units_param_name})
-                        for multi_cov_fr_vec_param_name in multi_cov_fr_vec_param_names:
-                            key.update({"multi_cov_fr_vec_param_name": multi_cov_fr_vec_param_name})
+                            nwb_file_name,
+                            epoch,
+                            min_epoch_mean_firing_rate,
+                            **unit_params,
+                        )
+                        key.update(
+                            {
+                                "epoch": epoch,
+                                "brain_region_units_param_name": brain_region_units_param_name,
+                            }
+                        )
+                        for (
+                            multi_cov_fr_vec_param_name
+                        ) in multi_cov_fr_vec_param_names:
+                            key.update(
+                                {
+                                    "multi_cov_fr_vec_param_name": multi_cov_fr_vec_param_name
+                                }
+                            )
                             for kernel_sd in kernel_sds:
-                                k = {"res_epoch_spikes_sm_param_name": ResEpochSpikesSmParams().lookup_param_name(
-                                    [kernel_sd])}
+                                k = {
+                                    "res_epoch_spikes_sm_param_name": ResEpochSpikesSmParams().lookup_param_name(
+                                        [kernel_sd]
+                                    )
+                                }
                                 keys.append({**primary_features, **key, **k})
 
-        print(f"\nDefined {len(keys)} potential keys, now restricting to those with matches in upstream tables...\n")
+        print(
+            f"\nDefined {len(keys)} potential keys, now restricting to those with matches in upstream tables...\n"
+        )
 
         # Calls parent class method
         table_intersection_keys = super()._get_potential_keys()
-        print(f"...found {len(table_intersection_keys)} upstream table keys, now checking which potential keys "
-              f"are in these...")
+        print(
+            f"...found {len(table_intersection_keys)} upstream table keys, now checking which potential keys "
+            f"are in these..."
+        )
         potential_keys = [x for x in keys if x in table_intersection_keys]
 
         print(f"\nReturning {len(potential_keys)} potential keys...")
@@ -259,20 +371,27 @@ class MultiCovFRVec(CovariateFRVecBase):
         """
 
     def _store_table_specific_quantities(self, inputs, main_table_key):
-        main_table_key.update({"table_old_new_bin_nums_map": inputs.table_old_new_bin_nums_map})
+        main_table_key.update(
+            {"table_old_new_bin_nums_map": inputs.table_old_new_bin_nums_map}
+        )
         return main_table_key
 
     def get_inputs(self, key, verbose=False, ax=None):
 
         # Get parameters
-        multi_cov_fr_vec_params = (MultiCovFRVecParams & key).fetch1("multi_cov_fr_vec_params")
+        multi_cov_fr_vec_params = (MultiCovFRVecParams & key).fetch1(
+            "multi_cov_fr_vec_params"
+        )
 
         # Get inputs for each table, and corresponding bin numbers
         inputs_list = []  # initialize list for inputs across tables
         bin_nums_list = []  # initialize list for bin numbers across tables
         table_names_list = []  # initialize list for table names
 
-        for table_name, params in zip(multi_cov_fr_vec_params["table_names"], multi_cov_fr_vec_params["keys"]):
+        for table_name, params in zip(
+            multi_cov_fr_vec_params["table_names"],
+            multi_cov_fr_vec_params["keys"],
+        ):
 
             # Append inputs
             table_key = {**key, **params}
@@ -293,7 +412,9 @@ class MultiCovFRVec(CovariateFRVecBase):
                 dig_params_table = RelTimeWellPostDelayDigParams()
                 bin_nums = dig_params_table.get_valid_bin_nums(key=table_key)
             else:
-                raise Exception(f"Currently no code to get bin nums for {table_name}")
+                raise Exception(
+                    f"Currently no code to get bin nums for {table_name}"
+                )
             bin_nums_list.append(bin_nums)
             # ...update upstream table entry tracker
             self._update_upstream_entries_tracker(dig_params_table, table_key)
@@ -306,8 +427,12 @@ class MultiCovFRVec(CovariateFRVecBase):
 
         # First define new bin numbers across tables
         new_bin_nums = []  # initialize list for new bin numbers across tables
-        table_old_new_bin_nums_map = dict()  # initialize map from table names to new bin numbers
-        for idx, (table_name, bin_nums) in enumerate(zip(table_names_list, bin_nums_list)):
+        table_old_new_bin_nums_map = (
+            dict()
+        )  # initialize map from table names to new bin numbers
+        for idx, (table_name, bin_nums) in enumerate(
+            zip(table_names_list, bin_nums_list)
+        ):
             # For first table, use bin numbers unchanged
             if idx == 0:
                 new_table_bin_numbers = list(bin_nums)
@@ -318,15 +443,21 @@ class MultiCovFRVec(CovariateFRVecBase):
                 new_table_bin_numbers = list(bin_nums + max_previous_bin)
             # Check that no overlap in new bin numbers and running list
             if any(x in new_bin_nums for x in new_table_bin_numbers):
-                raise Exception(f"bin numbers from current table overlap with previous ones")
+                raise Exception(
+                    f"bin numbers from current table overlap with previous ones"
+                )
             # Update running list with all bin numbers
             new_bin_nums += new_table_bin_numbers
             # Update map from table names to new bin numbers
-            table_old_new_bin_nums_map[table_name] = {x: y for x, y in zip(bin_nums, new_table_bin_numbers)}
+            table_old_new_bin_nums_map[table_name] = {
+                x: y for x, y in zip(bin_nums, new_table_bin_numbers)
+            }
 
         # Join x across tables, iterating x using map from old to new bin numbers. Also
         # concatenate labels and df across tables
-        for idx, (table_name, inputs) in enumerate(zip(table_names_list, inputs_list)):
+        for idx, (table_name, inputs) in enumerate(
+            zip(table_names_list, inputs_list)
+        ):
             # For first table, use x values unchanged, and initialize labels and df as those for current table
             if idx == 0:
                 new_x = inputs.x
@@ -336,8 +467,13 @@ class MultiCovFRVec(CovariateFRVecBase):
             # If after first table, shift bin numbers by maximum bin number from previous tables
             else:
                 # Update x values from table
-                new_table_x = pd.Series([table_old_new_bin_nums_map[table_name][x] for x in inputs.x],
-                                        index=inputs.x.index)
+                new_table_x = pd.Series(
+                    [
+                        table_old_new_bin_nums_map[table_name][x]
+                        for x in inputs.x
+                    ],
+                    index=inputs.x.index,
+                )
                 # Add to running list of x values across tables
                 new_x = pd.concat((new_x, new_table_x), axis=0)
 
@@ -356,8 +492,15 @@ class MultiCovFRVec(CovariateFRVecBase):
         # Plot labels again, now that have concatenated (if indicated)
         self._plot_labels("concatenated", new_labels, verbose, ax)
 
-        return namedtuple("Inputs", "x labels df unit_names table_old_new_bin_nums_map")(
-            new_x, new_labels, new_df, np.asarray(new_df.columns), table_old_new_bin_nums_map)
+        return namedtuple(
+            "Inputs", "x labels df unit_names table_old_new_bin_nums_map"
+        )(
+            new_x,
+            new_labels,
+            new_df,
+            np.asarray(new_df.columns),
+            table_old_new_bin_nums_map,
+        )
 
     def get_bin_centers(self, key=None, as_dict=False):
 
@@ -366,10 +509,17 @@ class MultiCovFRVec(CovariateFRVecBase):
             key = self.fetch1("KEY")
 
         # Get parameters
-        multi_cov_fr_vec_params = (MultiCovFRVecParams & key).fetch1("multi_cov_fr_vec_params")
+        multi_cov_fr_vec_params = (MultiCovFRVecParams & key).fetch1(
+            "multi_cov_fr_vec_params"
+        )
 
-        bin_centers_across_tables = []  # initialize list for bin centers across tables
-        for table_name, params in zip(multi_cov_fr_vec_params["table_names"], multi_cov_fr_vec_params["keys"]):
+        bin_centers_across_tables = (
+            []
+        )  # initialize list for bin centers across tables
+        for table_name, params in zip(
+            multi_cov_fr_vec_params["table_names"],
+            multi_cov_fr_vec_params["keys"],
+        ):
 
             table_key = {**key, **params}
 
@@ -377,11 +527,15 @@ class MultiCovFRVec(CovariateFRVecBase):
             if table_name == "PathFRVec":
                 bin_centers = (PptDigParams & table_key).get_bin_centers()
             elif table_name == "TimeRelWAFRVec":
-                bin_centers = TimeRelWADigSingleAxisParams().get_bin_centers(table_key)
+                bin_centers = TimeRelWADigSingleAxisParams().get_bin_centers(
+                    table_key
+                )
             elif table_name == "RelPostDelFRVec":
                 bin_centers = RelPostDelFRVec().get_bin_centers(key)
             else:
-                raise Exception(f"Missing code to get bin centers for table {table_name}")
+                raise Exception(
+                    f"Missing code to get bin centers for table {table_name}"
+                )
 
             # Store as dictionary if indicated. Otherwise concatenate to running list
             if as_dict:
@@ -393,20 +547,28 @@ class MultiCovFRVec(CovariateFRVecBase):
 
     def get_valid_covariate_bin_nums(self, key):
         # Important to pass full key because bins depend on file in this case
-        table_old_new_bin_nums_map = (self & key).fetch1("table_old_new_bin_nums_map")
-        return np.concatenate([list(x.values()) for x in table_old_new_bin_nums_map.values()])
+        table_old_new_bin_nums_map = (self & key).fetch1(
+            "table_old_new_bin_nums_map"
+        )
+        return np.concatenate(
+            [list(x.values()) for x in table_old_new_bin_nums_map.values()]
+        )
 
     def get_bin_centers_map(self):
         key = self.fetch1("KEY")
         x = self.get_valid_covariate_bin_nums(key)
         bin_centers = (self & key).get_bin_centers()
-        return AverageVectorDuringLabeledProgression.get_bin_centers_map(x, bin_centers)
+        return AverageVectorDuringLabeledProgression.get_bin_centers_map(
+            x, bin_centers
+        )
 
     def drop_(self):
         drop_([MultiCovAveFRVecSel(), MultiCovFRVecSTAveSel, self])
 
     def delete_(self, key, safemode=True):
-        delete_(self, [MultiCovAveFRVecSel, MultiCovFRVecSTAveSel], key, safemode)
+        delete_(
+            self, [MultiCovAveFRVecSel, MultiCovFRVecSTAveSel], key, safemode
+        )
 
 
 class MultiCovFRVecAveSelBase(CovariateFRVecAveSelBase):
@@ -462,8 +624,12 @@ class MultiCovAveFRVecSel(MultiCovFRVecAveSelBase):
         if key_filter is None:
             key_filter = dict()
 
-        for res_time_bins_pool_param_name in [ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms")]:
-            key_filter.update({"res_time_bins_pool_param_name": res_time_bins_pool_param_name})
+        for res_time_bins_pool_param_name in [
+            ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms")
+        ]:
+            key_filter.update(
+                {"res_time_bins_pool_param_name": res_time_bins_pool_param_name}
+            )
             keys = self._get_potential_keys(key_filter)
             for key in keys:
                 self.insert1(key)
@@ -517,9 +683,9 @@ class MultiCovFRVecSTAveParams(CovariateFRVecSTAveParamsBase):
     def delete_(self, key, safemode=True):
         # Delete from upstream tables
 
-        delete_(self, [
-            MultiCovFRVecSTAveSel, MultiCovAveFRVecSel],
-                key, safemode)
+        delete_(
+            self, [MultiCovFRVecSTAveSel, MultiCovAveFRVecSel], key, safemode
+        )
 
 
 class MultiCovFRVecAveSelBase(CovariateFRVecAveSelBase):
@@ -543,7 +709,10 @@ class MultiCovFRVecSTAveSel(MultiCovFRVecAveSelBase):
     """
 
     def _get_cov_fr_vec_param_names(self):
-        return ["path_delay^correct_incorrect_stay_trials", "path_delay_postdelay^correct_incorrect_stay_trials"]
+        return [
+            "path_delay^correct_incorrect_stay_trials",
+            "path_delay_postdelay^correct_incorrect_stay_trials",
+        ]
 
     def delete_(self, key, safemode=True):
         delete_(self, [MultiCovFRVecSTAve], key, safemode)
@@ -598,7 +767,10 @@ class MultiCovFRVecSTAveSummParams(CovariateFRVecAveSummSecKeyParamsBase):
     """
 
     def _boot_set_names(self):
-        return super()._boot_set_names() + self._valid_brain_region_diff_boot_set_names()
+        return (
+            super()._boot_set_names()
+            + self._valid_brain_region_diff_boot_set_names()
+        )
 
 
 @schema
@@ -629,38 +801,58 @@ class MultiCovFRVecSTAveSummSel(CovariateFRVecAveSummSelBase):
         -> MultiCovFRVecSTAve
         """
 
-    def _default_recording_set_names_boot_set_names_cov_fr_vec_param_names(self, **key_filter):
+    def _default_recording_set_names_boot_set_names_cov_fr_vec_param_names(
+        self, **key_filter
+    ):
         x = [
-
             # Rat cohort
-            (RecordingSet().lookup_rat_cohort_set_name(), "brain_region_diff_rat_cohort", "path_delay_postdelay^correct_incorrect_stay_trials"),
-            ]
+            (
+                RecordingSet().lookup_rat_cohort_set_name(),
+                "brain_region_diff_rat_cohort",
+                "path_delay_postdelay^correct_incorrect_stay_trials",
+            ),
+        ]
 
         # Non cohort
         for recording_set_name in RecordingSet().get_recording_set_names(
-                key_filter, ["single_epoch_testing"]):  # Haight rotation TODO: change once done testing
-            x.append((recording_set_name, "default", "path_delay_postdelay^correct_incorrect_stay_trials"))
+            key_filter, ["single_epoch_testing"]
+        ):  # Haight rotation TODO: change once done testing
+            x.append(
+                (
+                    recording_set_name,
+                    "default",
+                    "path_delay_postdelay^correct_incorrect_stay_trials",
+                )
+            )
 
         return x
 
     # TODO: remove this once done with testing. This is just to pass fewer recording set names for testing.
     def get_recording_set_names(self, key_filter):
         # Return list of recording set names for a given key_filter, for use in populating tables
-        return RecordingSet().get_recording_set_names(key_filter, ["single_epoch_testing"])
+        return RecordingSet().get_recording_set_names(
+            key_filter, ["single_epoch_testing"]
+        )
 
     def delete_(self, key, safemode=True):
         # If recording set name not in key but components that determine it are, then
         # find matching recording set names given the components, to avoid deleting irrelevant
         # entries
-        key = copy.deepcopy(key)  # make copy of key to avoid changing outside function
-        recording_set_names = RecordingSet().get_matching_recording_set_names(key)
+        key = copy.deepcopy(
+            key
+        )  # make copy of key to avoid changing outside function
+        recording_set_names = RecordingSet().get_matching_recording_set_names(
+            key
+        )
         for recording_set_name in recording_set_names:
             key.update({"recording_set_name": recording_set_name})
             delete_(self, [MultiCovFRVecSTAveSumm], key, safemode)
 
 
 @schema
-class MultiCovFRVecSTAveSumm(CovariateFRVecSTAveSummBase, MultiCovFRVecSummBase):
+class MultiCovFRVecSTAveSumm(
+    CovariateFRVecSTAveSummBase, MultiCovFRVecSummBase
+):
     definition = """
     # Summary of single 'trial' comparison of firing rate vectors
     -> MultiCovFRVecSTAveSummSel
@@ -683,7 +875,13 @@ class MultiCovFRVecSTAveSumm(CovariateFRVecSTAveSummBase, MultiCovFRVecSummBase)
 
         params = super().get_default_table_entry_params()
 
-        params.update({"mask_duration": self._upstream_table()()._get_params_table()._default_mask_duration()})
+        params.update(
+            {
+                "mask_duration": self._upstream_table()()
+                ._get_params_table()
+                ._default_mask_duration()
+            }
+        )
 
         # Return default params
         return params
@@ -742,7 +940,9 @@ class MultiCovAveFRVecSummSel(CovariateFRVecAveSummSelBase):
 
     # Override parent class method so can include across rat cohort
     def _recording_set_name_types(self):
-        return super()._recording_set_name_types() + ["Haight_rotation_rat_cohort"]
+        return super()._recording_set_name_types() + [
+            "Haight_rotation_rat_cohort"
+        ]
 
     def _default_cov_fr_vec_param_names(self):
         return ["path_delay^even_odd_correct_incorrect_stay_trials"]
@@ -772,12 +972,18 @@ class MultiCovAveFRVecSumm(CovariateAveFRVecSummBase, MultiCovFRVecSummBase):
 
     def _get_relationship_div_column_params(self, **kwargs):
 
-        cov_fr_vec_param_name = kwargs[self._upstream_table()().get_cov_fr_vec_meta_param_name()]
+        cov_fr_vec_param_name = kwargs[
+            self._upstream_table()().get_cov_fr_vec_meta_param_name()
+        ]
 
         if cov_fr_vec_param_name == "even_odd_trials":
             return {
-                "denominator_column_name": "same_path_even_odd_trials", "numerator_column_names": [
-                    "same_turn_even_odd_trials", "different_turn_well_even_odd_trials"]}
+                "denominator_column_name": "same_path_even_odd_trials",
+                "numerator_column_names": [
+                    "same_turn_even_odd_trials",
+                    "different_turn_well_even_odd_trials",
+                ],
+            }
         else:
             raise Exception(f"{cov_fr_vec_param_name} not accounted for")
 
@@ -789,11 +995,21 @@ class MultiCovAveFRVecSumm(CovariateAveFRVecSummBase, MultiCovFRVecSummBase):
 
 
 def populate_jguidera_multi_cov_firing_rate_vector(
-        key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_multi_cov_firing_rate_vector"
     upstream_schema_populate_fn_list = []
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_multi_cov_firing_rate_vector():

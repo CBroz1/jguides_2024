@@ -3,20 +3,43 @@ from collections import namedtuple
 
 import numpy as np
 
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase, SelBase, \
-    ParamNameBase, CohortBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import make_param_name, get_table_name, \
-    insert1_print, get_meta_param_name, \
-    get_non_param_name_primary_key_names, valid_candidate_keys_bool, get_next_int_id, check_int_id, \
-    get_table_column_names, get_key_filter, \
-    table_name_from_table_type, check_single_table_entry, \
-    get_table_secondary_key_names, get_param_name_separating_character, get_num_param_name, fetch_entries_as_dict, \
-    check_epochs_id, get_cohort_test_entry, replace_param_name_chars, get_epochs_id
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
+    SecKeyParamsBase,
+    SelBase,
+    ParamNameBase,
+    CohortBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    make_param_name,
+    get_table_name,
+    insert1_print,
+    get_meta_param_name,
+    get_non_param_name_primary_key_names,
+    valid_candidate_keys_bool,
+    get_next_int_id,
+    check_int_id,
+    get_table_column_names,
+    get_key_filter,
+    table_name_from_table_type,
+    check_single_table_entry,
+    get_table_secondary_key_names,
+    get_param_name_separating_character,
+    get_num_param_name,
+    fetch_entries_as_dict,
+    check_epochs_id,
+    get_cohort_test_entry,
+    replace_param_name_chars,
+    get_epochs_id,
+)
 from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 from jguides_2024.utils.dict_helpers import add_defaults
 from jguides_2024.utils.set_helpers import check_membership, check_set_equality
 from jguides_2024.utils.string_helpers import strip_trailing_s
-from jguides_2024.utils.vector_helpers import unpack_single_element, check_all_unique
+from jguides_2024.utils.vector_helpers import (
+    unpack_single_element,
+    check_all_unique,
+)
 
 """
 Documentation
@@ -28,31 +51,47 @@ param_name_dict: dictionary whose values were strung together to create  pool ta
 
 
 def check_source_table_name_valid(pool_selection_table, source_table_name):
-    check_membership([source_table_name], pool_selection_table._get_valid_source_table_names(),
-                     "source table name", "valid source table names")
+    check_membership(
+        [source_table_name],
+        pool_selection_table._get_valid_source_table_names(),
+        "source table name",
+        "valid source table names",
+    )
 
 
-def make_pool_param_name_dict(source_params_dict, meta_source_table_name, source_table_name):
+def make_pool_param_name_dict(
+    source_params_dict, meta_source_table_name, source_table_name
+):
     return {**{meta_source_table_name: source_table_name}, **source_params_dict}
 
 
 def make_pool_param_name(param_name_dict, table_name):
-    return make_param_name(param_name_dict.values(),
-                           separating_character=get_param_name_separating_character(table_name))
+    return make_param_name(
+        param_name_dict.values(),
+        separating_character=get_param_name_separating_character(table_name),
+    )
 
 
-def get_pool_table_param_name_quantities(pool_selection_table, source_table, source_table_key):
+def get_pool_table_param_name_quantities(
+    pool_selection_table, source_table, source_table_key
+):
     # Get pool table param name and related quantities
 
     # To define pool table param name, we string together "target keys": primary keys in source table that are NOT
     # primary keys in pool_selection_table. First define these target keys and check that all are present in
     # source_table_key
     source_table_name = get_table_name(source_table)
-    target_keys = [k for k in source_table.primary_key if k not in pool_selection_table.primary_key]
+    target_keys = [
+        k
+        for k in source_table.primary_key
+        if k not in pool_selection_table.primary_key
+    ]
     missing_keys = [x for x in target_keys if x not in source_table_key]
     if len(missing_keys) > 0:
-        raise Exception(f"All primary keys of source_table ({source_table_name}) that are not primary keys of "
-                        f"selection table must be present in source_table_key. The following were not: {missing_keys}")
+        raise Exception(
+            f"All primary keys of source_table ({source_table_name}) that are not primary keys of "
+            f"selection table must be present in source_table_key. The following were not: {missing_keys}"
+        )
 
     # To define the param name for the selection table, we string together values in the above target keys,
     # as well as the source table name. These, together with the primary keys of the selection table, define
@@ -60,30 +99,49 @@ def get_pool_table_param_name_quantities(pool_selection_table, source_table, sou
     # to help us interpret the selection table param name
     # ...Narrow source table key to target keys and ORDER SOURCE TABLE KEY entries in same manner as these. Ensures
     # consistent ordering in param name
-    source_params_dict = {k: source_table_key[k] for k in target_keys if k in source_table_key}
+    source_params_dict = {
+        k: source_table_key[k] for k in target_keys if k in source_table_key
+    }
     param_name_dict = make_pool_param_name_dict(
-        source_params_dict, pool_selection_table._get_meta_source_table_name(), source_table_name)
+        source_params_dict,
+        pool_selection_table._get_meta_source_table_name(),
+        source_table_name,
+    )
     # ...String together param_name_dict values to make param name
-    param_name = make_pool_param_name(param_name_dict, get_table_name(pool_selection_table))
-    ParamNameQuantities = namedtuple("ParamNameQuantities", "param_name param_name_dict source_params_dict")
+    param_name = make_pool_param_name(
+        param_name_dict, get_table_name(pool_selection_table)
+    )
+    ParamNameQuantities = namedtuple(
+        "ParamNameQuantities", "param_name param_name_dict source_params_dict"
+    )
     return ParamNameQuantities(param_name, param_name_dict, source_params_dict)
 
 
-def get_pool_table_param_name(pool_selection_table, source_table_name, source_table_key):
+def get_pool_table_param_name(
+    pool_selection_table, source_table_name, source_table_key
+):
     # Intended to allow lookup of param name in pool table
     return get_pool_table_param_name_quantities(
-        pool_selection_table, get_table(source_table_name), source_table_key).param_name
+        pool_selection_table, get_table(source_table_name), source_table_key
+    ).param_name
 
 
-def lookup_pool_table_param_name(pool_table, source_table_name, source_table_key, tolerate_no_entry=False):
+def lookup_pool_table_param_name(
+    pool_table, source_table_name, source_table_key, tolerate_no_entry=False
+):
     # Wrapper function for looking up param name in pool table
 
     # Get param name for passed params
-    param_name = get_pool_table_param_name(pool_table, source_table_name, source_table_key)
+    param_name = get_pool_table_param_name(
+        pool_table, source_table_name, source_table_key
+    )
 
     # If entry does not exist in table, optionally raise error
     meta_param_name = get_meta_param_name(pool_table)
-    if len(pool_table & {**source_table_key, **{meta_param_name: param_name}}) == 0:
+    if (
+        len(pool_table & {**source_table_key, **{meta_param_name: param_name}})
+        == 0
+    ):
         no_entry_message = f"Entry does not exist in {get_table_name(pool_table)} with param name {param_name}"
         if tolerate_no_entry:
             print(no_entry_message)
@@ -95,57 +153,92 @@ def lookup_pool_table_param_name(pool_table, source_table_name, source_table_key
     return param_name
 
 
-def _get_pool_table_insertion_arguments(pool_selection_table, source_table, source_table_key):
+def _get_pool_table_insertion_arguments(
+    pool_selection_table, source_table, source_table_key
+):
     # Get key-value pairs to insert into a pool selection table (with exception of that with int_id; we want to get this
     # just prior to insertion since it is defined based on existing entries in the table)
 
     # Check inputs
     # ...Check source table name valid
-    check_source_table_name_valid(pool_selection_table, get_table_name(source_table))
+    check_source_table_name_valid(
+        pool_selection_table, get_table_name(source_table)
+    )
     # ...Check source table key
     # Check that source_table_key specifies single entry in source table
     source_table_name = get_table_name(source_table)
     num_source_table_entries = len(source_table & source_table_key)
     if num_source_table_entries != 1:
-        raise Exception(f"source_table_key should specify exactly one entry in {source_table_name}, but specifies "
-                        f"{num_source_table_entries}. source_table_key: {source_table_key}")
+        raise Exception(
+            f"source_table_key should specify exactly one entry in {source_table_name}, but specifies "
+            f"{num_source_table_entries}. source_table_key: {source_table_key}"
+        )
     # Check that all keys in source_table_key are primary keys in source table, and that all primary keys in source
     # table are in source_table_key
-    check_set_equality(source_table.primary_key, source_table_key.keys(), f"{source_table_name} primary key",
-                       "source table key")
+    check_set_equality(
+        source_table.primary_key,
+        source_table_key.keys(),
+        f"{source_table_name} primary key",
+        "source table key",
+    )
 
     # For source_table_key (dictionary that specifies a single entry in source table), we want to find the
     # key-value pairs corresponding to primary keys in the selection table (except for the selection table param name),
     # to insert into the selection table
     # ...Get primary keys in selection table heading except for the param name primary key
-    non_param_name_primary_keys = get_non_param_name_primary_key_names(pool_selection_table)
+    non_param_name_primary_keys = get_non_param_name_primary_key_names(
+        pool_selection_table
+    )
     # ...Keep corresponding key-value pairs in source_table_key
-    primary_key = {k: v for k, v in source_table_key.items() if k in non_param_name_primary_keys}
+    primary_key = {
+        k: v
+        for k, v in source_table_key.items()
+        if k in non_param_name_primary_keys
+    }
 
     # Get param name for pool selection table and related quantities, including: primary keys in source table that
     # are not primary keys in selection table (allows us to access relevant entry in source table)
-    param_name_obj = get_pool_table_param_name_quantities(pool_selection_table, source_table, source_table_key)
+    param_name_obj = get_pool_table_param_name_quantities(
+        pool_selection_table, source_table, source_table_key
+    )
 
     # Get what param name is called in selection table (meta param name)
     meta_param_name = get_meta_param_name(pool_selection_table)
 
-    InsertArguments = namedtuple("InsertArguments", "primary_key meta_param_name param_name meta_source_table_name "
-                                                    "source_table_name source_params_dict param_name_dict")
-    return InsertArguments(primary_key, meta_param_name, param_name_obj.param_name,
-                           pool_selection_table._get_meta_source_table_name(), source_table_name,
-                           param_name_obj.source_params_dict, param_name_obj.param_name_dict)
+    InsertArguments = namedtuple(
+        "InsertArguments",
+        "primary_key meta_param_name param_name meta_source_table_name "
+        "source_table_name source_params_dict param_name_dict",
+    )
+    return InsertArguments(
+        primary_key,
+        meta_param_name,
+        param_name_obj.param_name,
+        pool_selection_table._get_meta_source_table_name(),
+        source_table_name,
+        param_name_obj.source_params_dict,
+        param_name_obj.param_name_dict,
+    )
 
 
-def _get_pool_table_insertion_key(pool_selection_table, source_table, source_table_key):
+def _get_pool_table_insertion_key(
+    pool_selection_table, source_table, source_table_key
+):
     # Return pool table insert arguments as dictionary
 
-    x = _get_pool_table_insertion_arguments(pool_selection_table, source_table, source_table_key)
+    x = _get_pool_table_insertion_arguments(
+        pool_selection_table, source_table, source_table_key
+    )
 
-    return {**x.primary_key,
-            **{x.meta_param_name: x.param_name,
-               x.meta_source_table_name: x.source_table_name,
-               "source_params_dict": x.source_params_dict,
-               "param_name_dict": x.param_name_dict}}
+    return {
+        **x.primary_key,
+        **{
+            x.meta_param_name: x.param_name,
+            x.meta_source_table_name: x.source_table_name,
+            "source_params_dict": x.source_params_dict,
+            "param_name_dict": x.param_name_dict,
+        },
+    }
 
 
 def get_pool_part_table_name(main_table, source_table_name):
@@ -174,10 +267,18 @@ class PoolSelBase(SelBase):
 
         bad_keys = []
         int_ids = self.fetch("int_id")
-        bad_int_ids = np.unique([x for x in int_ids if np.sum(int_ids == x) > 1])
+        bad_int_ids = np.unique(
+            [x for x in int_ids if np.sum(int_ids == x) > 1]
+        )
         if len(bad_int_ids) > 0:
-            bad_keys += list(np.concatenate([
-                (self & {"int_id": bad_int_id}).fetch("KEY") for bad_int_id in bad_int_ids]))
+            bad_keys += list(
+                np.concatenate(
+                    [
+                        (self & {"int_id": bad_int_id}).fetch("KEY")
+                        for bad_int_id in bad_int_ids
+                    ]
+                )
+            )
         bad_keys += super()._get_bad_keys()
 
         return bad_keys
@@ -186,7 +287,9 @@ class PoolSelBase(SelBase):
         # Insert into pool selection table
 
         # Get insertion arguments
-        insert_dict = _get_pool_table_insertion_key(self, source_table, source_table_key)
+        insert_dict = _get_pool_table_insertion_key(
+            self, source_table, source_table_key
+        )
 
         # Get integer ID for entry
         insert_dict.update({"int_id": get_next_int_id(self)})
@@ -204,20 +307,25 @@ class PoolSelBase(SelBase):
         key_filter = get_key_filter(kwargs)
 
         # Populate pool selection table: loop through source tables and copy entries to selection table
-        source_table_names = set(self._get_valid_source_table_names()) - {"none"}
+        source_table_names = set(self._get_valid_source_table_names()) - {
+            "none"
+        }
 
         for source_table_name in source_table_names:
 
             # Get source table and restrict based on key filter
-            source_table = (get_table(source_table_name) & key_filter)
+            source_table = get_table(source_table_name) & key_filter
 
             # Get primary key key-value pairs from source table
             source_table_keys = source_table.fetch("KEY")
 
             # For each source table key, get insertion arguments to pool selection table
             insert_dicts = [
-                _get_pool_table_insertion_key(self, source_table, source_table_key)
-                for source_table_key in source_table_keys]
+                _get_pool_table_insertion_key(
+                    self, source_table, source_table_key
+                )
+                for source_table_key in source_table_keys
+            ]
 
             # Find indices of insertion arguments that do not yet exist in pool selection table. This can speed
             # things up because using insert1 with existing entry seems to take a while
@@ -267,32 +375,51 @@ class PoolSelBase(SelBase):
         # If indicated, raise error if no entry found
         if source_table_entry is None and not tolerate_no_entry:
             source_table_name = (self & key).fetch1("source_table_name")
-            raise Exception(f"No entry found in {source_table_name} for key {source_table_key}")
+            raise Exception(
+                f"No entry found in {source_table_name} for key {source_table_key}"
+            )
 
         return source_table_entry
 
-    def get_entries_with_param_name_dict(self, param_name_dict, key_filter=None, restrict_primary_key=False):
+    def get_entries_with_param_name_dict(
+        self, param_name_dict, key_filter=None, restrict_primary_key=False
+    ):
         # Find entries with param_dict matching the one passed by user
 
         # Narrow to subset of table matching key_filter if indicated
         table_subset = copy.deepcopy(self)  # default is entire table
         if key_filter is not None:
-            table_subset = (table_subset & key_filter)
+            table_subset = table_subset & key_filter
 
         # Filter for table entries for which passed param_name_dict encompassed in entry param_name_dict
         column_names = get_table_column_names(self)
-        table_entries = [{k: v for k, v in zip(column_names, table_entry)} for table_entry in table_subset.fetch()
-                if all([table_entry["param_name_dict"].get(k) == v for k, v in param_name_dict.items()])]
+        table_entries = [
+            {k: v for k, v in zip(column_names, table_entry)}
+            for table_entry in table_subset.fetch()
+            if all(
+                [
+                    table_entry["param_name_dict"].get(k) == v
+                    for k, v in param_name_dict.items()
+                ]
+            )
+        ]
 
         # Restrict to primary keys if indicated. We do this after getting full table entry since we require
         # param name dict, a secondary key, in filtering step above
         if restrict_primary_key:
-            table_entries = [{k: table_entry[k] for k in self.primary_key} for table_entry in table_entries]
+            table_entries = [
+                {k: table_entry[k] for k in self.primary_key}
+                for table_entry in table_entries
+            ]
 
         return table_entries
 
-    def lookup_param_name(self, source_table_name, source_table_key, tolerate_no_entry=False):
-        return lookup_pool_table_param_name(self, source_table_name, source_table_key, tolerate_no_entry)
+    def lookup_param_name(
+        self, source_table_name, source_table_key, tolerate_no_entry=False
+    ):
+        return lookup_pool_table_param_name(
+            self, source_table_name, source_table_key, tolerate_no_entry
+        )
 
     def alter(self, prompt=True, context=None):
         super().alter()
@@ -307,8 +434,8 @@ class PoolBase(ComputedBase):
 
         # Insert into main table:
         # ...Set part table name to source table name
-        selection_entry = (selection_table & key)
-        source_table_name = selection_entry.fetch1('source_table_name')
+        selection_entry = selection_table & key
+        source_table_name = selection_entry.fetch1("source_table_name")
         part_table_name = get_pool_part_table_name(self, source_table_name)
         # ...Insert into table
         main_key = {**key, **{"part_table_name": part_table_name}}
@@ -318,14 +445,17 @@ class PoolBase(ComputedBase):
         # ...Get name of source table, and source params dict: the extra params we need
         # to add to key to specify a unique entry in the source table
         source_params_dict, source_table_name = (selection_table & key).fetch1(
-            "source_params_dict", "source_table_name")
+            "source_params_dict", "source_table_name"
+        )
         # ...Get part table
         part_table = get_table(part_table_name)
         # ...Insert into parts table
         insert1_print(part_table, {**key, **source_params_dict})
 
     def _get_source_table_entry(self):
-        return self._get_selection_table()().get_source_table_entry(key=self.fetch1())
+        return self._get_selection_table()().get_source_table_entry(
+            key=self.fetch1()
+        )
 
     def _get_source_params_table(self):
         return
@@ -333,10 +463,17 @@ class PoolBase(ComputedBase):
     def fetch1_part_entry(self):
         return self._get_source_table_entry().fetch1()
 
-    def fetch1_dataframe(self, object_id_name=None, restore_empty_nwb_object=True, df_index_name=None):
+    def fetch1_dataframe(
+        self,
+        object_id_name=None,
+        restore_empty_nwb_object=True,
+        df_index_name=None,
+    ):
         return self._get_source_table_entry().fetch1_dataframe(
-            object_id_name=object_id_name, restore_empty_nwb_object=restore_empty_nwb_object,
-            df_index_name=df_index_name)
+            object_id_name=object_id_name,
+            restore_empty_nwb_object=restore_empty_nwb_object,
+            df_index_name=df_index_name,
+        )
 
     def fetch1_dataframes(self):
         return self._get_source_table_entry().fetch1_dataframes()
@@ -358,22 +495,36 @@ class PoolCohortParamNameBase(ParamNameBase):
         :return: string, param name for current table (abbreviated version of "full" parameter name)
         """
 
-        param_name_iterables = self._get_params_table()()._get_param_name_iterables()
+        param_name_iterables = (
+            self._get_params_table()()._get_param_name_iterables()
+        )
 
         # Check that secondary key map contains exactly iterables we want to include in param name
-        check_set_equality(secondary_key_subset_map.keys(), param_name_iterables, "keys in secondary key subset map",
-                           "name of secondary keys we want to include in cohort param name")
+        check_set_equality(
+            secondary_key_subset_map.keys(),
+            param_name_iterables,
+            "keys in secondary key subset map",
+            "name of secondary keys we want to include in cohort param name",
+        )
 
         # Order the secondary keys by their order in param name iterables, so that order of passed keys does not matter
-        secondary_key_subset_map = {k: secondary_key_subset_map[k] for k in param_name_iterables}
+        secondary_key_subset_map = {
+            k: secondary_key_subset_map[k] for k in param_name_iterables
+        }
 
         # Order each set of values in secondary key, so that order of passed values does not matter
-        secondary_key_subset_map = {k: np.sort(np.asarray(v)) for k, v in secondary_key_subset_map.items()}
+        secondary_key_subset_map = {
+            k: np.sort(np.asarray(v))
+            for k, v in secondary_key_subset_map.items()
+        }
 
         # Make param name by joining values of iterables
-        param_name = make_param_name(list(secondary_key_subset_map.values()),
-                               separating_character=get_param_name_separating_character(
-                                   get_table_name(self._get_params_table())))
+        param_name = make_param_name(
+            list(secondary_key_subset_map.values()),
+            separating_character=get_param_name_separating_character(
+                get_table_name(self._get_params_table())
+            ),
+        )
 
         # Replace characters. Note that this means param name not necessarily unique
         if replace_chars:
@@ -385,7 +536,9 @@ class PoolCohortParamNameBase(ParamNameBase):
 class PoolCohortParamsBase(SecKeyParamsBase):
 
     def _get_meta_cohort_param_name(self):
-        return unpack_single_element([x for x in self.primary_key if "cohort_param_name" in x])
+        return unpack_single_element(
+            [x for x in self.primary_key if "cohort_param_name" in x]
+        )
 
     def _get_pool_selection_table(self):
         # Get pool selection table
@@ -406,26 +559,38 @@ class PoolCohortParamsBase(SecKeyParamsBase):
         if check_unique_iterables:
             num_passed_check = 0
             for meta_param_name in self._get_param_name_iterables():
-                num_passed_check += check_all_unique(key[meta_param_name], tolerate_error=True)
+                num_passed_check += check_all_unique(
+                    key[meta_param_name], tolerate_error=True
+                )
             if num_passed_check == 0:
-                raise Exception(f"iterables that make up cohort param name not unique; may result in different "
-                                f"cohort entries containing identical information")
+                raise Exception(
+                    f"iterables that make up cohort param name not unique; may result in different "
+                    f"cohort entries containing identical information"
+                )
 
         super().insert1(key, skip_duplicates=True)
 
-    def _get_insert_cohort_param_name(self, secondary_key_subset_map, use_full_param_name=False):
-        return self._get_param_name_table()().get_insert_param_name(use_full_param_name=use_full_param_name,
-                                                                    secondary_key_subset_map=secondary_key_subset_map)
+    def _get_insert_cohort_param_name(
+        self, secondary_key_subset_map, use_full_param_name=False
+    ):
+        return self._get_param_name_table()().get_insert_param_name(
+            use_full_param_name=use_full_param_name,
+            secondary_key_subset_map=secondary_key_subset_map,
+        )
 
-    def _insert_from_upstream_param_names(self, secondary_key_subset_map, key, use_full_param_name):
+    def _insert_from_upstream_param_names(
+        self, secondary_key_subset_map, key, use_full_param_name
+    ):
 
         # Update key with param names of upstream table
         key.update(secondary_key_subset_map)
 
         # Update key with cohort param name (param name for current table) and insert into param name table
         # TODO: think should SORT each set of values in secondary key prior to making param name. May need
-         # to be done separately for each table because in some cases want to order by something specific (e.g. epoch)
-        cohort_param_name = self._get_insert_cohort_param_name(secondary_key_subset_map, use_full_param_name)
+        # to be done separately for each table because in some cases want to order by something specific (e.g. epoch)
+        cohort_param_name = self._get_insert_cohort_param_name(
+            secondary_key_subset_map, use_full_param_name
+        )
         key.update({self._get_meta_cohort_param_name(): cohort_param_name})
 
         # For each upstream param name, add secondary key for number of param names if present in current table
@@ -444,7 +609,10 @@ class PoolCohortParamsBase(SecKeyParamsBase):
 
         # Exclude secondary keys that describe cohort size
         param_name_iterables = [
-            x for x in param_name_iterables if x not in [get_num_param_name(y) for y in param_name_iterables]]
+            x
+            for x in param_name_iterables
+            if x not in [get_num_param_name(y) for y in param_name_iterables]
+        ]
 
         # Return singular if indicated, otherwise return plural
         if singular:
@@ -463,24 +631,44 @@ class PoolCohortParamsBase(SecKeyParamsBase):
             key_filter = kwargs["key_filter"]
 
         # Find entries in pool selection table with param_dict matching the one passed by user
-        pool_table_entries = (self._get_pool_selection_table() & key_filter).get_entries_with_param_name_dict(param_name_dict)
+        pool_table_entries = (
+            self._get_pool_selection_table() & key_filter
+        ).get_entries_with_param_name_dict(param_name_dict)
 
         # Insert each entry as its own cohort
-        non_param_name_primary_key_names = get_non_param_name_primary_key_names(self)
-        param_name_iterables_singular = self._get_param_name_iterables(singular=True)
+        non_param_name_primary_key_names = get_non_param_name_primary_key_names(
+            self
+        )
+        param_name_iterables_singular = self._get_param_name_iterables(
+            singular=True
+        )
         param_name_iterables_plural = self._get_param_name_iterables()
-        print(f"Looping through {len(pool_table_entries)} pool_table_entries...")
+        print(
+            f"Looping through {len(pool_table_entries)} pool_table_entries..."
+        )
         for idx, entry in enumerate(pool_table_entries):
             # Add primary keys that are not cohort param name
             key = {k: entry[k] for k in non_param_name_primary_key_names}
             # Make map from secondary keys used to generate cohort param name to single value for each
             secondary_key_subset_map = {
-                k1: [entry[k2]] for k1, k2 in zip(param_name_iterables_plural, param_name_iterables_singular)}
+                k1: [entry[k2]]
+                for k1, k2 in zip(
+                    param_name_iterables_plural, param_name_iterables_singular
+                )
+            }
             # For interpretability and since should respect character limit, use full param name for single
             # member cohort
-            self._insert_from_upstream_param_names(secondary_key_subset_map, key, use_full_param_name=True)
+            self._insert_from_upstream_param_names(
+                secondary_key_subset_map, key, use_full_param_name=True
+            )
 
-    def lookup_param_name(self, source_table_names, source_table_keys, tolerate_no_entry=False, **kwargs):
+    def lookup_param_name(
+        self,
+        source_table_names,
+        source_table_keys,
+        tolerate_no_entry=False,
+        **kwargs,
+    ):
         # Return cohort param name
 
         # Get param name of upstream pool table for each member of cohort, since these are used to construct
@@ -489,20 +677,34 @@ class PoolCohortParamsBase(SecKeyParamsBase):
         #  allow multiple param name iterables. For now, require this method only be used when a single
         #  param name iterable.
         if len(self._get_param_name_iterables()) > 1:
-            raise Exception(f"Code currently not equipped to work with more than one param name iterable")
+            raise Exception(
+                f"Code currently not equipped to work with more than one param name iterable"
+            )
 
         secondary_key_subset_map = dict()
 
-        for param_name_iterable in self._get_param_name_iterables():  # keep loop so easier to make above change
+        for (
+            param_name_iterable
+        ) in (
+            self._get_param_name_iterables()
+        ):  # keep loop so easier to make above change
             pool_param_names = [
                 self._get_pool_selection_table()().lookup_param_name(
-                    source_table_name, source_table_key, tolerate_no_entry)
-                for source_table_name, source_table_key in zip(source_table_names, source_table_keys)]
-            secondary_key_subset_map.update({param_name_iterable: pool_param_names})
+                    source_table_name, source_table_key, tolerate_no_entry
+                )
+                for source_table_name, source_table_key in zip(
+                    source_table_names, source_table_keys
+                )
+            ]
+            secondary_key_subset_map.update(
+                {param_name_iterable: pool_param_names}
+            )
 
         # Return cohort param name
         return self._get_param_name_table()().lookup_param_name(
-            secondary_key_subset_map=secondary_key_subset_map, tolerate_no_entry=tolerate_no_entry)
+            secondary_key_subset_map=secondary_key_subset_map,
+            tolerate_no_entry=tolerate_no_entry,
+        )
 
     def lookup_param_name_from_shorthand(self, shorthand_param_name):
         raise Exception(f"This method must be overwritten in child class")
@@ -518,20 +720,33 @@ class PoolCohortBase(CohortBase):
         # Insert into parts table
         params_table = self._get_params_table()
         param_name_iterables_plural = params_table()._get_param_name_iterables()
-        param_name_iterables_singular = params_table()._get_param_name_iterables(singular=True)
-        for x in fetch_entries_as_dict(params_table & key, param_name_iterables_plural):
+        param_name_iterables_singular = (
+            params_table()._get_param_name_iterables(singular=True)
+        )
+        for x in fetch_entries_as_dict(
+            params_table & key, param_name_iterables_plural
+        ):
             for params in np.asarray((list(x.values()))).T:
-                key.update({k: v for k, v in zip(param_name_iterables_singular, params)})
+                key.update(
+                    {
+                        k: v
+                        for k, v in zip(param_name_iterables_singular, params)
+                    }
+                )
                 insert1_print(self.CohortEntries, key)
 
     def _get_param_name_iterables(self):
         # Get what params are called in upstream pool table
-        return self._get_params_table()()._get_param_name_iterables(singular=True)
+        return self._get_params_table()()._get_param_name_iterables(
+            singular=True
+        )
 
     def get_upstream_pool_table_param_names(self, key):
 
         # Check that passed key specifies a single cohort
-        check_single_table_entry(self, key)  # one entry in main table per cohort
+        check_single_table_entry(
+            self, key
+        )  # one entry in main table per cohort
 
         # Return upstream param names for cohort members
         param_name_iterables = self._get_param_name_iterables()
@@ -542,7 +757,11 @@ class PoolCohortBase(CohortBase):
 
         # Add iterable name and indicate that add to dfs, if these not in kwargs
         iterable_name = unpack_single_element(self._get_param_name_iterables())
-        kwargs = add_defaults(kwargs, {"iterable_name": iterable_name, "add_iterable": True}, add_nonexistent_keys=True)
+        kwargs = add_defaults(
+            kwargs,
+            {"iterable_name": iterable_name, "add_iterable": True},
+            add_nonexistent_keys=True,
+        )
 
         return super().fetch_dataframes(**kwargs)
 
@@ -575,8 +794,11 @@ class EpsCohortParamsBase(SecKeyParamsBase):
         # Add epochs_id to key
         # ...Ensure upstream table populated
         from jguides_2024.metadata.jguidera_epoch import EpochCohortParams
-        EpochCohortParams().insert_from_epochs(key["nwb_file_name"], key["epochs"])
-        key.update({"epochs_id":  get_epochs_id(key["epochs"])})
+
+        EpochCohortParams().insert_from_epochs(
+            key["nwb_file_name"], key["epochs"]
+        )
+        key.update({"epochs_id": get_epochs_id(key["epochs"])})
 
         # Return key
         return key
@@ -594,11 +816,16 @@ class EpsCohortParamsBase(SecKeyParamsBase):
         # Insert an across epochs entry for testing
         # Use for test, first two entries where there is same nwb_file_name and trials_pool_param_name
         num_epochs = 2
-        test_entry_obj = get_cohort_test_entry(self._upstream_table(), col_vary="epoch", num_entries=num_epochs)
+        test_entry_obj = get_cohort_test_entry(
+            self._upstream_table(), col_vary="epoch", num_entries=num_epochs
+        )
 
         # Insert if found valid set
         if test_entry_obj is not None:
-            key = {**test_entry_obj.same_col_vals_map, **{"epochs": test_entry_obj.target_vals}}
+            key = {
+                **test_entry_obj.same_col_vals_map,
+                **{"epochs": test_entry_obj.target_vals},
+            }
             key = self._update_key(key)
             self.insert1(key, skip_duplicates=True)
 

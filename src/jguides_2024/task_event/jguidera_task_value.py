@@ -8,14 +8,29 @@ import spyglass as nd
 
 from spyglass.common import AnalysisNwbfile
 
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase, CovDigmethBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    SelBase,
+    ComputedBase,
+    CovDigmethBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    insert_analysis_table_entry,
+)
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from jguides_2024.task_event.jguidera_dio_trials import DioWellDATrials, DioWellDATrialsParams, \
-    DioWellDDTrials, DioWellDDTrialsParams
+from jguides_2024.task_event.jguidera_dio_trials import (
+    DioWellDATrials,
+    DioWellDATrialsParams,
+    DioWellDDTrials,
+    DioWellDDTrialsParams,
+)
 from jguides_2024.task_event.jguidera_dio_trials import DioWellTrials
-from jguides_2024.task_event.jguidera_task_performance import reward_outcomes_to_int
-from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool, ResTimeBinsPoolSel
+from jguides_2024.task_event.jguidera_task_performance import (
+    reward_outcomes_to_int,
+)
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPool,
+    ResTimeBinsPoolSel,
+)
 from jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns
 from jguides_2024.utils.kernel_helpers import Kernel
 from jguides_2024.utils.plot_helpers import get_fig_axes
@@ -42,10 +57,14 @@ class TrialExpecValParams(dj.Manual):
         # Check parameters
 
         # Check that all required params passed
-        check_membership(["kernel_params", "val_model"], key["trial_expec_val_params"])
+        check_membership(
+            ["kernel_params", "val_model"], key["trial_expec_val_params"]
+        )
 
         # Check that kernel params valid
-        Kernel(key["trial_expec_val_params"]["kernel_params"])  # params checked when create kernel
+        Kernel(
+            key["trial_expec_val_params"]["kernel_params"]
+        )  # params checked when create kernel
 
         if "skip_duplicates" not in kwargs:
             kwargs["skip_duplicates"] = True
@@ -59,12 +78,26 @@ class TrialExpecValParams(dj.Manual):
         kernel_num_samples = 4
         kernel_tau = 2
 
-        kernel_params = {"kernel_type": kernel_type, "kernel_num_samples": kernel_num_samples, "kernel_tau": kernel_tau}
-        kernel_text = "_".join([str(x) for x in [kernel_type, kernel_num_samples, kernel_tau]])
+        kernel_params = {
+            "kernel_type": kernel_type,
+            "kernel_num_samples": kernel_num_samples,
+            "kernel_tau": kernel_tau,
+        }
+        kernel_text = "_".join(
+            [str(x) for x in [kernel_type, kernel_num_samples, kernel_tau]]
+        )
         expec_val_param_name = f"{val_model}_{kernel_text}"
-        expec_val_params = {"kernel_params": kernel_params, "val_model": val_model}
+        expec_val_params = {
+            "kernel_params": kernel_params,
+            "val_model": val_model,
+        }
 
-        self.insert1({"trial_expec_val_param_name": expec_val_param_name, "trial_expec_val_params": expec_val_params})
+        self.insert1(
+            {
+                "trial_expec_val_param_name": expec_val_param_name,
+                "trial_expec_val_params": expec_val_params,
+            }
+        )
 
 
 @schema
@@ -83,7 +116,11 @@ class TrialExpecValSel(SelBase):
         """
 
     def _get_potential_keys(self, key_filter=None):
-        return [k for k in super()._get_potential_keys() if len(DioWellDATrials & k) > 0]
+        return [
+            k
+            for k in super()._get_potential_keys()
+            if len(DioWellDATrials & k) > 0
+        ]
 
 
 @schema
@@ -110,15 +147,28 @@ class TrialExpecVal(ComputedBase):
 
         # Get trials information
         # ...Set departure to arrival trials param name to no shift
-        dio_well_da_trials_param_name = DioWellDATrialsParams().lookup_no_shift_param_name()
-        da_trials_key = {**key, **{"dio_well_da_trials_param_name": dio_well_da_trials_param_name}}
+        dio_well_da_trials_param_name = (
+            DioWellDATrialsParams().lookup_no_shift_param_name()
+        )
+        da_trials_key = {
+            **key,
+            **{"dio_well_da_trials_param_name": dio_well_da_trials_param_name},
+        }
         # ...Get information
-        trial_start_epoch_trial_numbers, path_names, trial_end_reward_outcomes = (
-                DioWellDATrials & da_trials_key).fetch1(
-            "trial_start_epoch_trial_numbers", "path_names", "trial_end_reward_outcomes")
+        (
+            trial_start_epoch_trial_numbers,
+            path_names,
+            trial_end_reward_outcomes,
+        ) = (DioWellDATrials & da_trials_key).fetch1(
+            "trial_start_epoch_trial_numbers",
+            "path_names",
+            "trial_end_reward_outcomes",
+        )
 
         # Convert reward outcomes to integer
-        trial_end_reward_outcomes = np.asarray(reward_outcomes_to_int(trial_end_reward_outcomes))
+        trial_end_reward_outcomes = np.asarray(
+            reward_outcomes_to_int(trial_end_reward_outcomes)
+        )
 
         # Get expected value for each trial
         if "val_model" == "single_path":
@@ -128,17 +178,41 @@ class TrialExpecVal(ComputedBase):
         for path_name in np.unique(path_names):  # for paths
             idxs = np.where(path_names == path_name)[0]
             path_trial_end_reward_outcomes = trial_end_reward_outcomes[idxs]
-            values = kernel.convolve(path_trial_end_reward_outcomes, mode="full")[0:len(path_trial_end_reward_outcomes)]
-            for idx, trial_value, reward_outcome in zip(idxs, values, path_trial_end_reward_outcomes):
-                data_list.append((trial_start_epoch_trial_numbers[idx], trial_value, path_name, reward_outcome))
-        df = df_from_data_list(data_list, [
-            "trial_start_epoch_trial_number", self._covariate_name(), "path_name", "trial_end_reward_outcome"])
+            values = kernel.convolve(
+                path_trial_end_reward_outcomes, mode="full"
+            )[0 : len(path_trial_end_reward_outcomes)]
+            for idx, trial_value, reward_outcome in zip(
+                idxs, values, path_trial_end_reward_outcomes
+            ):
+                data_list.append(
+                    (
+                        trial_start_epoch_trial_numbers[idx],
+                        trial_value,
+                        path_name,
+                        reward_outcome,
+                    )
+                )
+        df = df_from_data_list(
+            data_list,
+            [
+                "trial_start_epoch_trial_number",
+                self._covariate_name(),
+                "path_name",
+                "trial_end_reward_outcome",
+            ],
+        )
 
         insert_analysis_table_entry(self, [df], key)
 
     def fetch1_dataframe(
-            self, object_id_name=None, restore_empty_nwb_object=True, df_index_name="trial_start_epoch_trial_number"):
-        return super().fetch1_dataframe(object_id_name, restore_empty_nwb_object, df_index_name)
+        self,
+        object_id_name=None,
+        restore_empty_nwb_object=True,
+        df_index_name="trial_start_epoch_trial_number",
+    ):
+        return super().fetch1_dataframe(
+            object_id_name, restore_empty_nwb_object, df_index_name
+        )
 
     def plot_results(self):
 
@@ -148,14 +222,21 @@ class TrialExpecVal(ComputedBase):
 
         # Initialize figure
         fig, axes = get_fig_axes(
-            num_rows=len(path_names), num_columns=1, subplot_width=5, subplot_height=2.5)
+            num_rows=len(path_names),
+            num_columns=1,
+            subplot_width=5,
+            subplot_height=2.5,
+        )
 
         for idx, (path_name, ax) in enumerate(zip(path_names, axes)):
 
             df_subset = df_filter_columns(df, {"path_name": path_name})
 
             for x, plot_marker, color in zip(
-                    ["trial_end_reward_outcome", "trial_end_value"], ["o", "x"], ["black", "red"]):
+                ["trial_end_reward_outcome", "trial_end_value"],
+                ["o", "x"],
+                ["black", "red"],
+            ):
                 ax.plot(df_subset[x], plot_marker, label=x, color=color)
                 ax.plot(df_subset[x], label=x, color=color)
 
@@ -180,13 +261,24 @@ class TimeExpecValSel(SelBase):
             key_filter = dict()
 
         # Restrict to 100ms epoch time bins
-        valid_res_time_bins_pool_param_name = ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms")
+        valid_res_time_bins_pool_param_name = (
+            ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms")
+        )
         # ...If time bins param passed, check that 100ms epoch time bins
         if "res_time_bins_pool_param_name" in key_filter:
-            if key_filter["res_time_bins_pool_param_name"] != valid_res_time_bins_pool_param_name:
-                raise Exception(f"res_time_bins_pool_param_name must be {valid_res_time_bins_pool_param_name}")
+            if (
+                key_filter["res_time_bins_pool_param_name"]
+                != valid_res_time_bins_pool_param_name
+            ):
+                raise Exception(
+                    f"res_time_bins_pool_param_name must be {valid_res_time_bins_pool_param_name}"
+                )
         # ...Update key filter with time bins param
-        key_filter.update({"res_time_bins_pool_param_name": valid_res_time_bins_pool_param_name})
+        key_filter.update(
+            {
+                "res_time_bins_pool_param_name": valid_res_time_bins_pool_param_name
+            }
+        )
 
         return super()._get_potential_keys(key_filter)
 
@@ -221,32 +313,51 @@ class TimeExpecVal(CovDigmethBase):
         # or departure, whichever comes first
 
         # Get trial numbers and trial times for current dio well trials table entry
-        table_entry = (DioWellTrials & key)
+        table_entry = DioWellTrials & key
         # Get epoch trial numbers, omitting last since no associated "post delay or departure" trial
         epoch_trial_nums = table_entry.fetch1("epoch_trial_numbers")[:-1]
         # Get "post delay or departure" trial intervals
         trial_times = table_entry.get_post_delay_or_departure_trials()
         if len(epoch_trial_nums) != len(trial_times):
-            raise Exception(f"different number of trial numbers and trial times")
+            raise Exception(
+                f"different number of trial numbers and trial times"
+            )
 
         # Find the index of the trial interval in which each time falls
         time_bin_centers = time_bins_df.time_bin_centers.values
-        idxs = [unpack_single_element(
-            np.where(np.prod(np.asarray(trial_times) - x, axis=1) <= 0)[0], tolerate_no_entry=True,
-            return_no_entry=np.nan) for x in time_bin_centers]
+        idxs = [
+            unpack_single_element(
+                np.where(np.prod(np.asarray(trial_times) - x, axis=1) <= 0)[0],
+                tolerate_no_entry=True,
+                return_no_entry=np.nan,
+            )
+            for x in time_bin_centers
+        ]
 
         # Get the epoch trial number that each time falls within
-        time_vector_epoch_trial_nums = [np.nan if np.isnan(idx) else epoch_trial_nums[idx] for idx in idxs]
+        time_vector_epoch_trial_nums = [
+            np.nan if np.isnan(idx) else epoch_trial_nums[idx] for idx in idxs
+        ]
 
         # Get trial expected values
         trial_expec_val_df = (TrialExpecVal & key).fetch1_dataframe()
 
         trial_end_values = [
-            np.nan if np.logical_or(np.isnan(x), x not in trial_expec_val_df.index) else
-            trial_expec_val_df.trial_end_value.loc[x] for x in time_vector_epoch_trial_nums]
+            (
+                np.nan
+                if np.logical_or(np.isnan(x), x not in trial_expec_val_df.index)
+                else trial_expec_val_df.trial_end_value.loc[x]
+            )
+            for x in time_vector_epoch_trial_nums
+        ]
 
-        df = pd.DataFrame.from_dict({"time_bin_centers": time_bin_centers, "trial_end_value": trial_end_values,
-                                     "epoch_trial_nums": time_vector_epoch_trial_nums})
+        df = pd.DataFrame.from_dict(
+            {
+                "time_bin_centers": time_bin_centers,
+                "trial_end_value": trial_end_values,
+                "epoch_trial_nums": time_vector_epoch_trial_nums,
+            }
+        )
 
         insert_analysis_table_entry(self, [df], key)
 
@@ -254,13 +365,27 @@ class TimeExpecVal(CovDigmethBase):
     def _covariate_name():
         return TrialExpecVal()._covariate_name()
 
-    def fetch1_dataframe(self, object_id_name=None, restore_empty_nwb_object=True, df_index_name="time_bin_centers"):
-        return super().fetch1_dataframe(object_id_name, restore_empty_nwb_object, df_index_name)
+    def fetch1_dataframe(
+        self,
+        object_id_name=None,
+        restore_empty_nwb_object=True,
+        df_index_name="time_bin_centers",
+    ):
+        return super().fetch1_dataframe(
+            object_id_name, restore_empty_nwb_object, df_index_name
+        )
 
-    def fetch1_dataframe_exclude(self, exclusion_params=None, object_id_name=None, restore_empty_nwb_object=True,
-                                 df_index_name="time_bin_centers"):
+    def fetch1_dataframe_exclude(
+        self,
+        exclusion_params=None,
+        object_id_name=None,
+        restore_empty_nwb_object=True,
+        df_index_name="time_bin_centers",
+    ):
 
-        df = super().fetch1_dataframe(object_id_name, restore_empty_nwb_object, df_index_name)
+        df = super().fetch1_dataframe(
+            object_id_name, restore_empty_nwb_object, df_index_name
+        )
 
         # Exclude as indicated
         if exclusion_params is not None:
@@ -274,7 +399,9 @@ class TimeExpecVal(CovDigmethBase):
 
             # Check exclusion types valid
             exclusion_types = exclusion_params["exclusion_types"]
-            check_membership(exclusion_types, ["paths", None, "epoch_trial_numbers"])
+            check_membership(
+                exclusion_types, ["paths", None, "epoch_trial_numbers"]
+            )
 
             # Restrict to trials on particular paths
             if "paths" in exclusion_types:
@@ -283,19 +410,24 @@ class TimeExpecVal(CovDigmethBase):
 
                 # Get key for querying table with path trial times
                 key = self.fetch1("KEY")
-                param_name = DioWellDDTrialsParams().lookup_no_shift_param_name()
+                param_name = (
+                    DioWellDDTrialsParams().lookup_no_shift_param_name()
+                )
                 key.update({"dio_well_dd_trials_param_name": param_name})
 
                 # Get times by paths
                 path_times = (DioWellDDTrials & key).times_by_paths(
-                    df.index, exclusion_params["path_names"], task_period)
+                    df.index, exclusion_params["path_names"], task_period
+                )
 
                 # Restrict to times on paths
                 df = df.loc[path_times]
 
             # Exclude particular epoch trial numbers if indicated
             if "epoch_trial_numbers" in exclusion_types:
-                valid_bool = ~df["epoch_trial_nums"].isin(exclusion_params["epoch_trial_numbers"])
+                valid_bool = ~df["epoch_trial_nums"].isin(
+                    exclusion_params["epoch_trial_numbers"]
+                )
                 df = df[valid_bool]
 
         return df
@@ -318,18 +450,28 @@ class TimeExpecVal(CovDigmethBase):
         df = self.fetch1_dataframe()
 
         # Plot values
-        ax.plot(df.index, df.trial_end_value, '.', color="gray")
+        ax.plot(df.index, df.trial_end_value, ".", color="gray")
 
         # Plot dio well departure to departure trial information for context
         (DioWellDDTrials & self.fetch1("KEY")).plot_results(ax)
 
 
 def populate_jguidera_task_value(
-        key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_task_value"
-    upstream_schema_populate_fn_list= []
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+    upstream_schema_populate_fn_list = []
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_task_value():

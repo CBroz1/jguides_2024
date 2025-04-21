@@ -6,28 +6,53 @@ import spyglass as nd
 
 from spyglass.common import AnalysisNwbfile
 
-from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
-    CovariateFRVecSelBase, CovariateFRVecBase, CovariateAveFRVecParamsBase, CovariateFRVecTrialAveBase, \
-    CovariateFRVecAveSelBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import (
+    CovariateFRVecSelBase,
+    CovariateFRVecBase,
+    CovariateAveFRVecParamsBase,
+    CovariateFRVecTrialAveBase,
+    CovariateFRVecAveSelBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    SecKeyParamsBase,
+)
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import drop_
-from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+    get_jguidera_nwbf_names,
+)
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec
-from jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
+from jguides_2024.metadata.jguidera_brain_region import (
+    BrainRegionCohort,
+    CurationSet,
+)
 from jguides_2024.metadata.jguidera_epoch import EpochsDescription, RunEpoch
 from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
 from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits
-from jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrials, DioWellTrials
-from jguides_2024.time_and_trials.jguidera_relative_time_at_well import RelTimeWellPostDelayDig, \
-    RelTimeWellPostDelayDigParams
-from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
+from jguides_2024.spikes.jguidera_unit import (
+    BrainRegionUnitsParams,
+    BrainRegionUnits,
+)
+from jguides_2024.task_event.jguidera_dio_trials import (
+    DioWellDDTrials,
+    DioWellTrials,
+)
+from jguides_2024.time_and_trials.jguidera_relative_time_at_well import (
+    RelTimeWellPostDelayDig,
+    RelTimeWellPostDelayDigParams,
+)
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolSel,
+)
 
 # Needed for table definitions:
 from jguides_2024.utils.df_helpers import check_same_index
-from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
-from jguides_2024.utils.state_evolution_estimation import AverageVectorDuringLabeledProgression
+from jguides_2024.utils.point_process_helpers import (
+    event_times_in_intervals_bool,
+)
+from jguides_2024.utils.state_evolution_estimation import (
+    AverageVectorDuringLabeledProgression,
+)
 
 nd
 RelTimeWellPostDelayDig
@@ -49,8 +74,13 @@ class RelPostDelFRVecParams(SecKeyParamsBase):
     """
 
     def _default_params(self):
-        return [[x] for x in [
-            "even_odd_correct_incorrect_stay_trials", "correct_incorrect_stay_trials"]]
+        return [
+            [x]
+            for x in [
+                "even_odd_correct_incorrect_stay_trials",
+                "correct_incorrect_stay_trials",
+            ]
+        ]
 
     def drop_(self):
         drop_([RelPostDelFRVecSel(), self])  # RelPostDelFRVec(),
@@ -71,18 +101,23 @@ class RelPostDelFRVecSel(CovariateFRVecSelBase):
         if verbose:
             print(f"getting potential keys for RelPostDelFRVecSel...")
 
-        min_epoch_mean_firing_rate = .1
+        min_epoch_mean_firing_rate = 0.1
         brain_region_cohort_name = "all_targeted"
         curation_set_name = "runs_analysis_v1"
         primary_features = {
             "zscore_fr": 0,
-            "res_time_bins_pool_param_name": ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms"),
+            "res_time_bins_pool_param_name": ResTimeBinsPoolSel().lookup_param_name_from_shorthand(
+                "epoch_100ms"
+            ),
             "rel_time_well_post_delay_dig_param_name": "0.1",
-            "rel_post_del_fr_vec_param_name": "correct_incorrect_stay_trials"}  # even_odd_correct_incorrect_stay_trials
+            "rel_post_del_fr_vec_param_name": "correct_incorrect_stay_trials",
+        }  # even_odd_correct_incorrect_stay_trials
         unit_params = {
-            "unit_subset_type": "rand_target_region", "unit_subset_size": 50}
+            "unit_subset_type": "rand_target_region",
+            "unit_subset_size": 50,
+        }
         unit_subset_iterations = np.arange(0, 10)
-        kernel_sds = [.1]
+        kernel_sds = [0.1]
 
         # Define nwb file names
         nwb_file_names = get_jguidera_nwbf_names()
@@ -96,44 +131,76 @@ class RelPostDelFRVecSel(CovariateFRVecSelBase):
                 print(f"\non {nwb_file_name}...")
             key = {"nwb_file_name": nwb_file_name}
             # Get brain regions for this nwb file name
-            brain_regions = (BrainRegionCohort & {
-                "nwb_file_name": nwb_file_name, "brain_region_cohort_name": brain_region_cohort_name}).fetch1(
-                "brain_regions")
+            brain_regions = (
+                BrainRegionCohort
+                & {
+                    "nwb_file_name": nwb_file_name,
+                    "brain_region_cohort_name": brain_region_cohort_name,
+                }
+            ).fetch1("brain_regions")
             for brain_region in brain_regions:
                 if verbose:
                     print(f"\non {brain_region}...")
                 key.update({"brain_region": brain_region})
 
-                for epoch in (RunEpoch & {"nwb_file_name": nwb_file_name}).fetch("epoch"):
+                for epoch in (
+                    RunEpoch & {"nwb_file_name": nwb_file_name}
+                ).fetch("epoch"):
                     if verbose:
                         print(f"on epoch {epoch}...")
 
                     # Add curation name to key
-                    epochs_description = EpochsDescription().get_single_run_description(nwb_file_name, epoch)
-                    curation_name = (CurationSet & {
-                        "nwb_file_name": nwb_file_name, "brain_region_cohort_name": brain_region_cohort_name,
-                        "curation_set_name": curation_set_name}).get_curation_name(brain_region, epochs_description)
+                    epochs_description = (
+                        EpochsDescription().get_single_run_description(
+                            nwb_file_name, epoch
+                        )
+                    )
+                    curation_name = (
+                        CurationSet
+                        & {
+                            "nwb_file_name": nwb_file_name,
+                            "brain_region_cohort_name": brain_region_cohort_name,
+                            "curation_set_name": curation_set_name,
+                        }
+                    ).get_curation_name(brain_region, epochs_description)
                     key.update({"curation_name": curation_name})
 
                     if verbose:
                         print(f"on unit subset cases...")
                     for unit_subset_iteration in unit_subset_iterations:
-                        unit_params.update({"unit_subset_iteration": unit_subset_iteration})
+                        unit_params.update(
+                            {"unit_subset_iteration": unit_subset_iteration}
+                        )
                         brain_region_units_param_name = BrainRegionUnitsParams().lookup_single_epoch_param_name(
-                            nwb_file_name, epoch, min_epoch_mean_firing_rate, **unit_params)
-                        key.update({
-                            "epoch": epoch, "brain_region_units_param_name": brain_region_units_param_name})
+                            nwb_file_name,
+                            epoch,
+                            min_epoch_mean_firing_rate,
+                            **unit_params,
+                        )
+                        key.update(
+                            {
+                                "epoch": epoch,
+                                "brain_region_units_param_name": brain_region_units_param_name,
+                            }
+                        )
                         for kernel_sd in kernel_sds:
-                            k = {"res_epoch_spikes_sm_param_name": ResEpochSpikesSmParams().lookup_param_name(
-                                [kernel_sd])}
+                            k = {
+                                "res_epoch_spikes_sm_param_name": ResEpochSpikesSmParams().lookup_param_name(
+                                    [kernel_sd]
+                                )
+                            }
                             keys.append({**primary_features, **key, **k})
 
-        print(f"\nDefined {len(keys)} potential keys, now restricting to those with matches in upstream tables...\n")
+        print(
+            f"\nDefined {len(keys)} potential keys, now restricting to those with matches in upstream tables...\n"
+        )
 
         # Calls parent class method
         table_intersection_keys = super()._get_potential_keys()
-        print(f"...found {len(table_intersection_keys)} upstream table keys, now checking which potential keys "
-              f"are in these...")
+        print(
+            f"...found {len(table_intersection_keys)} upstream table keys, now checking which potential keys "
+            f"are in these..."
+        )
         potential_keys = [x for x in keys if x in table_intersection_keys]
 
         if len(potential_keys) == 0:
@@ -178,8 +245,10 @@ class RelPostDelFRVec(CovariateFRVecBase):
         # Also track which samples correspond to previous stay or leave trial, and exclude those
         # corresponding to neither.
 
-        in_intervals_bool_map = dict()  # store booleans indicating whether samples in stay or leave trials
-        table_subset = (DioWellTrials & key)
+        in_intervals_bool_map = (
+            dict()
+        )  # store booleans indicating whether samples in stay or leave trials
+        table_subset = DioWellTrials & key
 
         # DioWellTrials trials are defined from one well arrival to the next. We want whether or rat stayed
         # at well for full delay duration on current trial.
@@ -189,12 +258,15 @@ class RelPostDelFRVec(CovariateFRVecBase):
 
         # Add text to labels with times within these intervals
         # ...Get boolean indicating whether samples in intervals above
-        in_intervals_bool = event_times_in_intervals_bool(labels.index, trial_intervals)
+        in_intervals_bool = event_times_in_intervals_bool(
+            labels.index, trial_intervals
+        )
         # ...Add text to labels in interval
         label_name = MazePathWell().stay_leave_trial_text("stay")
         labels.loc[in_intervals_bool] = [
             MazePathWell().get_stay_leave_trial_path_name(x, label_name)
-            for x in labels[in_intervals_bool].values]
+            for x in labels[in_intervals_bool].values
+        ]
         # Store boolean indicating whether samples in intervals above, so can ultimately exclude samples
         # not associated with stay or leave trials
         in_intervals_bool_map[label_name] = in_intervals_bool
@@ -205,7 +277,9 @@ class RelPostDelFRVec(CovariateFRVecBase):
     def get_inputs(self, key, verbose=False, ax=None):
 
         # Get firing rate vectors
-        fr_vec_df = (FRVec & key).firing_rate_vector_across_sort_groups(populate_tables=False)
+        fr_vec_df = (FRVec & key).firing_rate_vector_across_sort_groups(
+            populate_tables=False
+        )
 
         # Get digitized relative time in post delay period
         df = (RelTimeWellPostDelayDig & key).fetch1_dataframe()
@@ -229,16 +303,25 @@ class RelPostDelFRVec(CovariateFRVecBase):
         ax = self._plot_labels("pre", labels, verbose, ax)
 
         # Alter labels as indicated
-        labels_description = (RelPostDelFRVecParams & key).fetch1("labels_description")
+        labels_description = (RelPostDelFRVecParams & key).fetch1(
+            "labels_description"
+        )
 
-        if labels_description in ["even_odd_correct_incorrect_stay_trials", "correct_incorrect_stay_trials"]:
+        if labels_description in [
+            "even_odd_correct_incorrect_stay_trials",
+            "correct_incorrect_stay_trials",
+        ]:
 
             # Add text to denote whether "stay" or "leave" trial
-            labels, in_intervals_bool_map = self.alter_input_labels_stay_leave(labels, key)
+            labels, in_intervals_bool_map = self.alter_input_labels_stay_leave(
+                labels, key
+            )
 
             # Add text to denote whether correct/incorrect trial in a given context (e.g. left to center path)
             # note that the line below returns only labels with correct/incorrect
-            labels, label_bool = self.alter_input_labels_correct_incorrect(labels, key)
+            labels, label_bool = self.alter_input_labels_correct_incorrect(
+                labels, key
+            )
 
             # Add text to denote whether even/odd trial in a given context (e.g. left to center path) if indicated
             if labels_description == "even_odd_correct_incorrect_stay_trials":
@@ -257,13 +340,16 @@ class RelPostDelFRVec(CovariateFRVecBase):
             pass
 
         else:
-            raise Exception(f"Have not coded case for labels_description {labels_description}")
+            raise Exception(
+                f"Have not coded case for labels_description {labels_description}"
+            )
 
         # Plot labels again, now that have altered (if indicated)
         self._plot_labels("post", labels, verbose, ax)
 
         return namedtuple("Inputs", "x labels df unit_names")(
-            dig_rel_time, labels, fr_vec_df, np.asarray(fr_vec_df.columns))
+            dig_rel_time, labels, fr_vec_df, np.asarray(fr_vec_df.columns)
+        )
 
     def get_valid_covariate_bin_nums(self, key):
         return (RelTimeWellPostDelayDigParams & key).get_valid_bin_nums()
@@ -273,7 +359,9 @@ class RelPostDelFRVec(CovariateFRVecBase):
         x = (RelTimeWellPostDelayDigParams & key).get_valid_bin_nums()
         bin_centers = (self._fr_vec_table() & key).get_bin_centers()
 
-        return AverageVectorDuringLabeledProgression.get_bin_centers_map(x, bin_centers)
+        return AverageVectorDuringLabeledProgression.get_bin_centers_map(
+            x, bin_centers
+        )
 
     def get_bin_centers(self, key=None):
 
@@ -338,8 +426,12 @@ class RelPostDelAveFRVecSel(RelPostDelFRVecAveSelBase):
         if key_filter is None:
             key_filter = dict()
 
-        for res_time_bins_pool_param_name in [ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms")]:
-            key_filter.update({"res_time_bins_pool_param_name": res_time_bins_pool_param_name})
+        for res_time_bins_pool_param_name in [
+            ResTimeBinsPoolSel().lookup_param_name_from_shorthand("epoch_100ms")
+        ]:
+            key_filter.update(
+                {"res_time_bins_pool_param_name": res_time_bins_pool_param_name}
+            )
             keys = self._get_potential_keys(key_filter)
             for key in keys:
                 self.insert1(key)
@@ -367,13 +459,22 @@ class RelPostDelAveFRVec(RelPostDelFRVecAveBase, CovariateFRVecTrialAveBase):
 
 
 def populate_jguidera_post_delay_firing_rate_vector(
-        key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_post_delay_firing_rate_vector"
     upstream_schema_populate_fn_list = []
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_post_delay_firing_rate_vector():
     schema.drop()
-

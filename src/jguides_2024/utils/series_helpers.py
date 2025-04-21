@@ -10,5 +10,13 @@ def check_series(x, require_index_name=False):
 
 
 def series_between_bool(series, valid_intervals):
-    return np.sum([series.between(*valid_interval).values
-                          for valid_interval in valid_intervals], axis=0) > 0
+    return (
+        np.sum(
+            [
+                series.between(*valid_interval).values
+                for valid_interval in valid_intervals
+            ],
+            axis=0,
+        )
+        > 0
+    )

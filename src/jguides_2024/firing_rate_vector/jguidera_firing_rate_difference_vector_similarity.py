@@ -6,17 +6,29 @@ import spyglass as nd
 
 from spyglass.common import AnalysisNwbfile
 
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, PartBase, \
-    AcrossFRVecTypeTableSelBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
-    insert1_print, delete_
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
+    PartBase,
+    AcrossFRVecTypeTableSelBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    insert_analysis_table_entry,
+    insert1_print,
+    delete_,
+)
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import FRDiffVec, \
-    populate_jguidera_firing_rate_difference_vector, \
-    FRDiffVecParams
-from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import FRVecEucDist
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import (
+    FRDiffVec,
+    populate_jguidera_firing_rate_difference_vector,
+    FRDiffVecParams,
+)
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import (
+    FRVecEucDist,
+)
 from jguides_2024.spikes.jguidera_unit import BrainRegionUnits
-from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolCohortParams,
+)
 
 # Needed for table definitions:
 ResTimeBinsPoolCohortParams
@@ -83,30 +95,54 @@ class FRDiffVecCosSim(ComputedBase):
         fr_diff_vec_arr = dfs.fr_diff_vec.to_numpy()
 
         # Find cosine distance between firing rate difference vectors
-        fr_diff_vec_cos_dist = sp.spatial.distance.pdist(fr_diff_vec_arr, metric='cosine')
+        fr_diff_vec_cos_dist = sp.spatial.distance.pdist(
+            fr_diff_vec_arr, metric="cosine"
+        )
 
         # Store in vector form to save space (symmetric matrix). Note that we do not store cosine
         # similarity since the function to retrieve the matrix from vector expects distance measure
-        fr_diff_vec_cos_dist_df = pd.DataFrame.from_dict({"fr_diff_vec_cos_dist": fr_diff_vec_cos_dist})
+        fr_diff_vec_cos_dist_df = pd.DataFrame.from_dict(
+            {"fr_diff_vec_cos_dist": fr_diff_vec_cos_dist}
+        )
 
         # Insert into main table
-        insert_analysis_table_entry(self, [
-            fr_diff_vec_cos_dist_df, dfs.vector_tail_time, dfs.vector_tip_time, dfs.epoch_vector], key)
+        insert_analysis_table_entry(
+            self,
+            [
+                fr_diff_vec_cos_dist_df,
+                dfs.vector_tail_time,
+                dfs.vector_tip_time,
+                dfs.epoch_vector,
+            ],
+            key,
+        )
 
         # Insert into part table
-        for part_key in ResTimeBinsPoolCohortParams().get_keys_with_cohort_params(key):
+        for (
+            part_key
+        ) in ResTimeBinsPoolCohortParams().get_keys_with_cohort_params(key):
             insert1_print(self.Upstream, part_key)
 
     def fetch1_fr_diff_vec_cos_sim(self, df_index_name="vector_tail_time"):
         # Convert cosine distance to cosine similarity. Important to do this after data stored since
         # function to convert vector to matrix expects distance measure
         sim_arr = 1 - sp.spatial.distance.squareform(
-            self.fetch1_dataframe("fr_diff_vec_cos_dist").fr_diff_vec_cos_dist.values)
-        time_vector = np.ndarray.flatten(self.fetch1_dataframe(df_index_name).values)
+            self.fetch1_dataframe(
+                "fr_diff_vec_cos_dist"
+            ).fr_diff_vec_cos_dist.values
+        )
+        time_vector = np.ndarray.flatten(
+            self.fetch1_dataframe(df_index_name).values
+        )
         return pd.DataFrame(sim_arr, index=time_vector, columns=time_vector)
 
     def get_nn_cosine_similarity(
-            self, n_neighbors, nn_restrictions=None, state_restrictions=None, populate_tables=True):
+        self,
+        n_neighbors,
+        nn_restrictions=None,
+        state_restrictions=None,
+        populate_tables=True,
+    ):
 
         key = self.fetch1("KEY")
 
@@ -123,8 +159,10 @@ class FRDiffVecCosSim(ComputedBase):
         if populate_tables:
             FRVecEucDist().populate_(key=key)
         # ...Get nearest neighbor indices for each state and time vector corresponding to states
-        table_subset = (FRVecEucDist & key)
-        nn_output = table_subset.get_nn_idxs(n_neighbors, nn_restrictions, state_restrictions)
+        table_subset = FRVecEucDist & key
+        nn_output = table_subset.get_nn_idxs(
+            n_neighbors, nn_restrictions, state_restrictions
+        )
         # update upstream entries tracker with that from FRVecEucDist
         self._merge_tracker(table_subset)
 
@@ -132,7 +170,9 @@ class FRDiffVecCosSim(ComputedBase):
         cos_df = (self & key).fetch1_fr_diff_vec_cos_sim()
 
         # Restrict to states as indicated
-        cos_df = cos_df.loc[nn_output.row_time_vector][nn_output.col_time_vector]
+        cos_df = cos_df.loc[nn_output.row_time_vector][
+            nn_output.col_time_vector
+        ]
 
         # Restrict to samples' cosine similarity with nearest neighbors
         # Currently, unsure how to achieve desired indexing efficiently when distance matrix is as
@@ -140,30 +180,57 @@ class FRDiffVecCosSim(ComputedBase):
         cos_arr = cos_df.to_numpy()  # convert to array
         # important to index columns with array of integers and not colon
         col_idxs = np.arange(0, np.shape(cos_arr)[1])
-        nn_cos_arr = np.vstack([cos_arr[nth_nn_idxs, col_idxs] for nth_nn_idxs in nn_output.sort_idxs])
+        nn_cos_arr = np.vstack(
+            [
+                cos_arr[nth_nn_idxs, col_idxs]
+                for nth_nn_idxs in nn_output.sort_idxs
+            ]
+        )
 
         # Return as df
         index = [f"nn_{x}" for x in np.arange(0, len(nn_output.sort_idxs))]
         return pd.DataFrame(nn_cos_arr, columns=cos_df.columns, index=index)
 
-    def get_average_nn_cosine_similarity(self, n_neighbors, nn_restrictions, state_restrictions, populate_tables):
-        return np.mean(self.get_nn_cosine_similarity(
-            n_neighbors, nn_restrictions, state_restrictions, populate_tables), axis=0)
+    def get_average_nn_cosine_similarity(
+        self, n_neighbors, nn_restrictions, state_restrictions, populate_tables
+    ):
+        return np.mean(
+            self.get_nn_cosine_similarity(
+                n_neighbors,
+                nn_restrictions,
+                state_restrictions,
+                populate_tables,
+            ),
+            axis=0,
+        )
 
     def delete_(self, key, safemode=True):
-        from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import \
-            FRDiffVecCosSimPptNnAveSel
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import (
+            FRDiffVecCosSimPptNnAveSel,
+        )
+
         delete_(self, [FRDiffVecCosSimPptNnAveSel], key, safemode)
 
 
 def populate_jguidera_firing_rate_difference_vector_similarity(
-        key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_firing_rate_difference_vector_similarity"
-    upstream_schema_populate_fn_list = [populate_jguidera_firing_rate_difference_vector]
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+    upstream_schema_populate_fn_list = [
+        populate_jguidera_firing_rate_difference_vector
+    ]
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_firing_rate_difference_vector_similarity():
     schema.drop()
-

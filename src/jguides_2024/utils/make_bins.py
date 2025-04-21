@@ -24,13 +24,15 @@ def make_bin_edges(x, bin_width, match_min_max="min", bins_encompass_x=True):
     if match_min_max == "min":
         bin_edges = np.arange(np.min(x), np.max(x) + bin_width, bin_width)
     elif match_min_max == "max":
-        bin_edges = np.sort(make_bin_edges(np.asarray(x)*-1, bin_width, match_min_max="min")*-1)
+        bin_edges = np.sort(
+            make_bin_edges(np.asarray(x) * -1, bin_width, match_min_max="min")
+            * -1
+        )
     # Return bin edges if want them to encompass x
     if bins_encompass_x:
         return bin_edges
     # Otherwise, return subset of bin edges that fall within min and max of x
-    valid_bool = np.logical_and(bin_edges >= np.min(x),
-                                bin_edges <= np.max(x))
+    valid_bool = np.logical_and(bin_edges >= np.min(x), bin_edges <= np.max(x))
 
     return bin_edges[valid_bool]
 
@@ -48,8 +50,9 @@ def flatten_bin_edge_tuples(bin_edge_tuples):
 
 
 def make_int_bin_edges(x, bin_width):
-    return np.arange(np.floor(np.nanmin(x)),
-                     np.ceil(np.nanmax(x)) + bin_width, bin_width)
+    return np.arange(
+        np.floor(np.nanmin(x)), np.ceil(np.nanmax(x)) + bin_width, bin_width
+    )
 
 
 def get_peri_event_bin_edges(peri_event_period, bin_width, event_time=0):
@@ -60,17 +63,29 @@ def get_peri_event_bin_edges(peri_event_period, bin_width, event_time=0):
     if np.diff(peri_event_period)[0] == 0:
         raise Exception(f"peri_event_period cant have same start and endpoint")
     # Relative period AFTER event
-    if peri_event_period[0] > 0:  # zero here and below since peri event period expressed relative to event
-        relative_bin_edges = np.arange(peri_event_period[0], peri_event_period[1] + bin_width, bin_width)
+    if (
+        peri_event_period[0] > 0
+    ):  # zero here and below since peri event period expressed relative to event
+        relative_bin_edges = np.arange(
+            peri_event_period[0], peri_event_period[1] + bin_width, bin_width
+        )
     # Relative period BEFORE event
     elif peri_event_period[1] < 0:
-        relative_bin_edges = np.arange(peri_event_period[0], peri_event_period[1] + bin_width, bin_width)
+        relative_bin_edges = np.arange(
+            peri_event_period[0], peri_event_period[1] + bin_width, bin_width
+        )
     # Relative period DURING event
     else:
-        relative_bin_edges_at_before_zero = np.sort(-np.arange(0, -peri_event_period[0] + bin_width, bin_width))
-        relative_bin_edges_after_zero = np.arange(bin_width, peri_event_period[1] + bin_width, bin_width)
-        relative_bin_edges = np.concatenate((relative_bin_edges_at_before_zero, relative_bin_edges_after_zero))
+        relative_bin_edges_at_before_zero = np.sort(
+            -np.arange(0, -peri_event_period[0] + bin_width, bin_width)
+        )
+        relative_bin_edges_after_zero = np.arange(
+            bin_width, peri_event_period[1] + bin_width, bin_width
+        )
+        relative_bin_edges = np.concatenate(
+            (relative_bin_edges_at_before_zero, relative_bin_edges_after_zero)
+        )
     # Check relative bin edges make sense
-    if np.max(abs(np.diff(relative_bin_edges) - bin_width)) > .001:
+    if np.max(abs(np.diff(relative_bin_edges) - bin_width)) > 0.001:
         raise Exception(f"bin_width not respected by relative_bin_edges")
     return event_time + relative_bin_edges

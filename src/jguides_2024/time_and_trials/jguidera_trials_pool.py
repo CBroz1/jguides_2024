@@ -1,24 +1,43 @@
 import datajoint as dj
 
-from jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import PoolSelBase, PoolBase, \
-    PoolCohortParamsBase, PoolCohortBase, \
-    PoolCohortParamNameBase, EpsCohortParamsBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (CohortBase)
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, check_single_table_entry, \
-    get_cohort_test_entry, get_table_name, \
-    delete_, fetch_entries_as_dict, get_epochs_id
+from jguides_2024.datajoint_nwb_utils.datajoint_pool_table_base import (
+    PoolSelBase,
+    PoolBase,
+    PoolCohortParamsBase,
+    PoolCohortBase,
+    PoolCohortParamNameBase,
+    EpsCohortParamsBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import CohortBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    insert1_print,
+    check_single_table_entry,
+    get_cohort_test_entry,
+    get_table_name,
+    delete_,
+    fetch_entries_as_dict,
+    get_epochs_id,
+)
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from jguides_2024.task_event.jguidera_dio_trials import (DioWellArrivalTrialsParams,
-                                                             DioWellDATrialsParams, DioWellArrivalTrials,
-                                                             DioWellDATrials,
-                                                             populate_jguidera_dio_trials, DioWellADTrials,
-                                                             DioWellADTrialsParams,
-                                                             DioWellArrivalTrialsSubParams,
-                                                             DioWellArrivalTrialsSub)
-from jguides_2024.time_and_trials.jguidera_epoch_interval import EpochInterval, \
-    populate_jguidera_epoch_interval
-from jguides_2024.time_and_trials.jguidera_ppt_trials import populate_jguidera_ppt_trials
+from jguides_2024.task_event.jguidera_dio_trials import (
+    DioWellArrivalTrialsParams,
+    DioWellDATrialsParams,
+    DioWellArrivalTrials,
+    DioWellDATrials,
+    populate_jguidera_dio_trials,
+    DioWellADTrials,
+    DioWellADTrialsParams,
+    DioWellArrivalTrialsSubParams,
+    DioWellArrivalTrialsSub,
+)
+from jguides_2024.time_and_trials.jguidera_epoch_interval import (
+    EpochInterval,
+    populate_jguidera_epoch_interval,
+)
+from jguides_2024.time_and_trials.jguidera_ppt_trials import (
+    populate_jguidera_ppt_trials,
+)
 from jguides_2024.utils.dict_helpers import add_defaults
 from jguides_2024.utils.vector_helpers import unpack_single_element
 
@@ -50,7 +69,12 @@ class TrialsPoolSel(PoolSelBase):
     def _get_valid_source_table_names():
         # Valid source trials table names
         return [
-            "DioWellArrivalTrials", "DioWellArrivalTrialsSub", "DioWellDATrials", "EpochInterval", "DioWellADTrials"]
+            "DioWellArrivalTrials",
+            "DioWellArrivalTrialsSub",
+            "DioWellDATrials",
+            "EpochInterval",
+            "DioWellADTrials",
+        ]
 
     def delete_(self, key, safemode=True):
         # Delete from upstream tables, selection table, and current table
@@ -107,7 +131,12 @@ class TrialsPool(PoolBase):
 
     def delete_(self, key, safemode=True):
         # Delete from upstream tables and current table
-        delete_(self, [TrialsPoolCohortParams, TrialsPoolEpsCohortParams], key, safemode)
+        delete_(
+            self,
+            [TrialsPoolCohortParams, TrialsPoolEpsCohortParams],
+            key,
+            safemode,
+        )
 
 
 # The following tables group trials WITHIN epochs
@@ -137,27 +166,46 @@ class TrialsPoolCohortParams(PoolCohortParamsBase):
         # Populate cohort table with single member cohort entries
 
         # Restrict population with these params
-        dio_well_arrival_trials_param_name = DioWellArrivalTrialsParams().lookup_delay_param_name()
-        dio_well_arrival_trials_sub_param_name = DioWellArrivalTrialsSubParams().lookup_param_name(["stay"])
-        dio_well_da_trials_param_name = DioWellDATrialsParams().lookup_no_shift_param_name()
+        dio_well_arrival_trials_param_name = (
+            DioWellArrivalTrialsParams().lookup_delay_param_name()
+        )
+        dio_well_arrival_trials_sub_param_name = (
+            DioWellArrivalTrialsSubParams().lookup_param_name(["stay"])
+        )
+        dio_well_da_trials_param_name = (
+            DioWellDATrialsParams().lookup_no_shift_param_name()
+        )
         param_name_dicts = [
-                # 2s DELAY PERIOD
-                {"source_table_name": "DioWellArrivalTrials",
-                 'dio_well_arrival_trials_param_name': dio_well_arrival_trials_param_name},
-                # 2s DELAY PERIOD, SUBSET WHERE RAT STAYED AT WELL FOR FULL 2s
-                {"source_table_name": "DioWellArrivalTrialsSub",
-                 'dio_well_arrival_trials_sub_param_name': dio_well_arrival_trials_sub_param_name},
-                # TIME AROUND WELL ARRIVAL
-                {"source_table_name": "DioWellArrivalTrials",
-                 'dio_well_arrival_trials_param_name': DioWellArrivalTrialsParams().lookup_param_name([-1, 3])},
-                # DELAY TO WELL DEPARTURE
-                {"source_table_name": "DioWellADTrials",
-                 "dio_well_ad_trials_param_name": DioWellADTrialsParams().lookup_post_delay_param_name()},
-                # PATH TRAVERSAL
-                {"source_table_name": "DioWellDATrials",
-                 "dio_well_da_trials_param_name": dio_well_da_trials_param_name},
-                # ENTIRE EPOCH
-                {"source_table_name": "EpochInterval"}]
+            # 2s DELAY PERIOD
+            {
+                "source_table_name": "DioWellArrivalTrials",
+                "dio_well_arrival_trials_param_name": dio_well_arrival_trials_param_name,
+            },
+            # 2s DELAY PERIOD, SUBSET WHERE RAT STAYED AT WELL FOR FULL 2s
+            {
+                "source_table_name": "DioWellArrivalTrialsSub",
+                "dio_well_arrival_trials_sub_param_name": dio_well_arrival_trials_sub_param_name,
+            },
+            # TIME AROUND WELL ARRIVAL
+            {
+                "source_table_name": "DioWellArrivalTrials",
+                "dio_well_arrival_trials_param_name": DioWellArrivalTrialsParams().lookup_param_name(
+                    [-1, 3]
+                ),
+            },
+            # DELAY TO WELL DEPARTURE
+            {
+                "source_table_name": "DioWellADTrials",
+                "dio_well_ad_trials_param_name": DioWellADTrialsParams().lookup_post_delay_param_name(),
+            },
+            # PATH TRAVERSAL
+            {
+                "source_table_name": "DioWellDATrials",
+                "dio_well_da_trials_param_name": dio_well_da_trials_param_name,
+            },
+            # ENTIRE EPOCH
+            {"source_table_name": "EpochInterval"},
+        ]
         for param_name_dict in param_name_dicts:
             self.insert_single_member_cohort(param_name_dict, **kwargs)
 
@@ -165,14 +213,23 @@ class TrialsPoolCohortParams(PoolCohortParamsBase):
         # Insert an entry with two upstream trial entries
         num_epochs = 2
         test_entry_obj = get_cohort_test_entry(
-            TrialsPool, col_vary=unpack_single_element(
-                self._get_param_name_iterables(singular=True)), num_entries=num_epochs)
+            TrialsPool,
+            col_vary=unpack_single_element(
+                self._get_param_name_iterables(singular=True)
+            ),
+            num_entries=num_epochs,
+        )
         # Insert if found valid set
         if test_entry_obj is not None:
             self._insert_from_upstream_param_names(
                 secondary_key_subset_map={
-                    unpack_single_element(self._get_param_name_iterables()): test_entry_obj.target_vals},
-                                           key=test_entry_obj.same_col_vals_map, use_full_param_name=True)
+                    unpack_single_element(
+                        self._get_param_name_iterables()
+                    ): test_entry_obj.target_vals
+                },
+                key=test_entry_obj.same_col_vals_map,
+                use_full_param_name=True,
+            )
         else:
             print(f"Could not insert test entry into {get_table_name(self)}")
 
@@ -183,10 +240,15 @@ class TrialsPoolCohortParams(PoolCohortParamsBase):
         # If trials_pool_param_name in key but trials_pool_param_names not in key, find all trials_pool_param_names
         # corresponding to trials_pool_param_name, and loop through these and clear corresponding entries
         keys = [key]  # default
-        if "trials_pool_param_names" not in key and "trials_pool_param_name" in key:
+        if (
+            "trials_pool_param_names" not in key
+            and "trials_pool_param_name" in key
+        ):
             keys = [
-                k for k in fetch_entries_as_dict(self & key) if key["trials_pool_param_name"]
-                                                                in k["trials_pool_param_names"]]
+                k
+                for k in fetch_entries_as_dict(self & key)
+                if key["trials_pool_param_name"] in k["trials_pool_param_names"]
+            ]
         for key in keys:
             delete_(self, [TrialsPoolCohort], key, safemode)
 
@@ -214,13 +276,20 @@ class TrialsPoolCohort(PoolCohortBase):
         pool_param_names = self.get_upstream_pool_table_param_names(key)
         # Get the trial start and end times for each trial set and convert to list of
         # trial start/end time tuples
-        return {pool_param_name:
-                (TrialsPool & {**key, **{"trials_pool_param_name": pool_param_name}}).trial_intervals()
-                for pool_param_name in pool_param_names}
+        return {
+            pool_param_name: (
+                TrialsPool
+                & {**key, **{"trials_pool_param_name": pool_param_name}}
+            ).trial_intervals()
+            for pool_param_name in pool_param_names
+        }
 
     def delete_(self, key, safemode=True):
         # Delete from upstream tables and selection table
-        from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool
+        from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+            ResTimeBinsPool,
+        )
+
         delete_(self, [ResTimeBinsPool], key, safemode)
 
 
@@ -298,7 +367,12 @@ class TrialsPoolEpsCohort(CohortBase):
         return self._fetch("epoch", "fetch1_part_entry")
 
     def fetch_dataframes(self, **kwargs):
-        kwargs = add_defaults(kwargs, {"iterable_name": "epoch"}, add_nonexistent_keys=True, require_match=True)
+        kwargs = add_defaults(
+            kwargs,
+            {"iterable_name": "epoch"},
+            add_nonexistent_keys=True,
+            require_match=True,
+        )
         return super().fetch_dataframes(**kwargs)
 
     def get_cohort_trial_intervals(self, key):
@@ -308,23 +382,46 @@ class TrialsPoolEpsCohort(CohortBase):
         epochs = self.get_cohort_epochs(key)
         # Get the trial start and end times for each trial set and convert to list of
         # trial start/end time tuples. Return in dictionary with epoch as key
-        return {epoch: (TrialsPool & {**key, **{"epoch": epoch}}).trial_intervals() for epoch in epochs}
+        return {
+            epoch: (TrialsPool & {**key, **{"epoch": epoch}}).trial_intervals()
+            for epoch in epochs
+        }
 
     def delete_(self, key, safemode=True):
-        from jguides_2024.time_and_trials.jguidera_condition_trials import ConditionTrialsSel
+        from jguides_2024.time_and_trials.jguidera_condition_trials import (
+            ConditionTrialsSel,
+        )
+
         delete_(self, [ConditionTrialsSel], key, safemode)
 
 
 # Appears can take a long time to run (but eventually completes)
-def populate_jguidera_trials_pool(key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+def populate_jguidera_trials_pool(
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_trials_pool"
     upstream_schema_populate_fn_list = [
-        populate_jguidera_dio_trials, populate_jguidera_ppt_trials, populate_jguidera_epoch_interval]
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+        populate_jguidera_dio_trials,
+        populate_jguidera_ppt_trials,
+        populate_jguidera_epoch_interval,
+    ]
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_trials_pool():
-    from jguides_2024.time_and_trials.jguidera_res_set import drop_jguidera_res_set
+    from jguides_2024.time_and_trials.jguidera_res_set import (
+        drop_jguidera_res_set,
+    )
+
     drop_jguidera_res_set()
     schema.drop()

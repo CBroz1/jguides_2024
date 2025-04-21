@@ -15,19 +15,28 @@ def return_for_loop_variable_lists(for_loop_variables_lists):
     # Ensure for loop variables in list
     for_loop_variables_lists = [list(x) for x in for_loop_variables_lists]
     if len(for_loop_variables_lists) == 3:  # 3 nested for loops
-        level_1_variables, level_2_variables, level_3_variables = for_loop_variables_lists
-        return [duplicate_elements(level_1_variables, len(level_2_variables) * len(level_3_variables)),
-                duplicate_elements(level_2_variables, len(level_3_variables)) * len(level_1_variables),
-                level_3_variables * len(level_2_variables) * len(level_1_variables)]
+        level_1_variables, level_2_variables, level_3_variables = (
+            for_loop_variables_lists
+        )
+        return [
+            duplicate_elements(
+                level_1_variables,
+                len(level_2_variables) * len(level_3_variables),
+            ),
+            duplicate_elements(level_2_variables, len(level_3_variables))
+            * len(level_1_variables),
+            level_3_variables * len(level_2_variables) * len(level_1_variables),
+        ]
 
 
-def print_iteration_progress(iteration_num, num_iterations, target_num_print_statements=10):
-    min_step_size = 1/target_num_print_statements
+def print_iteration_progress(
+    iteration_num, num_iterations, target_num_print_statements=10
+):
+    min_step_size = 1 / target_num_print_statements
     target_step_size = np.round(num_iterations / target_num_print_statements)
     step_size = np.max((target_step_size, min_step_size))
 
-    if iteration_num in np.arange(0, num_iterations,
-                                  step_size):
+    if iteration_num in np.arange(0, num_iterations, step_size):
         print(f"{np.round(iteration_num / num_iterations * 100)}%", flush=True)
 
 
@@ -43,7 +52,9 @@ def stoppable_function_loop(function_map, stop_loop_after, function_args=None):
     return False
 
 
-def stoppable_function_outer_loop(outer_functions, stop_loop_after, function_args=None):
+def stoppable_function_outer_loop(
+    outer_functions, stop_loop_after, function_args=None
+):
     """
     Wrapper for looping through functions that loop through functions
     :param outer_functions: List with functions that take function maps

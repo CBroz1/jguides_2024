@@ -4,11 +4,19 @@ import datajoint as dj
 import numpy as np
 from spyglass.common import Nwbfile, TaskEpoch
 
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
-    populate_insert, insert1_print, \
-    get_relationship_text
-from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
+    SelBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    get_schema_table_names_from_file,
+    populate_insert,
+    insert1_print,
+    get_relationship_text,
+)
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import (
+    get_jguidera_nwbf_names,
+)
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
 from jguides_2024.utils.df_helpers import df_from_data_list, df_pop
 from jguides_2024.utils.dict_helpers import invert_dict
@@ -27,8 +35,14 @@ class JguideraNwbfileSel(SelBase):
 
     # Overrides parent class method so can restrict nwb file names
     def insert_defaults(self, **kwargs):
-        valid_nwb_file_names = [nwb_file_name for nwb_file_name in Nwbfile.fetch("nwb_file_name") if nwb_file_name
-                                in get_jguidera_nwbf_names(high_priority=False, highest_priority=False)]
+        valid_nwb_file_names = [
+            nwb_file_name
+            for nwb_file_name in Nwbfile.fetch("nwb_file_name")
+            if nwb_file_name
+            in get_jguidera_nwbf_names(
+                high_priority=False, highest_priority=False
+            )
+        ]
         for nwb_file_name in valid_nwb_file_names:
             self.insert1({"nwb_file_name": nwb_file_name}, skip_duplicates=True)
 
@@ -57,8 +71,14 @@ class TaskIdentification(ComputedBase):
     def make(self, key):
 
         # Check that key corresponds to desired recording files
-        if key['nwb_file_name'] not in get_jguidera_nwbf_names(highest_priority=False, high_priority=False):
-            raise Exception("key with nwb_file_name: {nwb_file_name} not allowed".format(**key))
+        if key["nwb_file_name"] not in get_jguidera_nwbf_names(
+            highest_priority=False, high_priority=False
+        ):
+            raise Exception(
+                "key with nwb_file_name: {nwb_file_name} not allowed".format(
+                    **key
+                )
+            )
 
         # Parse entry in TaskEpoch
         task_epoch_entry = (TaskEpoch & key).fetch1()
@@ -77,11 +97,15 @@ class TaskIdentification(ComputedBase):
 
     @classmethod
     def get_contingency(cls, nwb_file_name, epoch):
-        return (cls & {"nwb_file_name": nwb_file_name, "epoch": epoch}).fetch1("contingency")
+        return (cls & {"nwb_file_name": nwb_file_name, "epoch": epoch}).fetch1(
+            "contingency"
+        )
 
     @classmethod
     def get_environment(cls, nwb_file_name, epoch):
-        return (cls & {"nwb_file_name": nwb_file_name, "epoch": epoch}).fetch1("task_environment")
+        return (cls & {"nwb_file_name": nwb_file_name, "epoch": epoch}).fetch1(
+            "task_environment"
+        )
 
     @classmethod
     def get_contingency_color(cls, nwb_file_name, epoch):
@@ -95,13 +119,17 @@ class TaskIdentification(ComputedBase):
     def single_contingencies():
         return ["centerAlternation", "handleAlternation"]
 
-    def is_single_contingency_epoch(self, nwb_file_name, epoch, valid_contingency=None):
+    def is_single_contingency_epoch(
+        self, nwb_file_name, epoch, valid_contingency=None
+    ):
 
         # Check inputs
         valid_contingencies = self.single_contingencies()
         check_membership([valid_contingency], [None] + valid_contingencies)
 
-        contingency = (self & {"nwb_file_name": nwb_file_name, "epoch": epoch}).fetch1("contingency")
+        contingency = (
+            self & {"nwb_file_name": nwb_file_name, "epoch": epoch}
+        ).fetch1("contingency")
 
         if valid_contingency is not None:
             valid_contingencies = [valid_contingency]
@@ -111,52 +139,94 @@ class TaskIdentification(ComputedBase):
     def get_single_contingency_epoch_map(self, nwb_file_name, epochs=None):
         single_contingencies = self.single_contingencies()
         # Restrict to passed epochs
-        epochs_, contingencies = (self & {"nwb_file_name": nwb_file_name}).fetch("epoch", "contingency")
+        epochs_, contingencies = (
+            self & {"nwb_file_name": nwb_file_name}
+        ).fetch("epoch", "contingency")
         if epochs is not None:
             valid_bool = [x in epochs for x in epochs_]
             epochs_ = epochs_[valid_bool]
             contingencies = contingencies[valid_bool]
-        return {contingency: epochs_[contingencies == contingency] for contingency in single_contingencies}
+        return {
+            contingency: epochs_[contingencies == contingency]
+            for contingency in single_contingencies
+        }
 
     def get_single_contingency_epoch_pair_map(self, nwb_file_name, epochs=None):
-        single_contingency_epoch_map = self.get_single_contingency_epoch_map(nwb_file_name, epochs)
-        return {k: list(itertools.combinations(v, r=2)) for k, v in single_contingency_epoch_map.items()}
+        single_contingency_epoch_map = self.get_single_contingency_epoch_map(
+            nwb_file_name, epochs
+        )
+        return {
+            k: list(itertools.combinations(v, r=2))
+            for k, v in single_contingency_epoch_map.items()
+        }
 
     def get_same_environment_epoch_map(self, nwb_file_name):
-        epochs, environments = (self & {"nwb_file_name": nwb_file_name}).fetch("epoch", "task_environment")
-        return {environment: epochs[environments == environment] for environment in environments}
+        epochs, environments = (self & {"nwb_file_name": nwb_file_name}).fetch(
+            "epoch", "task_environment"
+        )
+        return {
+            environment: epochs[environments == environment]
+            for environment in environments
+        }
 
-    def get_single_contingency_epoch_pairs_by_envs_relationship(self, nwb_file_name, epochs=None):
-        single_contingency_epoch_pair_map = self.get_single_contingency_epoch_pair_map(nwb_file_name, epochs)
-        same_contingency_pairs = np.concatenate(list(single_contingency_epoch_pair_map.values()))
-        return invert_dict({tuple(epochs): get_relationship_text(
-            *[self.get_environment(nwb_file_name, epoch) for epoch in epochs])
-                     for epochs in same_contingency_pairs})
+    def get_single_contingency_epoch_pairs_by_envs_relationship(
+        self, nwb_file_name, epochs=None
+    ):
+        single_contingency_epoch_pair_map = (
+            self.get_single_contingency_epoch_pair_map(nwb_file_name, epochs)
+        )
+        same_contingency_pairs = np.concatenate(
+            list(single_contingency_epoch_pair_map.values())
+        )
+        return invert_dict(
+            {
+                tuple(epochs): get_relationship_text(
+                    *[
+                        self.get_environment(nwb_file_name, epoch)
+                        for epoch in epochs
+                    ]
+                )
+                for epochs in same_contingency_pairs
+            }
+        )
 
     def get_line_param(self, param_name):
         # Make sure param name valid
         check_membership([param_name], ["linestyle", "alpha"])
         # Return param value for given contingency and task environment
-        line_df = df_from_data_list([
-            ("centerAlternation", "HaightRight", "solid", .8), ("centerAlternation", "HaightLeft", "solid", .3),
-            ("handleAlternation", "HaightRight", "dashed", .8), ("handleAlternation", "HaightLeft", "dashed", .3)],
-            ["contingency", "task_environment", "linestyle", "alpha"])
-        return df_pop(line_df, {k: self.fetch1(k) for k in ["contingency", "task_environment"]}, param_name)
+        line_df = df_from_data_list(
+            [
+                ("centerAlternation", "HaightRight", "solid", 0.8),
+                ("centerAlternation", "HaightLeft", "solid", 0.3),
+                ("handleAlternation", "HaightRight", "dashed", 0.8),
+                ("handleAlternation", "HaightLeft", "dashed", 0.3),
+            ],
+            ["contingency", "task_environment", "linestyle", "alpha"],
+        )
+        return df_pop(
+            line_df,
+            {k: self.fetch1(k) for k in ["contingency", "task_environment"]},
+            param_name,
+        )
 
     def get_line_params(self):
         return self.get_line_df
 
     def populate_(self, high_priority=False, highest_priority=False, **kwargs):
-        for nwb_file_name in get_jguidera_nwbf_names(high_priority, highest_priority):
+        for nwb_file_name in get_jguidera_nwbf_names(
+            high_priority, highest_priority
+        ):
             self.populate({"nwb_file_name": nwb_file_name})
         return [self.table_name]
 
 
 def get_contingency_color_map():
-    return {"centerAlternation": "darkgray",
-            "handleAlternation": "lightgray",
-            "handleThenCenterAlternation": "black",
-            "centerThenHandleAlternation": "black"}
+    return {
+        "centerAlternation": "darkgray",
+        "handleAlternation": "lightgray",
+        "handleThenCenterAlternation": "black",
+        "centerThenHandleAlternation": "black",
+    }
 
 
 def get_contingency_color(contingency):
@@ -164,9 +234,7 @@ def get_contingency_color(contingency):
 
 
 def get_environment_color_map():
-    return {"HaightRight": "brown",
-            "HaightLeft": "peru",
-            "SA": "orange"}
+    return {"HaightRight": "brown", "HaightLeft": "peru", "SA": "orange"}
 
 
 def get_environment_color(environment):
@@ -176,9 +244,10 @@ def get_environment_color(environment):
 def populate_jguidera_metadata(key=None, tolerate_error=False):
     schema_name = "jguidera_metadata"
     upstream_schema_populate_fn_list = []
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list)
+    populate_schema(
+        schema_name, key, tolerate_error, upstream_schema_populate_fn_list
+    )
 
 
 def drop_jguidera_metadata():
     schema.drop()
-

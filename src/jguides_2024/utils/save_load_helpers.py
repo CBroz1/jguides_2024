@@ -36,7 +36,11 @@ def append_iteration_num_to_file_name(file_name_base, save_dir):
     # Define current iteration as one more than largest iteration from past files. If no past files, define
     # current iteration as zero
     current_iteration = 0  # default
-    previous_iterations = [int(x.split("_iteration")[-1]) for x in dir_file_names if file_name_base in x]
+    previous_iterations = [
+        int(x.split("_iteration")[-1])
+        for x in dir_file_names
+        if file_name_base in x
+    ]
     if len(previous_iterations) > 0:
         current_iteration = np.max(previous_iterations) + 1
     ret = f"{file_name_base}_iteration{current_iteration}"
@@ -79,4 +83,3 @@ def save_json(file_name, file_contents, save_dir=None):
         f.write(json.dumps(file_contents))
     f.close()
     os.chdir(current_dir)  # change back to directory
-

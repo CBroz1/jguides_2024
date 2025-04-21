@@ -11,41 +11,68 @@ def get_glm_default_params_map():
     :return: dictonary with parameter names (keys) and values (values)
     """
 
-    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
-    from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
-        TimeRelWADigSingleAxisParams
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+        ResTimeBinsPoolSel,
+    )
+    from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
+        TimeRelWADigParams,
+        TimeRelWADigSingleAxisParams,
+    )
     from jguides_2024.glm.jguidera_basis_function import RaisedCosineBasisParams
     from jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
 
-    time_bin_width = .1
-    epoch_time_bins_param_name = EpochTimeBinsParams().lookup_param_name([time_bin_width])
+    time_bin_width = 0.1
+    epoch_time_bins_param_name = EpochTimeBinsParams().lookup_param_name(
+        [time_bin_width]
+    )
 
     # DELAY
     delay_time_bins_shorthand = "delay_stay_100ms"
-    delay_res_time_bins_pool_param_name = ResTimeBinsPoolSel().lookup_param_name_from_shorthand(
-        delay_time_bins_shorthand)
-    time_covariate_bin_width = .1  # this is distinct from time bin related to sampling rate
-    time_rel_wa_dig_param_name = TimeRelWADigParams().lookup_param_name([time_covariate_bin_width])
-    time_rel_wa_dig_single_axis_param_name = TimeRelWADigSingleAxisParams().lookup_param_name([0, 2])
+    delay_res_time_bins_pool_param_name = (
+        ResTimeBinsPoolSel().lookup_param_name_from_shorthand(
+            delay_time_bins_shorthand
+        )
+    )
+    time_covariate_bin_width = (
+        0.1  # this is distinct from time bin related to sampling rate
+    )
+    time_rel_wa_dig_param_name = TimeRelWADigParams().lookup_param_name(
+        [time_covariate_bin_width]
+    )
+    time_rel_wa_dig_single_axis_param_name = (
+        TimeRelWADigSingleAxisParams().lookup_param_name([0, 2])
+    )
 
     # PATH
     path_time_bins_shorthand = "path_100ms"
-    path_res_time_bins_pool_param_name = ResTimeBinsPoolSel().lookup_param_name_from_shorthand(path_time_bins_shorthand)
-    res_time_bins_pool_param_names = [delay_res_time_bins_pool_param_name, path_res_time_bins_pool_param_name]
-    ppt_bin_width = .05
-    path_raised_cosine_basis_param_name = RaisedCosineBasisParams().lookup_param_name_from_shorthand("ppt")
+    path_res_time_bins_pool_param_name = (
+        ResTimeBinsPoolSel().lookup_param_name_from_shorthand(
+            path_time_bins_shorthand
+        )
+    )
+    res_time_bins_pool_param_names = [
+        delay_res_time_bins_pool_param_name,
+        path_res_time_bins_pool_param_name,
+    ]
+    ppt_bin_width = 0.05
+    path_raised_cosine_basis_param_name = (
+        RaisedCosineBasisParams().lookup_param_name_from_shorthand("ppt")
+    )
     ppt_dig_param_name = PptDigParams().lookup_param_name([ppt_bin_width])
 
     return {
         "epoch_time_bins_param_name": epoch_time_bins_param_name,
         # delay
-        "time_bin_width": time_bin_width, "delay_time_bins_shorthand": delay_time_bins_shorthand,
+        "time_bin_width": time_bin_width,
+        "delay_time_bins_shorthand": delay_time_bins_shorthand,
         "delay_res_time_bins_pool_param_name": delay_res_time_bins_pool_param_name,
         "time_rel_wa_dig_single_axis_param_name": time_rel_wa_dig_single_axis_param_name,
         # path
-        "path_time_bins_shorthand": path_time_bins_shorthand, "path_res_time_bins_pool_param_name":
-            path_res_time_bins_pool_param_name, "res_time_bins_pool_param_names": res_time_bins_pool_param_names,
-        "ppt_bin_width": ppt_bin_width, "ppt_dig_param_name": ppt_dig_param_name,
+        "path_time_bins_shorthand": path_time_bins_shorthand,
+        "path_res_time_bins_pool_param_name": path_res_time_bins_pool_param_name,
+        "res_time_bins_pool_param_names": res_time_bins_pool_param_names,
+        "ppt_bin_width": ppt_bin_width,
+        "ppt_dig_param_name": ppt_dig_param_name,
         "time_rel_wa_dig_param_name": time_rel_wa_dig_param_name,
         "path_raised_cosine_basis_param_name": path_raised_cosine_basis_param_name,
     }
@@ -77,17 +104,39 @@ def get_glm_default_params(param_names, as_dict=True):
     if as_dict:
         # Return res_time_bins_pool_param_name without prefix (delay or path) if only one passed
         res_time_bins_pool_param_names = [
-            "path_res_time_bins_pool_param_name", "delay_res_time_bins_pool_param_name"]
-        if np.sum([x in param_names for x in res_time_bins_pool_param_names]) == 1:
-            param_names = ["res_time_bins_pool_param_name" if x in res_time_bins_pool_param_names
-                           else x for x in param_names]
+            "path_res_time_bins_pool_param_name",
+            "delay_res_time_bins_pool_param_name",
+        ]
+        if (
+            np.sum([x in param_names for x in res_time_bins_pool_param_names])
+            == 1
+        ):
+            param_names = [
+                (
+                    "res_time_bins_pool_param_name"
+                    if x in res_time_bins_pool_param_names
+                    else x
+                )
+                for x in param_names
+            ]
 
         # Return raised cosine basis param name without prefix if only one passed else
         raised_cosine_basis_param_names = [
-            "path_raised_cosine_basis_param_name", "delay_raised_cosine_basis_param_name"]
-        if np.sum([x in param_names for x in raised_cosine_basis_param_names]) == 1:
-            param_names = ["raised_cosine_basis_param_name" if x in raised_cosine_basis_param_names
-                           else x for x in param_names]
+            "path_raised_cosine_basis_param_name",
+            "delay_raised_cosine_basis_param_name",
+        ]
+        if (
+            np.sum([x in param_names for x in raised_cosine_basis_param_names])
+            == 1
+        ):
+            param_names = [
+                (
+                    "raised_cosine_basis_param_name"
+                    if x in raised_cosine_basis_param_names
+                    else x
+                )
+                for x in param_names
+            ]
         return dict_comprehension(param_names, default_params)
 
     # Otherwise just return params unchanged
@@ -100,22 +149,39 @@ def get_fr_vec_default_params_map():
     :return: dictonary with parameter names (keys) and values (values)
     """
 
-    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+        ResTimeBinsPoolSel,
+    )
     from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-    from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
-        TimeRelWADigSingleAxisParams
+    from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import (
+        TimeRelWADigParams,
+        TimeRelWADigSingleAxisParams,
+    )
 
     time_bins_shorthand = "epoch_100ms"
-    res_time_bins_pool_param_name = ResTimeBinsPoolSel().lookup_param_name_from_shorthand(time_bins_shorthand)
-    time_rel_wa_dig_single_axis_param_name = TimeRelWADigSingleAxisParams().lookup_param_name([-1, 3])
-    res_epoch_spikes_sm_param_name = ResEpochSpikesSmParams().lookup_param_name([.1])
-    ppt_dig_param_name = PptDigParams().lookup_param_name([.0625])
+    res_time_bins_pool_param_name = (
+        ResTimeBinsPoolSel().lookup_param_name_from_shorthand(
+            time_bins_shorthand
+        )
+    )
+    time_rel_wa_dig_single_axis_param_name = (
+        TimeRelWADigSingleAxisParams().lookup_param_name([-1, 3])
+    )
+    res_epoch_spikes_sm_param_name = ResEpochSpikesSmParams().lookup_param_name(
+        [0.1]
+    )
+    ppt_dig_param_name = PptDigParams().lookup_param_name([0.0625])
 
-    return {"time_bins_shorthand": time_bins_shorthand, "res_time_bins_pool_param_name": res_time_bins_pool_param_name,
-            "res_epoch_spikes_sm_param_name": res_epoch_spikes_sm_param_name,
-            "time_rel_wa_dig_param_name": TimeRelWADigParams().lookup_param_name([.25]),
-            "time_rel_wa_dig_single_axis_param_name": time_rel_wa_dig_single_axis_param_name,
-            "ppt_dig_param_name": ppt_dig_param_name}
+    return {
+        "time_bins_shorthand": time_bins_shorthand,
+        "res_time_bins_pool_param_name": res_time_bins_pool_param_name,
+        "res_epoch_spikes_sm_param_name": res_epoch_spikes_sm_param_name,
+        "time_rel_wa_dig_param_name": TimeRelWADigParams().lookup_param_name(
+            [0.25]
+        ),
+        "time_rel_wa_dig_single_axis_param_name": time_rel_wa_dig_single_axis_param_name,
+        "ppt_dig_param_name": ppt_dig_param_name,
+    }
 
 
 def get_fr_vec_default_param(param_name):
@@ -127,6 +193,11 @@ def get_fr_vec_default_param(param_name):
 # of covariate digitization, whereas time_bin_width corresponds to space between time samples. It just happens
 # that in this case, covariate has unit time
 glm_params = get_glm_default_params_map()
-default_params = {k: glm_params[k] for k in [
-    "delay_res_time_bins_pool_param_name", "time_rel_wa_dig_param_name",
-    "time_rel_wa_dig_single_axis_param_name"]}
+default_params = {
+    k: glm_params[k]
+    for k in [
+        "delay_res_time_bins_pool_param_name",
+        "time_rel_wa_dig_param_name",
+        "time_rel_wa_dig_single_axis_param_name",
+    ]
+}

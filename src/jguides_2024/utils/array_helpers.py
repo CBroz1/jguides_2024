@@ -25,7 +25,7 @@ def array_to_tuple_list(arr):
 
 def min_positive_val_arr(arr, axis=0):
     # Return the smallest positive value along an axis of an array
-    arr = arr.astype('float')
+    arr = arr.astype("float")
     arr[arr < 0] = np.inf
     return np.min(arr, axis=axis)
 
@@ -36,20 +36,41 @@ def stack_adjacent_columns(arr, stack_num_columns):
         raise Exception(f"Must pass 2D array")
     num_groups, remainder = divmod(np.shape(arr)[1], stack_num_columns)
     if remainder != 0:
-        raise Exception("Must be able to divide number of columns by div_factor without remainder")
-    return np.asarray([np.ndarray.flatten(np.asarray(arr[:, i*stack_num_columns:(i + 1)*stack_num_columns]).T)
-                        for i in np.arange(0, num_groups)]).T
+        raise Exception(
+            "Must be able to divide number of columns by div_factor without remainder"
+        )
+    return np.asarray(
+        [
+            np.ndarray.flatten(
+                np.asarray(
+                    arr[:, i * stack_num_columns : (i + 1) * stack_num_columns]
+                ).T
+            )
+            for i in np.arange(0, num_groups)
+        ]
+    ).T
 
 
-def average_adjacent_columns(arr, average_num_columns, average_function=np.mean):
+def average_adjacent_columns(
+    arr, average_num_columns, average_function=np.mean
+):
     # average_num_columns: number of adjacent columns to average
     if len(np.shape(arr)) != 2:
         raise Exception(f"Must pass 2D array")
     num_groups, remainder = divmod(np.shape(arr)[1], average_num_columns)
     if remainder != 0:
-        raise Exception("Must be able to divide number of columns by div_factor without remainder")
-    return np.asarray([np.mean(arr[:, i*average_num_columns:(i + 1)*average_num_columns], axis=1)
-                        for i in np.arange(0, num_groups)]).T
+        raise Exception(
+            "Must be able to divide number of columns by div_factor without remainder"
+        )
+    return np.asarray(
+        [
+            np.mean(
+                arr[:, i * average_num_columns : (i + 1) * average_num_columns],
+                axis=1,
+            )
+            for i in np.arange(0, num_groups)
+        ]
+    ).T
 
 
 def mask_upper_diagonal(arr, mask_value=0):
@@ -59,12 +80,16 @@ def mask_upper_diagonal(arr, mask_value=0):
     return arr
 
 
-def check_dimensionality(arr, expected_num_dimensions, raise_error=True, return_outcome=False):
+def check_dimensionality(
+    arr, expected_num_dimensions, raise_error=True, return_outcome=False
+):
     num_dimensions = len(np.shape(arr))
     outcome = num_dimensions == expected_num_dimensions
     if raise_error and not outcome:
-        raise Exception(f"arr should have dimensionality {expected_num_dimensions} "
-                        f"but has has dimensionality {num_dimensions}")
+        raise Exception(
+            f"arr should have dimensionality {expected_num_dimensions} "
+            f"but has has dimensionality {num_dimensions}"
+        )
     if return_outcome:
         return outcome
 

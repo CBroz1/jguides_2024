@@ -5,14 +5,24 @@ import spyglass as nd
 
 from spyglass.common import AnalysisNwbfile
 
-from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_horizontal_lines
-from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import \
-    insert_cross_validation_table
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import (
+    plot_horizontal_lines,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import (
+    insert_cross_validation_table,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    SelBase,
+    ComputedBase,
+)
 from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from jguides_2024.time_and_trials.jguidera_condition_trials import ConditionTrials, \
-    populate_jguidera_condition_trials
-from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohort
+from jguides_2024.time_and_trials.jguidera_condition_trials import (
+    ConditionTrials,
+    populate_jguidera_condition_trials,
+)
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolCohort,
+)
 
 # Needed for table definitions
 nd
@@ -49,16 +59,32 @@ class LOOCTTrainTestSplit(ComputedBase):
         time_bins_df = (ResTimeBinsPoolCohort & key).fetch_dataframes()
 
         # Only param is map from condition trial indices to condition values
-        condition_trials_map = (ConditionTrials & key).fetch1("condition_trials_map")
+        condition_trials_map = (ConditionTrials & key).fetch1(
+            "condition_trials_map"
+        )
         params = {"condition_trials_map": condition_trials_map}
 
         # Insert into table
-        insert_cross_validation_table(self, key, "leave_one_out_condition_trials", params, time_bins_df)
+        insert_cross_validation_table(
+            self, key, "leave_one_out_condition_trials", params, time_bins_df
+        )
 
-    def fetch1_dataframe(self, object_id_name=None, restore_empty_nwb_object=True, df_index_name=None):
-        df_index_name_map = {"train_set_df": "train_set_id", "test_set_df": "test_set_id"}
-        df_index_name = self.get_default_df_index_name(df_index_name, object_id_name, df_index_name_map)
-        return super().fetch1_dataframe(object_id_name, restore_empty_nwb_object, df_index_name)
+    def fetch1_dataframe(
+        self,
+        object_id_name=None,
+        restore_empty_nwb_object=True,
+        df_index_name=None,
+    ):
+        df_index_name_map = {
+            "train_set_df": "train_set_id",
+            "test_set_df": "test_set_id",
+        }
+        df_index_name = self.get_default_df_index_name(
+            df_index_name, object_id_name, df_index_name_map
+        )
+        return super().fetch1_dataframe(
+            object_id_name, restore_empty_nwb_object, df_index_name
+        )
 
     def plot_results(self, ax=None):
 
@@ -81,14 +107,27 @@ class LOOCTTrainTestSplit(ComputedBase):
 
 
 def populate_jguidera_leave_one_out_condition_trials_cross_validation(
-        key=None, tolerate_error=False, populate_upstream_limit=None, populate_upstream_num=None):
+    key=None,
+    tolerate_error=False,
+    populate_upstream_limit=None,
+    populate_upstream_num=None,
+):
     schema_name = "jguidera_leave_one_out_condition_trials_cross_validation"
     upstream_schema_populate_fn_list = [populate_jguidera_condition_trials]
-    populate_schema(schema_name, key, tolerate_error, upstream_schema_populate_fn_list,
-                    populate_upstream_limit, populate_upstream_num)
+    populate_schema(
+        schema_name,
+        key,
+        tolerate_error,
+        upstream_schema_populate_fn_list,
+        populate_upstream_limit,
+        populate_upstream_num,
+    )
 
 
 def drop_jguidera_leave_one_out_condition_trials_cross_validation():
-    from jguides_2024.time_and_trials.jguidera_cross_validation_pool import drop_jguidera_cross_validation_pool
+    from jguides_2024.time_and_trials.jguidera_cross_validation_pool import (
+        drop_jguidera_cross_validation_pool,
+    )
+
     drop_jguidera_cross_validation_pool()
     schema.drop()

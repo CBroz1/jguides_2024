@@ -15,13 +15,20 @@ def append_result(x):
 
 def _get_dfs(glm_restriction_idx, unit_name, df_row, key):
 
-    table_subset = (ElNet & key)
+    table_subset = ElNet & key
     if len(table_subset) == 0 and tolerate_missing_units:
         return None
     dfs = table_subset.fetch1_dataframes()
 
-    return (glm_restriction_idx, unit_name, df_row.brain_region,
-            dfs.results_folds_merged_df, dfs.folds_df, dfs.fit_params_df, dfs.log_likelihood)
+    return (
+        glm_restriction_idx,
+        unit_name,
+        df_row.brain_region,
+        dfs.results_folds_merged_df,
+        dfs.folds_df,
+        dfs.fit_params_df,
+        dfs.log_likelihood,
+    )
 
 
 def get_glm_results_df(arg_sets, tolerate_missing_units_, debug_mode=True):
@@ -42,11 +49,24 @@ def get_glm_results_df(arg_sets, tolerate_missing_units_, debug_mode=True):
     # Otherwise do using parallelization
     for arg_set in arg_sets:
         pool.apply_async(
-            _get_dfs, args=arg_set, callback=append_result, error_callback=show_error)
+            _get_dfs,
+            args=arg_set,
+            callback=append_result,
+            error_callback=show_error,
+        )
 
     pool.close()
     pool.join()  # waits until all processes done before running next line
 
     return df_from_data_list(
-        data_list, ["glm_restriction_idx", "unit_name", "brain_region", "results_folds_merged_df", "folds_df",
-                    "fit_params", "log_likelihood"])
+        data_list,
+        [
+            "glm_restriction_idx",
+            "unit_name",
+            "brain_region",
+            "results_folds_merged_df",
+            "folds_df",
+            "fit_params",
+            "log_likelihood",
+        ],
+    )

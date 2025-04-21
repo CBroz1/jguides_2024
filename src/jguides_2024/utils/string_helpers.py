@@ -23,7 +23,11 @@ def _camel_to_snake_case_group_uppercase(string):
         # If current character is upercase, previous character is uppercase, and next character
         # is lowercase, add underscore before new character
         if idx < len(string) - 1:  # if before last index
-            if x.isupper() and string[idx - 1].isupper() and string[idx + 1].islower():
+            if (
+                x.isupper()
+                and string[idx - 1].isupper()
+                and string[idx + 1].islower()
+            ):
                 new_string += "_"
         # Add new character
         new_string += x.lower()
@@ -31,10 +35,10 @@ def _camel_to_snake_case_group_uppercase(string):
 
 
 def snake_to_camel_case(string, capitalize_first=True):
-    split_string = string.split('_')
+    split_string = string.split("_")
     if capitalize_first:
-        return ''.join(x.title() for x in split_string)
-    return split_string[0] + ''.join(x.title() for x in split_string[1:])
+        return "".join(x.title() for x in split_string)
+    return split_string[0] + "".join(x.title() for x in split_string[1:])
 
 
 def plural_to_singular(string):
@@ -86,20 +90,28 @@ def strip_string(x, strip_character, strip_start=False, strip_end=True):
 
 
 def strip_trailing_s(x):
-    return strip_string(x, strip_character="s", strip_start=False, strip_end=True)
+    return strip_string(
+        x, strip_character="s", strip_start=False, strip_end=True
+    )
 
 
 def add_underscore(x, prepend_underscore=False, append_underscore=True):
     return "_" * prepend_underscore + str(x) + "_" * append_underscore
 
 
-def format_optional_var(x, leading_text="", prepend_underscore=False, append_underscore=False):
+def format_optional_var(
+    x, leading_text="", prepend_underscore=False, append_underscore=False
+):
     if x is None:
         return ""
-    return add_underscore(leading_text + str(x), prepend_underscore, append_underscore)
+    return add_underscore(
+        leading_text + str(x), prepend_underscore, append_underscore
+    )
 
 
-def format_bool(bool_val, bool_str, prepend_underscore=False, append_underscore=False):
+def format_bool(
+    bool_val, bool_str, prepend_underscore=False, append_underscore=False
+):
     if bool_val:
         return add_underscore(bool_str, prepend_underscore, append_underscore)
     return ""
@@ -116,7 +128,7 @@ def abbreviate_join_strings(strings):
 
 
 def get_name_of_var(var):
-    return f"{var=}".split('=')[0]  # var= in f string gives var=var value
+    return f"{var=}".split("=")[0]  # var= in f string gives var=var value
 
 
 def remove_leading_dunder(x):
@@ -133,6 +145,7 @@ def replace_chars(x, replace_char_map):
     for old_char, new_char in replace_char_map.items():
         x = x.replace(old_char, new_char)
     return x
+
 
 def get_even_odd_text(num):
     even_odd_bool = num % 2

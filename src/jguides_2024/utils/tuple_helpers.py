@@ -3,8 +3,7 @@ import numpy as np
 
 def key_value_tuple_to_dict(list_tuples):
     keys, values = zip(*list_tuples)
-    return {key: np.asarray(values)[keys == key]
-                    for key in np.unique(keys)}
+    return {key: np.asarray(values)[keys == key] for key in np.unique(keys)}
 
 
 def index_list_of_tuples(list_tuples, valid_bool):

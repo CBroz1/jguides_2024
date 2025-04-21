@@ -5,9 +5,20 @@ from jguides_2024.utils.plot_helpers import format_ax
 from jguides_2024.utils.point_process_helpers import event_times_in_intervals
 
 
-def plot_spike_times(spike_times_list, min_spike_count=None, scale_spike_idxs=1, ax=None, xlims=None, colors=None,
-                     alpha=.5, linewidths=None, yticks_show_unit_count=True, title=None,
-                     use_eventplot=True, figsize=(20, 5)):
+def plot_spike_times(
+    spike_times_list,
+    min_spike_count=None,
+    scale_spike_idxs=1,
+    ax=None,
+    xlims=None,
+    colors=None,
+    alpha=0.5,
+    linewidths=None,
+    yticks_show_unit_count=True,
+    title=None,
+    use_eventplot=True,
+    figsize=(20, 5),
+):
     """
     Plot spike times
     :param min_spike_count: exclude rows in spike_times_list with fewer than this number of spikes. Default is None
@@ -36,15 +47,29 @@ def plot_spike_times(spike_times_list, min_spike_count=None, scale_spike_idxs=1,
     if use_eventplot:
         # Narrow events to x lims if passed
         if xlims is not None:
-            spike_times_list = [event_times_in_intervals(x, [xlims])[1] for x in spike_times_list]
+            spike_times_list = [
+                event_times_in_intervals(x, [xlims])[1]
+                for x in spike_times_list
+            ]
         # Exclude rows with fewer than min_spike_count
-        spike_times_list = [x for x in spike_times_list if len(x) >= min_spike_count]
-        ax.eventplot(spike_times_list, lineoffsets=np.arange(0, len(spike_times_list)) * scale_spike_idxs,
-                     colors=colors, linewidths=linewidths)
+        spike_times_list = [
+            x for x in spike_times_list if len(x) >= min_spike_count
+        ]
+        ax.eventplot(
+            spike_times_list,
+            lineoffsets=np.arange(0, len(spike_times_list)) * scale_spike_idxs,
+            colors=colors,
+            linewidths=linewidths,
+        )
     else:
         for neuron_idx, spike_times in enumerate(spike_times_list):
-            ax.scatter(spike_times, [neuron_idx * scale_spike_idxs] * len(spike_times), marker='|', color=colors,
-                       alpha=alpha)
+            ax.scatter(
+                spike_times,
+                [neuron_idx * scale_spike_idxs] * len(spike_times),
+                marker="|",
+                color=colors,
+                alpha=alpha,
+            )
 
     if xlims is not None:
         ax.set_xlim(xlims)
@@ -55,6 +80,8 @@ def plot_spike_times(spike_times_list, min_spike_count=None, scale_spike_idxs=1,
         yticks = [unit_count]
         ax.set_yticks(yticks)
         ax.set_yticklabels(yticks)
-    if scale_spike_idxs != 1:  # remove y ticks if scaled spike y position_and_maze
+    if (
+        scale_spike_idxs != 1
+    ):  # remove y ticks if scaled spike y position_and_maze
         ax.set_yticks([])
     format_ax(ax=ax, title=title, ylim=[0, unit_count])

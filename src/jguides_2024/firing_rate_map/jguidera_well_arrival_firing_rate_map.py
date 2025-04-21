@@ -5,17 +5,31 @@ import spyglass as nd
 
 from spyglass.common import AnalysisNwbfile
 
-from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import make_well_trial_table_fr_df, \
-    make_well_single_trial_table_fr_df, \
-    insert_firing_rate_map_unique_well_table, \
-    insert_single_trial_firing_rate_map_smoothed_well_table, get_bin_centers_name
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, FrmapBase, FrmapSmBase, \
-    TemporalFrmapParamsBase, TemporalFrmapSmParamsBase, SelBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (insert_analysis_table_entry,
-                                                                          get_schema_table_names_from_file,
-                                                                          populate_insert)
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import (
+    make_well_trial_table_fr_df,
+    make_well_single_trial_table_fr_df,
+    insert_firing_rate_map_unique_well_table,
+    insert_single_trial_firing_rate_map_smoothed_well_table,
+    get_bin_centers_name,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    ComputedBase,
+    FrmapBase,
+    FrmapSmBase,
+    TemporalFrmapParamsBase,
+    TemporalFrmapSmParamsBase,
+    SelBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    insert_analysis_table_entry,
+    get_schema_table_names_from_file,
+    populate_insert,
+)
 from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
-from jguides_2024.task_event.jguidera_dio_trials import (DioWellArrivalTrials, DioWellArrivalTrialsParams)
+from jguides_2024.task_event.jguidera_dio_trials import (
+    DioWellArrivalTrials,
+    DioWellArrivalTrialsParams,
+)
 
 # Needed for table definitions:
 nd
@@ -59,9 +73,14 @@ class FrmapWellArrival(FrmapBase):
 
     def make(self, key):
         firing_rate_map_wa_df = make_well_trial_table_fr_df(
-            key, trials_table=DioWellArrivalTrials, trials_params_table=DioWellArrivalTrialsParams,
-            firing_rate_map_params_table=FrmapWellArrivalParams)
-        insert_analysis_table_entry(self, nwb_objects=[firing_rate_map_wa_df], key=key)
+            key,
+            trials_table=DioWellArrivalTrials,
+            trials_params_table=DioWellArrivalTrialsParams,
+            firing_rate_map_params_table=FrmapWellArrivalParams,
+        )
+        insert_analysis_table_entry(
+            self, nwb_objects=[firing_rate_map_wa_df], key=key
+        )
 
 
 @schema
@@ -81,8 +100,13 @@ class FrmapUniqueWellArrival(ComputedBase):
         trial_feature_name = "well_name"
 
         insert_firing_rate_map_unique_well_table(
-            self, trials_table=DioWellArrivalTrials, trials_params_table=DioWellArrivalTrialsParams,
-            firing_rate_map_params_table=FrmapWellArrivalParams, trial_feature_name=trial_feature_name, key=key)
+            self,
+            trials_table=DioWellArrivalTrials,
+            trials_params_table=DioWellArrivalTrialsParams,
+            firing_rate_map_params_table=FrmapWellArrivalParams,
+            trial_feature_name=trial_feature_name,
+            key=key,
+        )
 
 
 @schema
@@ -142,11 +166,16 @@ class STFrmapWellArrival(ComputedBase):
     def make(self, key):
         # Get rate maps
         st_frmap_well_arrival_df = make_well_single_trial_table_fr_df(
-            key, trials_table=DioWellArrivalTrials, trials_params_table=DioWellArrivalTrialsParams,
-            firing_rate_map_params_table=FrmapWellArrivalParams)
+            key,
+            trials_table=DioWellArrivalTrials,
+            trials_params_table=DioWellArrivalTrialsParams,
+            firing_rate_map_params_table=FrmapWellArrivalParams,
+        )
 
         # Insert into table
-        insert_analysis_table_entry(self, [st_frmap_well_arrival_df], key, [self.get_object_id_name()])
+        insert_analysis_table_entry(
+            self, [st_frmap_well_arrival_df], key, [self.get_object_id_name()]
+        )
 
 
 @schema
@@ -168,18 +197,26 @@ class STFrmapWellArrivalSm(ComputedBase):
         # Smooth rate maps
 
         insert_single_trial_firing_rate_map_smoothed_well_table(
-            fr_smoothed_table=self, fr_table=STFrmapWellArrival, params_table=FrmapWellArrivalSmParams, key=key,
-            data_type=self._data_type())
+            fr_smoothed_table=self,
+            fr_table=STFrmapWellArrival,
+            params_table=FrmapWellArrivalSmParams,
+            key=key,
+            data_type=self._data_type(),
+        )
 
     def get_bin_centers_name(self):
         return get_bin_centers_name(self._data_type())
 
     def _get_xlims(self):
-        trial_start_time_shift, trial_end_time_shift = (DioWellArrivalTrialsParams & self.fetch1("KEY")).trial_shifts()
+        trial_start_time_shift, trial_end_time_shift = (
+            DioWellArrivalTrialsParams & self.fetch1("KEY")
+        ).trial_shifts()
         return [trial_start_time_shift, trial_end_time_shift]
 
 
-def populate_jguidera_well_arrival_firing_rate_map(key=None, tolerate_error=False):
+def populate_jguidera_well_arrival_firing_rate_map(
+    key=None, tolerate_error=False
+):
     schema_name = "jguidera_well_arrival_firing_rate_map"
 
     for table_name in get_schema_table_names_from_file(schema_name):

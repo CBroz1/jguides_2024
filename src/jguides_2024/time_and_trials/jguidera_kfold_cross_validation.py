@@ -2,12 +2,22 @@ import datajoint as dj
 
 from spyglass.common import AnalysisNwbfile
 
-from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import \
-    insert_cross_validation_table
-from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
-from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
-    populate_insert, get_table_secondary_key_names
-from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohort
+from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import (
+    insert_cross_validation_table,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (
+    SecKeyParamsBase,
+    SelBase,
+    ComputedBase,
+)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (
+    get_schema_table_names_from_file,
+    populate_insert,
+    get_table_secondary_key_names,
+)
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import (
+    ResTimeBinsPoolCohort,
+)
 from jguides_2024.utils.cross_validation_helpers import CrossValidate
 
 schema_name = "jguidera_kfold_cross_validation"
@@ -29,7 +39,9 @@ class KFoldTrainTestSplitParams(SecKeyParamsBase):
     def insert1(self, key, **kwargs):
         # Require random_state to be -1 if use_random_state is 0 (False)
         if not key["use_random_state"] and key["random_state"] != -1:
-            raise Exception(f"random_state must be -1 if use_random_state is 0 (False)")
+            raise Exception(
+                f"random_state must be -1 if use_random_state is 0 (False)"
+            )
         super().insert1(key, **kwargs)
 
     def _default_params(self):
@@ -37,7 +49,10 @@ class KFoldTrainTestSplitParams(SecKeyParamsBase):
         return [[params[k] for k in get_table_secondary_key_names(self)]]
 
     def fetch1_params(self):
-        params = {k: self.fetch1(k) for k in ["n_splits", "use_random_state", "random_state"]}
+        params = {
+            k: self.fetch1(k)
+            for k in ["n_splits", "use_random_state", "random_state"]
+        }
         # Before returning params, set random state to None if use_random_state is zero (False)
         # This is helpful for use in downstream analyses that expect random state to be indicated by None when
         # random state not used

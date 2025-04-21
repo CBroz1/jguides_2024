@@ -1,17 +1,23 @@
 """This module has functions to check whether data is well defined"""
 
-from jguides_2024.position_and_maze.jguidera_maze import AnnotatedUniversalTrackGraph
+from jguides_2024.position_and_maze.jguidera_maze import (
+    AnnotatedUniversalTrackGraph,
+)
 
 
-def check_edge_names_valid(edge_names, universal_track_graph_name="fork_maze_universal"):
+def check_edge_names_valid(
+    edge_names, universal_track_graph_name="fork_maze_universal"
+):
     """
     Check whether names of edges of track graph are valid
     :param edge_names: list of edge names as strings
     :param universal_track_graph_name: str, name of univresal track graph
     """
 
-    valid_edge_names = (AnnotatedUniversalTrackGraph & {"universal_track_graph_name":
-                                                         universal_track_graph_name}).fetch1("edge_names")
+    valid_edge_names = (
+        AnnotatedUniversalTrackGraph
+        & {"universal_track_graph_name": universal_track_graph_name}
+    ).fetch1("edge_names")
     if not all([edge_name in valid_edge_names for edge_name in edge_names]):
         raise Exception(f"All edge names must be in {valid_edge_names}")
 
