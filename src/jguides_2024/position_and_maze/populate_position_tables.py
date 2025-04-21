@@ -3,18 +3,18 @@ import numpy as np
 from spyglass.common.common_position import (IntervalPositionInfoSelection, IntervalPositionInfo,
                                              TrackGraph, IntervalLinearizationSelection, IntervalLinearizedPosition)
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import populate_flexible_key, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import populate_flexible_key, \
     add_param_defaults
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_epoch_keys
-from src.jguides_2024.metadata.jguidera_epoch import RunEpoch
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.position_and_maze.jguidera_maze import get_fork_maze_track_graph_name
-from src.jguides_2024.position_and_maze.jguidera_position import IntervalLinearizedPositionRelabel, \
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_epoch_keys
+from jguides_2024.metadata.jguidera_epoch import RunEpoch
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.position_and_maze.jguidera_maze import get_fork_maze_track_graph_name
+from jguides_2024.position_and_maze.jguidera_position import IntervalLinearizedPositionRelabel, \
     IntervalLinearizedPositionRescaled, \
     IntervalPositionInfoRelabel
-from src.jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import check_length
+from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import check_length
 
 
 def populate_IntervalLinearizedPosition(nwb_file_name, epoch, position_info_param_name="default",

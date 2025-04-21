@@ -6,26 +6,26 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecSelBase, CovariateFRVecBase, CovariateFRVecTrialAveBase, CovariateAveFRVecParamsBase, \
     CovariateFRVecAveSelBase, CovariateFRVecSTAveBase, CovariateFRVecSTAveParamsBase, CovariateFRVecSTAveSummBase, \
     CovariateFRVecAveSummSelBase, CovariateFRVecAveSummSecKeyParamsBase, MultiCovFRVecSummBase, CovariateAveFRVecSummBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import drop_, delete_
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_post_delay_firing_rate_vector import RelPostDelFRVec
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
-from src.jguides_2024.metadata.jguidera_epoch import RunEpoch, EpochsDescription, RecordingSet
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits, BrainRegionUnitsCohortType
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellTrials, DioWellDDTrials
-from src.jguides_2024.time_and_trials.jguidera_relative_time_at_well import RelTimeWellPostDelayDigParams
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
-from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigSingleAxisParams
-from src.jguides_2024.utils.df_helpers import check_df_indices_close
-from src.jguides_2024.utils.state_evolution_estimation import AverageVectorDuringLabeledProgression
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import drop_, delete_
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_post_delay_firing_rate_vector import RelPostDelFRVec
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
+from jguides_2024.metadata.jguidera_epoch import RunEpoch, EpochsDescription, RecordingSet
+from jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits, BrainRegionUnitsCohortType
+from jguides_2024.task_event.jguidera_dio_trials import DioWellTrials, DioWellDDTrials
+from jguides_2024.time_and_trials.jguidera_relative_time_at_well import RelTimeWellPostDelayDigParams
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
+from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigSingleAxisParams
+from jguides_2024.utils.df_helpers import check_df_indices_close
+from jguides_2024.utils.state_evolution_estimation import AverageVectorDuringLabeledProgression
 
 # Needed for table definitions:
 nd

@@ -7,10 +7,10 @@ from collections.abc import Iterable
 
 import numpy as np
 
-from src.jguides_2024.utils.check_well_defined import failed_check
-from src.jguides_2024.utils.list_helpers import check_return_single_element, check_single_element
-from src.jguides_2024.utils.set_helpers import check_membership, check_set_equality
-from src.jguides_2024.utils.vector_helpers import unpack_single_element, check_all_unique, check_vectors_equal
+from jguides_2024.utils.check_well_defined import failed_check
+from jguides_2024.utils.list_helpers import check_return_single_element, check_single_element
+from jguides_2024.utils.set_helpers import check_membership, check_set_equality
+from jguides_2024.utils.vector_helpers import unpack_single_element, check_all_unique, check_vectors_equal
 
 
 def invert_dict(dictionary, unpack_single_elements=False):
@@ -29,7 +29,7 @@ def pairs_keys_same_value(dictionary):
 
 
 def pairs_keys_different_value(dictionary):
-    from src.jguides_2024.utils.list_helpers import remove_duplicate_combinations
+    from jguides_2024.utils.list_helpers import remove_duplicate_combinations
     return remove_duplicate_combinations(list(itertools.chain.from_iterable([[(k, target_k) for k,
                                              v in dictionary.items() if v != target_v]
                                              for target_k, target_v in dictionary.items()])))

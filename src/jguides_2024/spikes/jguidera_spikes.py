@@ -9,8 +9,8 @@ import spyglass as nd
 from spyglass.common import IntervalList
 from spyglass.spikesorting.v0.spikesorting_curation import SortInterval, CuratedSpikeSorting
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase, PartBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (insert_analysis_table_entry,
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase, PartBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (insert_analysis_table_entry,
                                                                           get_schema_table_names_from_file,
                                                                           insert1_print,
                                                                           populate_insert, add_param_defaults,
@@ -20,11 +20,11 @@ from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (insert
                                                                           delete_,
                                                                           get_table_curation_names_for_key,
                                                                           get_unit_name)
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.metadata.jguidera_premaze_durations import PremazeDurations
-from src.jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
-from src.jguides_2024.time_and_trials.jguidera_time_bins import EpochTimeBins, EpochTimeBinsParams
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.metadata.jguidera_premaze_durations import PremazeDurations
+from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
+from jguides_2024.time_and_trials.jguidera_time_bins import EpochTimeBins, EpochTimeBinsParams
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals
 
 # Needed for table definitions:
 TaskIdentification
@@ -293,7 +293,7 @@ class EpochSpikeTimesRelabel(ComputedBase):
     def delete_(self, key, safemode=True):
         # Add curation_name if not present but params to define it are. Helps ensure only relevant entries for key
         # are deleted
-        from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikeCountsSel
+        from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikeCountsSel
         key = copy.deepcopy(key)
         for curation_name in get_table_curation_names_for_key(self, key):
             key.update({"curation_name": curation_name})
@@ -312,7 +312,7 @@ class EpochMeanFiringRate(ComputedBase):
 
     def make(self, key):
 
-        from src.jguides_2024.utils.point_process_helpers import calculate_average_event_rate
+        from jguides_2024.utils.point_process_helpers import calculate_average_event_rate
 
         # Get epoch valid times
         epoch_interval_list_name = EpochIntervalListName().get_interval_list_name(key["nwb_file_name"], key["epoch"])
@@ -338,7 +338,7 @@ class EpochMeanFiringRate(ComputedBase):
         # are deleted
 
         key = copy.deepcopy(key)
-        from src.jguides_2024.spikes.jguidera_unit import EpsUnits
+        from jguides_2024.spikes.jguidera_unit import EpsUnits
         for curation_name in get_table_curation_names_for_key(self, key):
             key.update({"curation_name": curation_name})
             delete_(self, [EpsUnits], key, safemode)

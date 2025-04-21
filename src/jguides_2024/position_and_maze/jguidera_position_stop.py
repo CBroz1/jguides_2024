@@ -8,14 +8,14 @@ import pandas as pd
 # Import custom datajoint tables
 os.chdir("/home/jguidera/Src/jguides_2024/")
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     get_schema_table_names_from_file, populate_insert
-from src.jguides_2024.position_and_maze.jguidera_position import IntervalPositionInfoRelabel
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDATrials, DioWellDATrialsParams
-from src.jguides_2024.utils.plot_helpers import plot_spanning_line, format_ax
-from src.jguides_2024.utils.similarity_measure_helpers import SimilarOverlapPeriods
+from jguides_2024.position_and_maze.jguidera_position import IntervalPositionInfoRelabel
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt
+from jguides_2024.task_event.jguidera_dio_trials import DioWellDATrials, DioWellDATrialsParams
+from jguides_2024.utils.plot_helpers import plot_spanning_line, format_ax
+from jguides_2024.utils.similarity_measure_helpers import SimilarOverlapPeriods
 
 
 schema_name = "jguidera_position_stop"

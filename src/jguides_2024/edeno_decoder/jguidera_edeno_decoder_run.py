@@ -19,32 +19,32 @@ from spyglass.decoding.v0.sorted_spikes import (
 from spyglass.decoding.v0.clusterless import ClusterlessClassifierParameters
 from spyglass.spikesorting.v0.spikesorting_curation import CuratedSpikeSorting
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_reliability_paper_nwb_file_names, \
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_reliability_paper_nwb_file_names, \
     get_subject_id
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
     populate_insert, get_default_param, \
     split_curation_name, make_param_name, insert_analysis_table_entry
-from src.jguides_2024.edeno_decoder.jguidera_edeno_decoder_helpers import get_valid_decode_variable_names, \
+from jguides_2024.edeno_decoder.jguidera_edeno_decoder_helpers import get_valid_decode_variable_names, \
     StackedEdgeTrackGraph, EDPathGroups, max_posterior_position, get_valid_turn_zone_decode_variable_names
-from src.jguides_2024.metadata.jguidera_brain_region import CurationSet, BrainRegionCohort
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription, TrainTestEpoch, EpochsDescriptions
-from src.jguides_2024.position_and_maze.jguidera_maze import get_path_junction_abbreviation, MazePathWell
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.spikes.jguidera_unit import EpsUnitsParams, BrainRegionUnits, BrainRegionUnitsParams
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrials, DioWellDDTrials, \
+from jguides_2024.metadata.jguidera_brain_region import CurationSet, BrainRegionCohort
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription, TrainTestEpoch, EpochsDescriptions
+from jguides_2024.position_and_maze.jguidera_maze import get_path_junction_abbreviation, MazePathWell
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt
+from jguides_2024.spikes.jguidera_unit import EpsUnitsParams, BrainRegionUnits, BrainRegionUnitsParams
+from jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrials, DioWellDDTrials, \
     DioWellArrivalTrialsSub
-from src.jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
-from src.jguides_2024.utils.cross_validation_helpers import CrossValidate
-from src.jguides_2024.utils.df_helpers import zip_df_columns, match_two_dfs, df_pop, df_from_data_list
-from src.jguides_2024.utils.dict_helpers import merge_dicts
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.plot_helpers import path_name_to_plot_string, format_ax
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool, event_times_in_intervals
-from src.jguides_2024.utils.print_helpers import optional_print
-from src.jguides_2024.utils.save_load_helpers import pickle_file
-from src.jguides_2024.utils.set_helpers import check_membership, check_set_equality
-from src.jguides_2024.utils.vector_helpers import unpack_single_element, check_all_unique, vector_midpoints
+from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
+from jguides_2024.utils.cross_validation_helpers import CrossValidate
+from jguides_2024.utils.df_helpers import zip_df_columns, match_two_dfs, df_pop, df_from_data_list
+from jguides_2024.utils.dict_helpers import merge_dicts
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.plot_helpers import path_name_to_plot_string, format_ax
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool, event_times_in_intervals
+from jguides_2024.utils.print_helpers import optional_print
+from jguides_2024.utils.save_load_helpers import pickle_file
+from jguides_2024.utils.set_helpers import check_membership, check_set_equality
+from jguides_2024.utils.vector_helpers import unpack_single_element, check_all_unique, vector_midpoints
 
 schema = dj.schema("jguidera_edeno_decoder_run")
 
@@ -849,8 +849,8 @@ class EdenoDecode(ComputedBase):
         :return:
         """
 
-        from src.jguides_2024.utils.df_helpers import zip_df_columns
-        from src.jguides_2024.position_and_maze.jguidera_maze import return_n_junction_path_names
+        from jguides_2024.utils.df_helpers import zip_df_columns
+        from jguides_2024.position_and_maze.jguidera_maze import return_n_junction_path_names
 
         # Get time of upsampled position_and_maze measurements
         pos_t = linear_position.index

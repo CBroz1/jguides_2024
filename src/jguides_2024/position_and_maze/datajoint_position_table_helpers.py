@@ -1,6 +1,6 @@
 from spyglass.common.common_position import IntervalPositionInfo
 
-from src.jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
+from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
 
 
 def fetch1_IntervalPositionInfo(nwb_file_name, epoch, position_info_param_name="default"):

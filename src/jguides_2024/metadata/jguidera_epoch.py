@@ -6,20 +6,20 @@ import itertools
 import datajoint as dj
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, \
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, \
     get_reliability_paper_nwb_file_names
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import format_nwb_file_name
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import format_nwb_file_name
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, \
     get_schema_table_names_from_file, \
     populate_insert, get_epochs_id, check_epochs_id, get_key_filter, fetch_iterable_array, fetch_entries_as_dict
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import Contingency
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification, JguideraNwbfile
-from src.jguides_2024.time_and_trials.jguidera_epoch_interval import EpochInterval
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_element
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import Contingency
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification, JguideraNwbfile
+from jguides_2024.time_and_trials.jguidera_epoch_interval import EpochInterval
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_element
 
 schema_name = "jguidera_epoch"
 schema = dj.schema(schema_name)  # define custom schema
@@ -136,7 +136,7 @@ class EpochCohort(ComputedBase):
         return key
 
     def drop(self):
-        from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits
+        from jguides_2024.spikes.jguidera_unit import BrainRegionUnits
         BrainRegionUnits().drop()
         super.drop()
 

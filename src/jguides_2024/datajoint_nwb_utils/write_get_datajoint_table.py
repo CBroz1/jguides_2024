@@ -1,8 +1,8 @@
 # Write import statements to a file
 import os
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_import_statements
-from src.jguides_2024.utils.save_load_helpers import get_file_contents
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_import_statements
+from jguides_2024.utils.save_load_helpers import get_file_contents
 
 
 def write_get_datajoint_table(verbose=False):

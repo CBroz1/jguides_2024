@@ -1,21 +1,21 @@
 import datajoint as dj
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_junction_fractions, plot_task_phases
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_decode_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_junction_fractions, plot_task_phases
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_decode_table_base import \
     DecodeCovFRVecBase, DecodeCovFRVecParamsBase, DecodeCovFRVecSelBase, DecodeCovFRVecSummBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecAveSelBase, PopulationAnalysisParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, get_table_secondary_key_names
-from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import PathFRVec, PathFRVecParams
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.position_and_maze.jguidera_ppt import PptParams
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits, BrainRegionUnitsCohortType
-from src.jguides_2024.utils.plot_helpers import plot_spanning_line
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, get_table_secondary_key_names
+from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import PathFRVec, PathFRVecParams
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.position_and_maze.jguidera_ppt import PptParams
+from jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnits, BrainRegionUnitsCohortType
+from jguides_2024.utils.plot_helpers import plot_spanning_line
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 schema = dj.schema("jguidera_path_firing_rate_vector_decode")
 

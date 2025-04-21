@@ -2,9 +2,9 @@ from collections import namedtuple
 
 import numpy as np
 
-from src.jguides_2024.utils.df_helpers import df_from_data_list
-from src.jguides_2024.utils.dict_helpers import check_same_values_at_shared_keys
-from src.jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.df_helpers import df_from_data_list
+from jguides_2024.utils.dict_helpers import check_same_values_at_shared_keys
+from jguides_2024.utils.list_helpers import check_return_single_element
 
 
 class EmbeddingParams:

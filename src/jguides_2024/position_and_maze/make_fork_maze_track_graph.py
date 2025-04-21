@@ -66,7 +66,7 @@ def make_track_graph(node_names, node_positions, edge_list):
                                             "pos": node_pos})
                                 for node_num, (node_pos, node_name) in
                                 enumerate(zip(node_positions, node_names))])  # add nodes to graph
-    from src.jguides_2024.utils.vector_helpers import euclidean_distance
+    from jguides_2024.utils.vector_helpers import euclidean_distance
     track_graph.add_edges_from([(edge[0], edge[1],
                                  {"length": euclidean_distance(track_graph.nodes[edge[0]]["pos"],
                                                                  track_graph.nodes[edge[1]]["pos"]),

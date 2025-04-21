@@ -2,25 +2,25 @@ import datajoint as dj
 import spyglass as nd
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_task_phases
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_decode_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_task_phases
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_decode_table_base import \
     DecodeCovFRVecParamsBase, DecodeCovFRVecBase, DecodeCovFRVecSelBase, DecodeCovFRVecSummBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecAveSelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, get_table_secondary_key_names
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_delay_duration
-from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector_decode import DecodeCovFRVecSummSecKeyParamsBase
-from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import TimeRelWAFRVec, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, get_table_secondary_key_names
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_delay_duration
+from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector_decode import DecodeCovFRVecSummSecKeyParamsBase
+from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import TimeRelWAFRVec, \
     TimeRelWAFRVecParams
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits, BrainRegionUnitsCohortType
-from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnits, BrainRegionUnitsCohortType
+from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
     TimeRelWADigSingleAxisParams
-from src.jguides_2024.utils.dict_helpers import check_same_values_at_shared_keys
-from src.jguides_2024.utils.plot_helpers import plot_spanning_line
-from src.jguides_2024.utils.vector_helpers import unpack_single_element, unpack_single_vector
+from jguides_2024.utils.dict_helpers import check_same_values_at_shared_keys
+from jguides_2024.utils.plot_helpers import plot_spanning_line
+from jguides_2024.utils.vector_helpers import unpack_single_element, unpack_single_vector
 
 schema = dj.schema("jguidera_well_event_firing_rate_vector_decode")
 

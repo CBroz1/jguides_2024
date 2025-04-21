@@ -2,17 +2,17 @@ import datajoint as dj
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, delete_
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrialsParams, DioWellADTrialsParams
-from src.jguides_2024.time_and_trials.jguidera_res_set import ResSet, populate_jguidera_res_set, ResSetParams
-from src.jguides_2024.time_and_trials.jguidera_time_bins import (EpochTimeBins, DioWATrialsTimeBins,
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, delete_
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrialsParams, DioWellADTrialsParams
+from jguides_2024.time_and_trials.jguidera_res_set import ResSet, populate_jguidera_res_set, ResSetParams
+from jguides_2024.time_and_trials.jguidera_time_bins import (EpochTimeBins, DioWATrialsTimeBins,
                                                                  populate_jguidera_time_bins,
                                                                  EpochTimeBinsParams, DioWATrialsTimeBinsParams,
                                                                  DioWellADTrialsTimeBins,
                                                                  DioWellADTrialsTimeBinsParams)
-from src.jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolCohortParams
+from jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolCohortParams
 
 # Needed for table definitions:
 nd
@@ -68,7 +68,7 @@ class ResEpochTimeBins(ComputedBase):
         insert_res_time_bins_table(self, EpochTimeBins, key)
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool
+        from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool
         delete_(self, [ResTimeBinsPool], key, safemode)
 
 
@@ -236,6 +236,6 @@ def populate_jguidera_res_time_bins(
 
 
 def drop_jguidera_res_time_bins():
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import drop_jguidera_res_time_bins_pool
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import drop_jguidera_res_time_bins_pool
     drop_jguidera_res_time_bins_pool()
     schema.drop()

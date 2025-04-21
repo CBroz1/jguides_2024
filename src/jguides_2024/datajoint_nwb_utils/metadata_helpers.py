@@ -57,7 +57,7 @@ def get_jguidera_nwbf_names(high_priority=True, highest_priority=False, as_dict=
 
     # Import spyglass file here to avoid error when running other functions in this script
     # outside spyglass environment
-    from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import nwbf_name_from_subject_id_date
+    from jguides_2024.datajoint_nwb_utils.nwbf_helpers import nwbf_name_from_subject_id_date
 
     nwbf_names = [nwbf_name_from_subject_id_date(subject_id, date)
             for subject_id, dates in get_all_subject_id_recording_dates().items()
@@ -85,7 +85,7 @@ def get_jguidera_nwbf_epoch_keys(high_priority=False, highest_priority=True):
 
     # If go back to using spyglass table: import locally to avoid error when importing module to run other
     # functions in this script outside spyglass environment
-    from src.jguides_2024.metadata.jguidera_epoch import RunEpoch  # local import to avoid circular import error
+    from jguides_2024.metadata.jguidera_epoch import RunEpoch  # local import to avoid circular import error
 
     # Note that cannot use RunEpoch here because would require circular import
     return [{"nwb_file_name": nwb_file_name, "epoch": epoch} for nwb_file_name in
@@ -176,7 +176,7 @@ def get_dropbox_path(backup_folder=False):
 
 def get_brain_regions(nwb_file_name, targeted=False):
 
-    from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import subject_id_date_from_nwbf_name
+    from jguides_2024.datajoint_nwb_utils.nwbf_helpers import subject_id_date_from_nwbf_name
 
     subject_id, _ = subject_id_date_from_nwbf_name(nwb_file_name)
     brain_regions = ["CA1", "mPFC", "OFC"]  # default
@@ -211,7 +211,7 @@ class Contingency:
 
     def get_contingency_type(self, contingency):
 
-        from src.jguides_2024.utils.vector_helpers import unpack_single_element
+        from jguides_2024.utils.vector_helpers import unpack_single_element
 
         return unpack_single_element([contingency_type for contingency_type, contingencies
                                       in self.valid_contingencies.items() if contingency in contingencies])

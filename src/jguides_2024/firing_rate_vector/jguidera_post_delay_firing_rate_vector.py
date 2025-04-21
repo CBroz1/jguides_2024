@@ -4,28 +4,28 @@ import datajoint as dj
 import numpy as np
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecSelBase, CovariateFRVecBase, CovariateAveFRVecParamsBase, CovariateFRVecTrialAveBase, \
     CovariateFRVecAveSelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import drop_
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription, RunEpoch
-from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrials, DioWellTrials
-from src.jguides_2024.time_and_trials.jguidera_relative_time_at_well import RelTimeWellPostDelayDig, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import drop_
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription, RunEpoch
+from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits
+from jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrials, DioWellTrials
+from jguides_2024.time_and_trials.jguidera_relative_time_at_well import RelTimeWellPostDelayDig, \
     RelTimeWellPostDelayDigParams
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
 
 # Needed for table definitions:
-from src.jguides_2024.utils.df_helpers import check_same_index
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
-from src.jguides_2024.utils.state_evolution_estimation import AverageVectorDuringLabeledProgression
+from jguides_2024.utils.df_helpers import check_same_index
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
+from jguides_2024.utils.state_evolution_estimation import AverageVectorDuringLabeledProgression
 
 nd
 RelTimeWellPostDelayDig

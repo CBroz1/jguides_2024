@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import sklearn
 
-from src.jguides_2024.utils.dict_helpers import dict_comprehension, merge_dicts, check_dict_equality
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.set_helpers import check_set_equality
-from src.jguides_2024.utils.vector_helpers import check_vectors_close, check_vectors_equal, \
+from jguides_2024.utils.dict_helpers import dict_comprehension, merge_dicts, check_dict_equality
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.set_helpers import check_set_equality
+from jguides_2024.utils.vector_helpers import check_vectors_close, check_vectors_equal, \
     unpack_single_element, check_all_unique
 
 
@@ -95,7 +95,7 @@ def unpack_df_columns(df, column_names, pop_single_entries=False):
 
 
 def df_filter_index(df, valid_intervals):
-    from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
+    from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
     return df[event_times_in_intervals_bool(event_times=df.index, valid_time_intervals=valid_intervals)]
 
 

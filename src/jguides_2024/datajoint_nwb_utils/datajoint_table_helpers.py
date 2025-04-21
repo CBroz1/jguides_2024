@@ -13,18 +13,18 @@ from networkx import NetworkXError
 from spyglass.common import (Session, IntervalList)
 from spyglass.utils.dj_helper_fn import fetch_nwb as fetch_nwb_
 
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_environments, get_jguidera_nwbf_names
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.df_helpers import zip_df_columns
-from src.jguides_2024.utils.dict_helpers import dict_comprehension, add_defaults, remove_repeat_dicts, \
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_environments, get_jguidera_nwbf_names
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.df_helpers import zip_df_columns
+from jguides_2024.utils.dict_helpers import dict_comprehension, add_defaults, remove_repeat_dicts, \
     merge_dicts_lists
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.save_load_helpers import get_file_contents
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.string_helpers import camel_to_snake_case, snake_to_camel_case, strip_string, \
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.save_load_helpers import get_file_contents
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.string_helpers import camel_to_snake_case, snake_to_camel_case, strip_string, \
     strip_trailing_s, \
     get_string_prior_to_dunder, remove_leading_dunder, replace_chars
-from src.jguides_2024.utils.vector_helpers import (unpack_single_element, find_spans_increasing_list,
+from jguides_2024.utils.vector_helpers import (unpack_single_element, find_spans_increasing_list,
                                                    check_all_unique, none_to_string_none)
 
 """
@@ -371,19 +371,19 @@ def create_analysis_nwbf(key, nwb_objects, nwb_object_names):
         nwb_file_name = key["nwb_file_name"]
     elif "recording_set_name" in key:
         # Take first nwb file name
-        from src.jguides_2024.metadata.jguidera_epoch import RecordingSet  # local import to avoid circular import error
+        from jguides_2024.metadata.jguidera_epoch import RecordingSet  # local import to avoid circular import error
         nwb_file_name = (RecordingSet & key).fetch1("nwb_file_names")[0]
     elif "train_test_epoch_set_name" in key:
         # Take first nwb file name
-        from src.jguides_2024.metadata.jguidera_epoch import TrainTestEpochSet
+        from jguides_2024.metadata.jguidera_epoch import TrainTestEpochSet
         nwb_file_name = (TrainTestEpochSet & key).fetch1("nwb_file_names")[0]
     else:
         raise Exception(f"nwb_file_name, recording_set_name, or train_test_epoch_set_name must be in key to"
                         f" define nwb file name for making analysis nwb file")
 
     # Create analysis nwb file
-    key['analysis_file_name'] = nd.common.AnalysisNwbfile().create(nwb_file_name)
-    nwb_analysis_file = nd.common.AnalysisNwbfile()
+    key['analysis_file_name'] = AnalysisNwbfile().create(nwb_file_name)
+    nwb_analysis_file = AnalysisNwbfile()
 
     # Check that objects all dfs (code currently assumes this in defining table_name)
     if not all([isinstance(x, pd.DataFrame) for x in nwb_objects]):
@@ -454,7 +454,7 @@ def trial_duration_from_params_table(trials_table, column_name, param_name):
 
 
 def format_path_name(path_name):
-    from src.jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
+    from jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
     split_char = RewardWellPath._join_well_char()
     return path_name.replace(split_char, "-").replace("_well", "")
 
@@ -1036,9 +1036,9 @@ def get_param_defaults_map():
 
     # Local import to avoid circular import error
     os.chdir("/home/jguidera/Src/jguides_2024/")
-    from src.jguides_2024.position_and_maze.jguidera_ppt import PptParams
-    from src.jguides_2024.spikes.jguidera_unit import EpsUnitsParams
-    from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+    from jguides_2024.position_and_maze.jguidera_ppt import PptParams
+    from jguides_2024.spikes.jguidera_unit import EpsUnitsParams
+    from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
     default_curation_id = 3
 
     return {"position_info_param_name": "default",
@@ -1112,7 +1112,7 @@ def convert_path_name(path_name):
     :return: path name in string form (if tuple form passed), or in tuple form (if string form passed)
     """
 
-    from src.jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
+    from jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
     split_char = RewardWellPath._join_well_char()
 
     if isinstance(path_name, tuple):
@@ -1148,7 +1148,7 @@ def extract_from_path_name(path_name, extract_name=False, verbose=False):
     end_well_name = end_well_plus_descriptor_tuple[0] + split_char
 
     # ...Check that end well name valid
-    from src.jguides_2024.position_and_maze.jguidera_maze import RewardWell
+    from jguides_2024.position_and_maze.jguidera_maze import RewardWell
     check_membership([end_well_name], (
             RewardWell & {"universal_track_graph_name": "fork_maze_universal"}).fetch1("well_names"))
 
@@ -1247,7 +1247,7 @@ def add_upstream_res_set_params(kwargs):
     # making multiple keys from passed key, and looping through.
 
     # Local imports to avoid circular import error
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams, ResTimeBinsPoolSel
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams, ResTimeBinsPoolSel
 
     key = kwargs.pop("key", None)
 
@@ -1300,7 +1300,7 @@ def fetch1_dataframes_across_epochs(table, key, axis=0):
     # Concatenate dfs across epochs
 
     # Assemble keys, one for each epoch/res_epoch_time_bins_pool_param_name pair
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
     keys = ResTimeBinsPoolCohortParams().get_keys_with_cohort_params(key)
     # Get dfs across epochs
     dfs_objs = [(table & key).fetch1_dataframes() for key in keys]
@@ -1366,7 +1366,7 @@ def scrappy_clean(sel_table, main_table, safemode=True):
 
 def get_table_curation_names_for_key(table, key):
 
-    from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
+    from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
 
     # Get curation names relevant to a key
     if "curation_name" in key:

@@ -4,8 +4,8 @@ import pickle
 
 import numpy as np
 
-from src.jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
-from src.jguides_2024.utils.plot_helpers import get_default_plot_save_dir
+from jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
+from jguides_2024.utils.plot_helpers import get_default_plot_save_dir
 
 
 def pickle_file(data, file_name, save_dir=None, overwrite=False):

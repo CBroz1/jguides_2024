@@ -6,31 +6,31 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase, SecKeyParamsBase, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase, SecKeyParamsBase, \
     PartBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     format_nwb_file_name, \
     get_table_object_id_name, insert1_print, \
     add_upstream_res_set_params, delete_, get_unit_name, get_key_filter, get_table_curation_names_for_key
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
-from src.jguides_2024.spikes.datajoint_spikes_table_helpers import plot_smoothed_spikes_table_result, \
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
+from jguides_2024.spikes.datajoint_spikes_table_helpers import plot_smoothed_spikes_table_result, \
     firing_rate_across_sort_groups, \
     firing_rate_across_sort_groups_epochs
-from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel, _get_kernel_standard_deviations
-from src.jguides_2024.time_and_trials.jguidera_res_set import ResSet, ResSetParams
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins import ResEpochTimeBins
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel, ResTimeBinsPool, \
+from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel, _get_kernel_standard_deviations
+from jguides_2024.time_and_trials.jguidera_res_set import ResSet, ResSetParams
+from jguides_2024.time_and_trials.jguidera_res_time_bins import ResEpochTimeBins
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel, ResTimeBinsPool, \
     populate_jguidera_res_time_bins_pool
-from src.jguides_2024.time_and_trials.jguidera_time_bins import EpochTimeBinsParams
-from src.jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolCohortParams
-from src.jguides_2024.utils.convolve_point_process import convolve_point_process_efficient
-from src.jguides_2024.utils.df_helpers import get_empty_df, df_from_data_list, zip_df_columns
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.plot_helpers import plot_intervals, format_ax
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool, event_times_in_intervals, \
+from jguides_2024.time_and_trials.jguidera_time_bins import EpochTimeBinsParams
+from jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolCohortParams
+from jguides_2024.utils.convolve_point_process import convolve_point_process_efficient
+from jguides_2024.utils.df_helpers import get_empty_df, df_from_data_list, zip_df_columns
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.plot_helpers import plot_intervals, format_ax
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool, event_times_in_intervals, \
     bins_in_intervals
-from src.jguides_2024.utils.vector_helpers import check_all_unique
+from jguides_2024.utils.vector_helpers import check_all_unique
 
 # Needed for table definitions:
 nd
@@ -109,7 +109,7 @@ class ResEpochSpikeCountsSel(SelBase):
         # First get param names
         res_time_bins_pool_param_names = []
         # 1) GLM analysis
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_param  # necessary to avoid circular import
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_param  # necessary to avoid circular import
         res_time_bins_pool_param_names += get_glm_default_param("res_time_bins_pool_param_names")
         # 2) Correlation analysis
         res_time_bins_pool_param_names += [
@@ -204,7 +204,7 @@ class ResEpochSpikeCounts(ComputedBase):
         return df[valid_bool]
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.glm.jguidera_el_net import ElNetSel
+        from jguides_2024.glm.jguidera_el_net import ElNetSel
         # Add curation_name if not present but params to define it are. Helps ensure only relevant entries for key
         # are deleted
         key = copy.deepcopy(key)
@@ -491,7 +491,7 @@ class ResEpochSpikesSmDsParams(SecKeyParamsBase):
         # if "res_time_bins_pool_param_name" not in key and
 
         # Add curation name if not present
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVecSel
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVecSel
         curation_names = get_table_curation_names_for_key(self, key)
         keys = [key]
         if curation_names is not None:
@@ -595,6 +595,6 @@ def populate_jguidera_res_spikes(
 
 
 def drop_jguidera_res_spikes():
-    from src.jguides_2024.glm.jguidera_el_net import drop_jguidera_el_net
+    from jguides_2024.glm.jguidera_el_net import drop_jguidera_el_net
     drop_jguidera_el_net()
     schema.drop()

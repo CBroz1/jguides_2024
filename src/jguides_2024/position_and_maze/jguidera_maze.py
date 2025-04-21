@@ -7,29 +7,29 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from spyglass.common.common_position import TrackGraph
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, SecKeyParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, SecKeyParamsBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
     insert1_print, populate_insert, \
     convert_path_names, fetch1_dataframe_from_table_entry, get_table_secondary_key_names, convert_path_name, \
     fetch_entries_as_dict
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_environments
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.position_and_maze.make_fork_maze_track_graph import make_fork_maze_track_graph, \
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_environments
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.position_and_maze.make_fork_maze_track_graph import make_fork_maze_track_graph, \
     simulate_fork_maze
-from src.jguides_2024.task_event.jguidera_task_performance import ContingencyActiveContingenciesMap, \
+from jguides_2024.task_event.jguidera_task_performance import ContingencyActiveContingenciesMap, \
     AlternationTaskWellIdentities, \
     AlternationTaskRule
-from src.jguides_2024.utils.array_helpers import array_to_tuple_list
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.df_helpers import (df_filter_columns, df_filter1_columns, df_pop)
-from src.jguides_2024.utils.dict_helpers import pairs_keys_same_value, pairs_keys_different_value
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
-from src.jguides_2024.utils.make_bins import make_int_bin_edges
-from src.jguides_2024.utils.plot_helpers import plot_text_color
-from src.jguides_2024.utils.set_helpers import check_set_equality, check_membership
-from src.jguides_2024.utils.string_helpers import abbreviate_join_strings, get_even_odd_text
-from src.jguides_2024.utils.tuple_helpers import add_reversed_pairs
-from src.jguides_2024.utils.vector_helpers import check_range_within, unpack_single_element, unique_in_order
+from jguides_2024.utils.array_helpers import array_to_tuple_list
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.df_helpers import (df_filter_columns, df_filter1_columns, df_pop)
+from jguides_2024.utils.dict_helpers import pairs_keys_same_value, pairs_keys_different_value
+from jguides_2024.utils.list_helpers import zip_adjacent_elements
+from jguides_2024.utils.make_bins import make_int_bin_edges
+from jguides_2024.utils.plot_helpers import plot_text_color
+from jguides_2024.utils.set_helpers import check_set_equality, check_membership
+from jguides_2024.utils.string_helpers import abbreviate_join_strings, get_even_odd_text
+from jguides_2024.utils.tuple_helpers import add_reversed_pairs
+from jguides_2024.utils.vector_helpers import check_range_within, unpack_single_element, unique_in_order
 
 schema = dj.schema("jguidera_maze")  # define custom schema
 
@@ -339,7 +339,7 @@ class UniversalTrackGraphAnnotations(dj.Manual):
 
 
 def _plot_track_graph(track_graph_parameters, ax):
-    from src.jguides_2024.position_and_maze.make_fork_maze_track_graph import make_track_graph
+    from jguides_2024.position_and_maze.make_fork_maze_track_graph import make_track_graph
     track_graph = make_track_graph(node_names=track_graph_parameters["node_names"],
                                    node_positions=track_graph_parameters["node_positions"],
                                    edge_list=track_graph_parameters["edges"])
@@ -1189,7 +1189,7 @@ class MazePathWell:
                                             {"contingency": contingency}).fetch1("active_contingencies")
         home_well_names = [AlternationTaskWellIdentities().get_well_name("home_well", active_contingency)
                            for active_contingency in potential_active_contingencies]
-        from src.jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
+        from jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
         split_char = RewardWellPath._join_well_char()
         path_names = {home_well_name: [path_name for path_name in cls.get_rewarded_path_names(contingency=contingency)
                 if path_name.split(split_char)[position] == home_well_name] for home_well_name in home_well_names}

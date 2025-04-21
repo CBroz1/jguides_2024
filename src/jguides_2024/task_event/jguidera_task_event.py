@@ -3,13 +3,13 @@ import datajoint as dj
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.task_event.jguidera_dio_event import (PumpDiosComplete, ProcessedDioEvents,
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.task_event.jguidera_dio_event import (PumpDiosComplete, ProcessedDioEvents,
                                                             populate_jguidera_dio_event)
-from src.jguides_2024.task_event.jguidera_statescript_event import ProcessedStatescriptEvents
+from jguides_2024.task_event.jguidera_statescript_event import ProcessedStatescriptEvents
 
 # Needed for table definitions
 ProcessedStatescriptEvents

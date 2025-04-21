@@ -4,17 +4,17 @@ import pandas as pd
 import scipy as sp
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, PartBase, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, PartBase, \
     AcrossFRVecTypeTableSelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     insert1_print, delete_
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import FRDiffVec, \
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import FRDiffVec, \
     populate_jguidera_firing_rate_difference_vector, \
     FRDiffVecParams
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import FRVecEucDist
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import FRVecEucDist
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnits
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
 
 # Needed for table definitions:
 ResTimeBinsPoolCohortParams
@@ -149,7 +149,7 @@ class FRDiffVecCosSim(ComputedBase):
             n_neighbors, nn_restrictions, state_restrictions, populate_tables), axis=0)
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import \
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import \
             FRDiffVecCosSimPptNnAveSel
         delete_(self, [FRDiffVecCosSimPptNnAveSel], key, safemode)
 

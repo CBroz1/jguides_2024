@@ -1,12 +1,12 @@
 import datajoint as dj
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     get_schema_table_names_from_file, \
     populate_insert
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file
-from src.jguides_2024.datajoint_nwb_utils.unpack_nwbf import get_epoch_timestamps_nwbf
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file
+from jguides_2024.datajoint_nwb_utils.unpack_nwbf import get_epoch_timestamps_nwbf
 
 schema = dj.schema("jguidera_timestamps")
 

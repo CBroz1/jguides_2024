@@ -2,17 +2,17 @@ import copy
 
 import datajoint as dj
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, \
     get_table_column_names, delete_
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_epoch_keys
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohort, \
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_epoch_keys
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohort, \
     ResTimeBinsPoolCohortParams, ResTimeBinsPoolSel
-from src.jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolEpsCohort, TrialsPool
-from src.jguides_2024.utils.df_helpers import zip_df_columns, df_filter_columns
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals as in_intervals
+from jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolEpsCohort, TrialsPool
+from jguides_2024.utils.df_helpers import zip_df_columns, df_filter_columns
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals as in_intervals
 
 schema = dj.schema("jguidera_condition_trials")
 
@@ -72,7 +72,7 @@ class ConditionTrialsSel(SelBase):
 
         # Loop through path / delay period using GLM params
         keys = []
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params
         for shorthand_param_name, condition_name in zip(
                 get_glm_default_params(["path_time_bins_shorthand", "delay_time_bins_shorthand"], as_dict=False),
                                         ["path_names", "well_names"]):
@@ -93,7 +93,7 @@ class ConditionTrialsSel(SelBase):
         return keys
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.time_and_trials.jguidera_cross_validation_pool import TrainTestSplitPool
+        from jguides_2024.time_and_trials.jguidera_cross_validation_pool import TrainTestSplitPool
         delete_(self, [TrainTestSplitPool], key, safemode)
 
 
@@ -153,7 +153,7 @@ def populate_jguidera_condition_trials(key=None, tolerate_error=False, populate_
 
 
 def drop_jguidera_condition_trials():
-    from src.jguides_2024.time_and_trials.jguidera_leave_one_out_condition_trials_cross_validation import \
+    from jguides_2024.time_and_trials.jguidera_leave_one_out_condition_trials_cross_validation import \
         drop_jguidera_leave_one_out_condition_trials_cross_validation
     drop_jguidera_leave_one_out_condition_trials_cross_validation()
     schema.drop()

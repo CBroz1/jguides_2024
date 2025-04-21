@@ -1,12 +1,12 @@
 import datajoint as dj
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import \
+from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import \
     insert_cross_validation_table
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
     populate_insert, get_table_secondary_key_names
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohort
-from src.jguides_2024.utils.cross_validation_helpers import CrossValidate
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohort
+from jguides_2024.utils.cross_validation_helpers import CrossValidate
 
 schema_name = "jguidera_kfold_cross_validation"
 schema = dj.schema(schema_name)

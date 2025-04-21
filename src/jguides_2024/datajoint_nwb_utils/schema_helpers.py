@@ -1,8 +1,8 @@
 import copy
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
     populate_insert
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
 
 
 def populate_schema(schema_name, key=None, tolerate_error=False, upstream_schema_populate_fn_list=None,

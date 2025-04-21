@@ -15,15 +15,15 @@ from spyglass.spikesorting.v0.spikesorting_artifact import (ArtifactDetectionSel
 from spyglass.spikesorting.v0.spikesorting_recording import SpikeSortingRecording
 from spyglass.utils.nwb_helper_fn import get_valid_intervals
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import make_param_name
-from src.jguides_2024.spike_sorting_curation.jguidera_spikesorting import SpikeSortingRecordingCohort, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import make_param_name
+from jguides_2024.spike_sorting_curation.jguidera_spikesorting import SpikeSortingRecordingCohort, \
     SpikeSortingRecordingCohortParams
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.plot_helpers import format_ax
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import check_all_unique
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.plot_helpers import format_ax
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import check_all_unique
 
 schema = dj.schema("jguidera_artifact")
 
@@ -146,7 +146,7 @@ def _visualize_artifacts_wrapper(traces,
                                  plot_trace_idxs_artifacts=None,
                                  downsample_factor=50):  # for plot of all time. 1 = no downsampling)
 
-    from src.jguides_2024.utils.vector_helpers import index_if_not_none, expand_interval
+    from jguides_2024.utils.vector_helpers import index_if_not_none, expand_interval
     if plot_trace_idxs_all_time is None:
         plot_trace_idxs_all_time = [0]
     if plot_trace_idxs_artifacts is None:

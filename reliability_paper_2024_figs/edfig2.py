@@ -7,19 +7,19 @@ import pandas as pd
 # Import custom datajoint tables
 analysis_dir = '/home/jguidera/Src/jguides_2024'
 os.chdir(analysis_dir)
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_thesis_nwb_file_names, format_brain_region, \
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_thesis_nwb_file_names, format_brain_region, \
     get_subject_id_shorthand, get_subject_id
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import format_nwb_file_name
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionColor, BrainRegionCohort
-from src.jguides_2024.metadata.jguidera_epoch import RunEpoch
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams
-from src.jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns
-from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
-from src.jguides_2024.utils.plot_helpers import format_ax, save_figure
-from src.jguides_2024.utils.stats_helpers import random_sample
-from src.jguides_2024.utils.pca_wrappers import PCAContainer
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import format_nwb_file_name
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionColor, BrainRegionCohort
+from jguides_2024.metadata.jguidera_epoch import RunEpoch
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams
+from jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns
+from jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
+from jguides_2024.utils.plot_helpers import format_ax, save_figure
+from jguides_2024.utils.stats_helpers import random_sample
+from jguides_2024.utils.pca_wrappers import PCAContainer
 
 
 # Define parameters

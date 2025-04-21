@@ -17,22 +17,22 @@ from spyglass.spikesorting.v0.spikesorting_sorting import SpikeSorting
 from spyglass.spikesorting.v0.sortingview import SortingviewWorkspace
 from spyglass.spikesorting.v0.spikesorting_curation import (CuratedSpikeSorting, Waveforms, WaveformSelection)
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import format_nwb_file_name, make_params_string
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import nwbf_name_from_subject_id_date
-from src.jguides_2024.metadata.jguidera_brain_region import SortGroupTargetedLocation
-from src.jguides_2024.metadata.jguidera_epoch import RunEpoch, SleepEpoch
-from src.jguides_2024.spike_sorting_curation.jguidera_spikesorting import return_spikesorting_params, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import format_nwb_file_name, make_params_string
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import nwbf_name_from_subject_id_date
+from jguides_2024.metadata.jguidera_brain_region import SortGroupTargetedLocation
+from jguides_2024.metadata.jguidera_epoch import RunEpoch, SleepEpoch
+from jguides_2024.spike_sorting_curation.jguidera_spikesorting import return_spikesorting_params, \
     get_default_waveform_params_name
-from src.jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
-from src.jguides_2024.utils.array_helpers import mask_upper_diagonal
-from src.jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.client_helpers import get_google_spreadsheet
-from src.jguides_2024.utils.df_helpers import zip_df_columns
-from src.jguides_2024.utils.parallelization_helpers import show_error
-from src.jguides_2024.utils.plot_helpers import add_colorbar, format_ax, get_fig_axes, get_ax_for_layout, \
+from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
+from jguides_2024.utils.array_helpers import mask_upper_diagonal
+from jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.client_helpers import get_google_spreadsheet
+from jguides_2024.utils.df_helpers import zip_df_columns
+from jguides_2024.utils.parallelization_helpers import show_error
+from jguides_2024.utils.plot_helpers import add_colorbar, format_ax, get_fig_axes, get_ax_for_layout, \
     plot_spanning_line
-from src.jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_element, overlap
+from jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_element, overlap
 
 
 def _convert_curation_spreadsheet_dtype(row, column_name):

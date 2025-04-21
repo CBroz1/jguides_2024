@@ -3,17 +3,17 @@
 import datajoint as dj
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import make_well_trial_table_fr_df, \
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import make_well_trial_table_fr_df, \
     make_well_single_trial_table_fr_df, \
     insert_firing_rate_map_unique_well_table, \
     insert_single_trial_firing_rate_map_smoothed_well_table, get_bin_centers_name
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, FrmapBase, FrmapSmBase, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, FrmapBase, FrmapSmBase, \
     TemporalFrmapParamsBase, TemporalFrmapSmParamsBase, SelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (insert_analysis_table_entry,
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (insert_analysis_table_entry,
                                                                           get_schema_table_names_from_file,
                                                                           populate_insert)
-from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
-from src.jguides_2024.task_event.jguidera_dio_trials import (DioWellArrivalTrials, DioWellArrivalTrialsParams)
+from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
+from jguides_2024.task_event.jguidera_dio_trials import (DioWellArrivalTrials, DioWellArrivalTrialsParams)
 
 # Needed for table definitions:
 nd

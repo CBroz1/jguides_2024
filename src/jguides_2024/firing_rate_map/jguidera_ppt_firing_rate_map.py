@@ -6,21 +6,21 @@ import pandas as pd
 import scipy as sp
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import smooth_datajoint_table_fr, get_bin_centers_name
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import FrmapSmBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (SecKeyParamsBase, SelBase, ComputedBase, FrmapBase)
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (plot_datajoint_table_rate_map, get_table_object_id_name,
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import smooth_datajoint_table_fr, get_bin_centers_name
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import FrmapSmBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (SecKeyParamsBase, SelBase, ComputedBase, FrmapBase)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (plot_datajoint_table_rate_map, get_table_object_id_name,
                                                                           insert_analysis_table_entry, get_schema_table_names_from_file, populate_insert)
-from src.jguides_2024.utils.df_helpers import df_filter_columns, unpack_df_columns, get_empty_df
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDATrials
-from src.jguides_2024.metadata.jguidera_epoch import DistinctRunEpochPair, RunEpochPair
-from src.jguides_2024.position_and_maze.jguidera_maze import ForkMazeRewardWellPathPair
-from src.jguides_2024.position_and_maze.jguidera_ppt import PptParams, Ppt, PptBinEdges, populate_jguidera_ppt
-from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
-from src.jguides_2024.utils.list_helpers import duplicate_elements
-from src.jguides_2024.utils.make_rate_map import make_1D_rate_map_measurement_bouts
-from src.jguides_2024.utils.tuple_helpers import unzip_as_list
-from src.jguides_2024.utils.vector_helpers import vector_midpoints, vectors_finite_idxs, overlap
+from jguides_2024.utils.df_helpers import df_filter_columns, unpack_df_columns, get_empty_df
+from jguides_2024.task_event.jguidera_dio_trials import DioWellDATrials
+from jguides_2024.metadata.jguidera_epoch import DistinctRunEpochPair, RunEpochPair
+from jguides_2024.position_and_maze.jguidera_maze import ForkMazeRewardWellPathPair
+from jguides_2024.position_and_maze.jguidera_ppt import PptParams, Ppt, PptBinEdges, populate_jguidera_ppt
+from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
+from jguides_2024.utils.list_helpers import duplicate_elements
+from jguides_2024.utils.make_rate_map import make_1D_rate_map_measurement_bouts
+from jguides_2024.utils.tuple_helpers import unzip_as_list
+from jguides_2024.utils.vector_helpers import vector_midpoints, vectors_finite_idxs, overlap
 
 # Needed for table definitions:
 PptParams

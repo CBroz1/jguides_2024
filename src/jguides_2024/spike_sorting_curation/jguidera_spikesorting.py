@@ -8,14 +8,14 @@ from spyglass.spikesorting.v0.spikesorting_recording import (
 from spyglass.spikesorting.v0.spikesorting_curation import (
     CuratedSpikeSorting, WaveformParameters, AutomaticCurationParameters, MetricParameters, SortInterval)
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
     populate_insert, split_curation_name
-from src.jguides_2024.metadata.jguidera_brain_region import SortGroupTargetedLocation
-from src.jguides_2024.metadata.jguidera_epoch import RunEpoch
-from src.jguides_2024.time_and_trials.define_interval_list import NewIntervalList
-from src.jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
-from src.jguides_2024.utils.vector_helpers import check_all_unique
+from jguides_2024.metadata.jguidera_brain_region import SortGroupTargetedLocation
+from jguides_2024.metadata.jguidera_epoch import RunEpoch
+from jguides_2024.time_and_trials.define_interval_list import NewIntervalList
+from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
+from jguides_2024.utils.vector_helpers import check_all_unique
 
 schema = dj.schema("jguidera_spikesorting")
 
@@ -178,13 +178,13 @@ def return_spikesorting_params():
     for region in ["CA1"]:
         parameter_set_dict["sorter_params_name"][region] = "franklab_tetrode_hippocampus_30KHz"
         parameter_set_dict["preproc_params_name"][region] = "franklab_tetrode_hippocampus_min_seg"
-        from src.jguides_2024.spike_sorting_curation.jguidera_artifact import \
+        from jguides_2024.spike_sorting_curation.jguidera_artifact import \
             ArtifactDetectionAcrossSortGroupsParams  # local import to avoid circular import
         parameter_set_dict["artifact"][region] = ArtifactDetectionAcrossSortGroupsParams().get_default_param_name()
     for region in ["mPFC", "OFC", "Cortex"]:
         parameter_set_dict["sorter_params_name"][region] = "franklab_probe_ctx_30KHz_115rad_30clip"
         parameter_set_dict["preproc_params_name"][region] = "default_min_seg"
-        from src.jguides_2024.spike_sorting_curation.jguidera_artifact import return_global_artifact_detection_params
+        from jguides_2024.spike_sorting_curation.jguidera_artifact import return_global_artifact_detection_params
         parameter_set_dict["artifact"][region] = list(return_global_artifact_detection_params().keys())[0]
 
     # Same param for all regions
@@ -199,7 +199,7 @@ def print_sort_groups_CuratedSpikeSorting(nwb_file_names=None,
                                           sort_interval_name="raw data valid times no premaze no home",
                                           sorter="mountainsort4"):
     if nwb_file_names is None:
-        from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
+        from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
         nwb_file_names = get_jguidera_nwbf_names(high_priority=True, highest_priority=False)
     for nwb_file_name in nwb_file_names:
         sort_group_ids = np.sort((CuratedSpikeSorting & {"nwb_file_name": nwb_file_name,
@@ -266,11 +266,11 @@ class DefineSortInterval:
 
     def get_sort_interval_obj(self):
         # Populate premaze durations table in case needed
-        from src.jguides_2024.metadata.jguidera_premaze_durations import PremazeDurations
+        from jguides_2024.metadata.jguidera_premaze_durations import PremazeDurations
         PremazeDurations().insert_defaults()
 
         # Define sort interval
-        from src.jguides_2024.time_and_trials.define_interval_list import NewIntervalList
+        from jguides_2024.time_and_trials.define_interval_list import NewIntervalList
         obj = NewIntervalList(
             starting_interval_list_names=self.starting_interval_list_names,
             nwb_file_name=self.nwb_file_name,

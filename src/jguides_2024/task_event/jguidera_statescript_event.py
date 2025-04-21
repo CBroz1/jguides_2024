@@ -6,18 +6,18 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from spyglass.common import StateScriptFile
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     insert1_print
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_environments
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import events_in_epoch_bool
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.task_event.jguidera_dio_event import ProcessedDioEvents, PumpDiosComplete
-from src.jguides_2024.time_and_trials.jguidera_timestamps import EpochTimestamps
-from src.jguides_2024.utils.check_well_defined import failed_check
-from src.jguides_2024.utils.df_helpers import unpack_df_columns, df_filter_columns
-from src.jguides_2024.utils.vector_helpers import match_increasing_elements, unpack_single_element, \
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_environments
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import events_in_epoch_bool
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.task_event.jguidera_dio_event import ProcessedDioEvents, PumpDiosComplete
+from jguides_2024.time_and_trials.jguidera_timestamps import EpochTimestamps
+from jguides_2024.utils.check_well_defined import failed_check
+from jguides_2024.utils.df_helpers import unpack_df_columns, df_filter_columns
+from jguides_2024.utils.vector_helpers import match_increasing_elements, unpack_single_element, \
     remove_repeat_elements
 
 schema = dj.schema("jguidera_statescript_event")

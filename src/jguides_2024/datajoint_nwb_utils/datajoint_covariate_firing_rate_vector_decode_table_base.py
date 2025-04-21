@@ -5,24 +5,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     PopulationAnalysisSelBase, PathWellFRVecSummBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, ParamsBase, SecKeyParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, ParamsBase, SecKeyParamsBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, insert_analysis_table_entry, \
     insert1_print, get_table_secondary_key_names, get_table_name
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_nwb_file_name_epochs_description
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription, RecordingSet
-from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell
-from src.jguides_2024.utils.df_helpers import df_filter_columns, df_from_data_list, df_pop, get_empty_df
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
-from src.jguides_2024.utils.plot_helpers import get_fig_axes, format_ax, get_ax_for_layout
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.tuple_helpers import reverse_pair
-from src.jguides_2024.utils.vector_helpers import unpack_single_element, unique_in_order
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import extract_from_path_name
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_nwb_file_name_epochs_description
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription, RecordingSet
+from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
+from jguides_2024.utils.df_helpers import df_filter_columns, df_from_data_list, df_pop, get_empty_df
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
+from jguides_2024.utils.plot_helpers import get_fig_axes, format_ax, get_ax_for_layout
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.tuple_helpers import reverse_pair
+from jguides_2024.utils.vector_helpers import unpack_single_element, unique_in_order
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import extract_from_path_name
 
 
 # This function must be defined in module and not be a method of a class in order for parallelization to work

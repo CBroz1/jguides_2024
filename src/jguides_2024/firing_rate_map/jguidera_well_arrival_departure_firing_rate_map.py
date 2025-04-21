@@ -1,18 +1,18 @@
 import datajoint as dj
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import make_well_single_trial_table_fr_df, \
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import make_well_single_trial_table_fr_df, \
     insert_single_trial_firing_rate_map_smoothed_well_table
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, ComputedBase, SelBase, FrmapBase, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, ComputedBase, SelBase, FrmapBase, \
     TemporalFrmapParamsBase, TemporalFrmapSmParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (plot_datajoint_table_rate_map,
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (plot_datajoint_table_rate_map,
                                                                           insert_analysis_table_entry, get_schema_table_names_from_file, populate_insert)
-from src.jguides_2024.utils.df_helpers import unique_df_column_sets, df_filter_columns, zip_df_columns, df_from_data_list
-from src.jguides_2024.task_event.jguidera_dio_trials import (DioWellADTrials,
+from jguides_2024.utils.df_helpers import unique_df_column_sets, df_filter_columns, zip_df_columns, df_from_data_list
+from jguides_2024.task_event.jguidera_dio_trials import (DioWellADTrials,
                                                              DioWellADTrialsParams)
-from src.jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import populate_jguidera_ppt_firing_rate_map
-from src.jguides_2024.time_and_trials.jguidera_warped_axis_bins import WarpedAxisBins, WarpedAxisBinsParams
-from src.jguides_2024.utils.vector_helpers import rescale_1d, vector_midpoints, check_all_unique
+from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import populate_jguidera_ppt_firing_rate_map
+from jguides_2024.time_and_trials.jguidera_warped_axis_bins import WarpedAxisBins, WarpedAxisBinsParams
+from jguides_2024.utils.vector_helpers import rescale_1d, vector_midpoints, check_all_unique
 
 # Imports used in table definition below (do not remove):
 
