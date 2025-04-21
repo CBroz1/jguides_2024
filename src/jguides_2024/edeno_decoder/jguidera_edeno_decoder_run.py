@@ -1245,6 +1245,7 @@ class EdenoDecode(ComputedBase):
 
     def cleanup_lone_files(self):
         # Delete files that have no corresponding table entry
+        prev_dir = os.getcwd()
 
         for storage_params in EDStorageParams().fetch("storage_params"):
 
@@ -1267,9 +1268,11 @@ class EdenoDecode(ComputedBase):
                     os.remove(file_name)
 
                 os.chdir("..")
+        os.chdir(prev_dir)
 
     def cleanup_lone_entries(self, safemode=None):
         # Delete table entries that have no corresponding file
+        prev_dir = os.getcwd()
 
         if safemode is None:
             safemode = True
@@ -1289,6 +1292,8 @@ class EdenoDecode(ComputedBase):
         print(f"Found {len(bad_keys)} bad keys. Deleting...")
         for bad_key in bad_keys:
             (self & bad_key).delete(safemode=safemode)
+
+        os.chdir(prev_dir)
 
     def cleanup_lone(self, safemode=None):
         # Delete files that have no corresponding table entry, and delete table entries that have no corresponpding

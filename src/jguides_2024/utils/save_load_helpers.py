@@ -9,21 +9,27 @@ from jguides_2024.utils.plot_helpers import get_default_plot_save_dir
 
 
 def pickle_file(data, file_name, save_dir=None, overwrite=False):
+    prev_dir = os.getcwd()
     if save_dir is not None:
         os.chdir(save_dir)  # change to directory where want to save file
     print(f"saving {file_name}")
     if os.path.exists(file_name) and not overwrite:
         raise Exception(f"{file_name} already exists at {os.getcwd()}")
     pickle.dump(data, open(file_name, "wb"))  # save data
+    os.chdir(prev_dir)  # change back to directory
 
 
 def unpickle_file(file_name, save_dir=None):
+    prev_dir = os.getcwd()
     if save_dir is not None:
         os.chdir(save_dir)
-    return pickle.load(open(file_name, "rb"))
+    ret = pickle.load(open(file_name, "rb"))
+    os.chdir(prev_dir)  # change back to directory
+    return ret
 
 
 def append_iteration_num_to_file_name(file_name_base, save_dir):
+    prev_dir = os.getcwd()
     # Get files in directory where want to save file
     os.chdir(save_dir)
     dir_file_names = os.listdir()
@@ -33,7 +39,9 @@ def append_iteration_num_to_file_name(file_name_base, save_dir):
     previous_iterations = [int(x.split("_iteration")[-1]) for x in dir_file_names if file_name_base in x]
     if len(previous_iterations) > 0:
         current_iteration = np.max(previous_iterations) + 1
-    return f"{file_name_base}_iteration{current_iteration}"
+    ret = f"{file_name_base}_iteration{current_iteration}"
+    os.chdir(prev_dir)  # change back to directory
+    return ret
 
 
 def get_file_contents(file_name, file_path=None):

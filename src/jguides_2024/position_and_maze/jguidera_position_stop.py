@@ -8,7 +8,6 @@ import pandas as pd
 from spyglass.common import AnalysisNwbfile
 
 # Import custom datajoint tables
-os.chdir("/home/jguidera/Src/jguides_2024/")
 
 from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
 from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \

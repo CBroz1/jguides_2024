@@ -1034,8 +1034,6 @@ def get_default_param(param_name):
 
 def get_param_defaults_map():
 
-    # Local import to avoid circular import error
-    os.chdir("/home/jguidera/Src/jguides_2024/")
     from jguides_2024.position_and_maze.jguidera_ppt import PptParams
     from jguides_2024.spikes.jguidera_unit import EpsUnitsParams
     from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
