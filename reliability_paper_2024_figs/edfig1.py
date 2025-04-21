@@ -6,11 +6,11 @@ import numpy as np
 # Import custom datajoint tables
 analysis_dir = '/home/jguidera/Src/jguides_2024'
 os.chdir(analysis_dir)
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_reliability_paper_nwb_file_names, get_plot_marker
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescriptions, RunEpoch
-from src.jguides_2024.task_event.jguidera_task_performance import AlternationTaskPerformanceStatistics
-from src.jguides_2024.utils.plot_helpers import plot_spanning_line, format_ax, save_figure
+from jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_reliability_paper_nwb_file_names, get_plot_marker
+from jguides_2024.metadata.jguidera_epoch import EpochsDescriptions, RunEpoch
+from jguides_2024.task_event.jguidera_task_performance import AlternationTaskPerformanceStatistics
+from jguides_2024.utils.plot_helpers import plot_spanning_line, format_ax, save_figure
 
 # Define plotting params
 epoch_gap = .2

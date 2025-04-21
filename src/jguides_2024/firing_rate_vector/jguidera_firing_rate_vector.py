@@ -5,23 +5,23 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase, PartBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import unique_table_column_sets, insert1_print, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase, PartBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import unique_table_column_sets, insert1_print, \
     delete_, get_epochs_id
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription, EpochCohort, RunEpoch, EpochsDescriptions
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmDs, populate_jguidera_res_spikes
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits, populate_jguidera_unit, \
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionSortGroup
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription, EpochCohort, RunEpoch, EpochsDescriptions
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmDs, populate_jguidera_res_spikes
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnits, populate_jguidera_unit, \
     BrainRegionUnitsParams, EpsUnitsParams
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel, \
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel, \
     ResTimeBinsPoolCohortParams
-from src.jguides_2024.utils.df_helpers import unpack_single_df, df_filter_columns
-from src.jguides_2024.utils.dict_helpers import check_equality, dict_comprehension
-from src.jguides_2024.utils.list_helpers import check_single_element
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_vector, unpack_single_element
+from jguides_2024.utils.df_helpers import unpack_single_df, df_filter_columns
+from jguides_2024.utils.dict_helpers import check_equality, dict_comprehension
+from jguides_2024.utils.list_helpers import check_single_element
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_vector, unpack_single_element
 
 # Needed for table definitions:
 TaskIdentification
@@ -419,11 +419,11 @@ class FRVec(ComputedBase):
         return pd.Series(np.sum(np.vstack(fr_df["firing_rate"]), axis=0) / len(fr_df), index=time_vector)
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import FRDiffVecCosSimSel
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import FRVecEucDistSel
-        from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import PathFRVecSel
-        from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import TimeRelWAFRVecSel
-        from src.jguides_2024.firing_rate_vector.jguidera_post_delay_firing_rate_vector import RelPostDelFRVecSel
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import FRDiffVecCosSimSel
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import FRVecEucDistSel
+        from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import PathFRVecSel
+        from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import TimeRelWAFRVecSel
+        from jguides_2024.firing_rate_vector.jguidera_post_delay_firing_rate_vector import RelPostDelFRVecSel
         delete_(self, [
             FRDiffVecCosSimSel, FRVecEucDistSel, PathFRVecSel, TimeRelWAFRVecSel, RelPostDelFRVecSel], key, safemode)
 
@@ -437,15 +437,15 @@ def populate_jguidera_firing_rate_vector(
 
 
 def drop_jguidera_firing_rate_vector():
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import \
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import \
         drop_jguidera_firing_rate_difference_vector
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import \
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import \
         drop_jguidera_firing_rate_vector_euclidean_distance
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import \
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_embedding import \
         drop_jguidera_firing_rate_vector_embedding
-    from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import \
+    from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import \
         drop_jguidera_path_firing_rate_vector
-    from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import \
+    from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import \
         drop_jguidera_well_event_firing_rate_vector
 
     drop_jguidera_firing_rate_difference_vector()

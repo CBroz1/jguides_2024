@@ -1,25 +1,27 @@
 import copy
 from collections import namedtuple
 
+from spyglass.common import AnalysisNwbfile
+
 import datajoint as dj
 import numpy as np
 import pandas as pd
 import scipy as sp
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, PartBase, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, PartBase, \
     AcrossFRVecTypeTableSelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     insert1_print, \
     delete_
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec, \
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec, \
     populate_jguidera_firing_rate_vector
-from src.jguides_2024.metadata.jguidera_epoch import EpochCohort
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
-from src.jguides_2024.utils.plot_helpers import plot_heatmap
-from src.jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.metadata.jguidera_epoch import EpochCohort
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnits
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
+from jguides_2024.utils.plot_helpers import plot_heatmap
+from jguides_2024.utils.set_helpers import check_membership
 
 # Needed for table definitions:
 ResTimeBinsPoolCohortParams
@@ -66,7 +68,7 @@ class FRVecEucDist(ComputedBase):
     # Euclidean distance between firing rate vectors
     -> FRVecEucDistSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     fr_euc_dist_object_id : varchar(40)
     time_vector_object_id : varchar(40)
     epoch_vector_object_id : varchar(40)
@@ -250,7 +252,7 @@ def populate_jguidera_firing_rate_vector_euclidean_distance(
 
 
 def drop_jguidera_firing_rate_vector_euclidean_distance():
-    from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import \
+    from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import \
         drop_jguidera_firing_rate_difference_vector_similarity_ave
     drop_jguidera_firing_rate_difference_vector_similarity_ave()
     schema.drop()

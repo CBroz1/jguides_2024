@@ -5,43 +5,43 @@ import numpy as np
 import pandas as pd
 import scipy as sp
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import get_smoothed_fr_table_map
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_unit_name, abbreviate_path_name, \
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import get_smoothed_fr_table_map
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_unit_name, abbreviate_path_name, \
     populate_multiple_flexible_key, \
     abbreviate_path_names, make_params_string
-from src.jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (FrmapPupt,
+from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import (FrmapPupt,
                                                                            FrmapPuptSm)
-from src.jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (FrmapWellArrival,
+from jguides_2024.firing_rate_map.jguidera_well_arrival_firing_rate_map import (FrmapWellArrival,
                                                                                     FrmapWellArrivalSm,
                                                                                     STFrmapWellArrivalSm,
                                                                                     STFrmapWellArrival,
                                                                                     FrmapUniqueWellArrival,
                                                                                     FrmapUniqueWellArrivalSm)
-from src.jguides_2024.metadata.jguidera_brain_region import SortGroupTargetedLocation, CurationSet, \
+from jguides_2024.metadata.jguidera_brain_region import SortGroupTargetedLocation, CurationSet, \
     get_brain_region_from_targeted_location
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.position_and_maze.jguidera_position import IntervalLinearizedPositionRescaled
-from src.jguides_2024.position_and_maze.jguidera_position_stop import StopLikeWellArrival
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.spikes.jguidera_spikes import (EpochSpikeTimesRelabelParams,
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.position_and_maze.jguidera_position import IntervalLinearizedPositionRescaled
+from jguides_2024.position_and_maze.jguidera_position_stop import StopLikeWellArrival
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt
+from jguides_2024.spikes.jguidera_spikes import (EpochSpikeTimesRelabelParams,
                                                      )
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits
-from src.jguides_2024.task_event.jguidera_dio_event import DioEvents, ProcessedDioEvents, PumpDiosComplete
-from src.jguides_2024.task_event.jguidera_dio_trials import (DioWellDDTrials,
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnits
+from jguides_2024.task_event.jguidera_dio_event import DioEvents, ProcessedDioEvents, PumpDiosComplete
+from jguides_2024.task_event.jguidera_dio_trials import (DioWellDDTrials,
                                                              DioWellDATrials,
                                                              DioWellArrivalTrials,
                                                              DioWellArrivalTrialsParams,
                                                              DioWellDepartureTrials, populate_jguidera_dio_trials,
                                                              DioWellDATrialsParams)
-from src.jguides_2024.task_event.jguidera_statescript_event import StatescriptEvents, ProcessedStatescriptEvents
-from src.jguides_2024.task_event.jguidera_task_performance import (AlternationTaskPerformance)
-from src.jguides_2024.utils.df_helpers import df_filter_columns, df_filter_columns_isin, df_filter1_columns, \
+from jguides_2024.task_event.jguidera_statescript_event import StatescriptEvents, ProcessedStatescriptEvents
+from jguides_2024.task_event.jguidera_task_performance import (AlternationTaskPerformance)
+from jguides_2024.utils.df_helpers import df_filter_columns, df_filter_columns_isin, df_filter1_columns, \
     df_from_data_list
-from src.jguides_2024.utils.plot_helpers import plot_spanning_line, get_gridspec_ax_maps, get_plot_idx_map, format_ax
-from src.jguides_2024.utils.plot_helpers import save_figure
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals as in_intervals
-from src.jguides_2024.utils.string_helpers import format_optional_var
-from src.jguides_2024.utils.vector_helpers import unpack_single_element, check_vectors_equal, merged_combinations, \
+from jguides_2024.utils.plot_helpers import plot_spanning_line, get_gridspec_ax_maps, get_plot_idx_map, format_ax
+from jguides_2024.utils.plot_helpers import save_figure
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals as in_intervals
+from jguides_2024.utils.string_helpers import format_optional_var
+from jguides_2024.utils.vector_helpers import unpack_single_element, check_vectors_equal, merged_combinations, \
     vectors_finite_idxs, unpack_single_vector, overlap
 
 # Tables called with eval (do not remove):

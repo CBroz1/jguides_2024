@@ -5,7 +5,7 @@ import datajoint as dj
 from spyglass.common import Nwbfile, ElectrodeGroup, BrainRegion
 
 # Define schema
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
     populate_insert
 
 schema = dj.schema("jguidera_reference_electrode")

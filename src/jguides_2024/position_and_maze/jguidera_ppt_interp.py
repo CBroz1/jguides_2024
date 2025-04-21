@@ -2,21 +2,23 @@ import datajoint as dj
 import numpy as np
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, CovariateRCB, \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, CovariateRCB, \
     CovariateDigParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     get_key_filter, delete_
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.glm.jguidera_basis_function import RaisedCosineBasis, RaisedCosineBasisParams
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.time_and_trials.jguidera_ppt_trials import populate_jguidera_ppt_trials
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel, \
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.glm.jguidera_basis_function import RaisedCosineBasis, RaisedCosineBasisParams
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt
+from jguides_2024.time_and_trials.jguidera_ppt_trials import populate_jguidera_ppt_trials
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel, \
     ResTimeBinsPool
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import populate_jguidera_res_time_bins_pool
-from src.jguides_2024.utils.basis_function_helpers import sample_basis_functions
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import populate_jguidera_res_time_bins_pool
+from jguides_2024.utils.basis_function_helpers import sample_basis_functions
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.digitize_helpers import digitize_indexed_variable
 
 # These imports are called with eval or used in table definitions (do not remove):
 ResTimeBinsPool
@@ -61,7 +63,7 @@ class PptInterp(ComputedBase):
     # Proportion path traversed interpolated using time bins from ResTimeBinsPool
     -> PptInterpSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_interp_object_id : varchar(40)
     ppt_range : blob  # copied from Ppt for convenience
     """
@@ -104,7 +106,7 @@ class PptInterp(ComputedBase):
 
     def delete_(self, key=None, safemode=True):
         # Delete downstream entries first
-        from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import FRDiffVecCosSimPptNnAve
+        from jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import FRDiffVecCosSimPptNnAve
         delete_(self, [FRDiffVecCosSimPptNnAve], key, safemode)
 
 
@@ -150,7 +152,7 @@ class PptDig(ComputedBase):
     # Digitized interpolated fraction path traversed
     -> PptDigSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_dig_object_id : varchar(40)
     """
 
@@ -189,7 +191,7 @@ class PptRCBSel(SelBase):
         if key_filter is None:
             key_filter = dict()
         # GLM analysis (path)
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params
         default_params = get_glm_default_params(
             ["ppt_dig_param_name", "path_res_time_bins_pool_param_name", "path_raised_cosine_basis_param_name"])
         key_filter = add_defaults(key_filter, default_params, add_nonexistent_keys=True, require_match=True)
@@ -211,7 +213,7 @@ class PptRCB(CovariateRCB):
     # Sampled raised cosine basis, proportion path traversed
     -> PptRCBSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_rcb_df_object_id : varchar(40)
     """
 
@@ -222,7 +224,7 @@ class PptRCB(CovariateRCB):
         insert_analysis_table_entry(self, [ppt_rcb_df], key, reset_index=True)
 
     def delete_(self, key, safemode=False):
-        from src.jguides_2024.glm.jguidera_measurements_interp_pool import XInterpPool
+        from jguides_2024.glm.jguidera_measurements_interp_pool import XInterpPool
         delete_(self, [XInterpPool], key, safemode)
 
 
@@ -235,9 +237,9 @@ def populate_jguidera_ppt_interp(
 
 
 def drop_jguidera_ppt_interp():
-    from src.jguides_2024.glm.jguidera_measurements_interp_pool import drop_jguidera_measurements_interp_pool
-    from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import drop_jguidera_path_firing_rate_vector
-    from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import drop_jguidera_firing_rate_difference_vector_similarity_ave
+    from jguides_2024.glm.jguidera_measurements_interp_pool import drop_jguidera_measurements_interp_pool
+    from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector import drop_jguidera_path_firing_rate_vector
+    from jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import drop_jguidera_firing_rate_difference_vector_similarity_ave
     drop_jguidera_measurements_interp_pool()
     drop_jguidera_path_firing_rate_vector()
     drop_jguidera_firing_rate_difference_vector_similarity_ave()

@@ -7,18 +7,18 @@ from matplotlib.patches import Rectangle
 
 # Import custom datajoint tables
 os.chdir("/home/jguidera/Src/jguides_2024/")
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrials, DioWellArrivalTrialsParams, DioWellDDTrials
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort
-from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell
-from src.jguides_2024.utils.plot_helpers import get_figsize, plot_spanning_line, save_figure, format_ax
-from src.jguides_2024.spikes.plot_spike_times import plot_spike_times
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_wrappers import order_units_by_trial_segments_fr
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionColor
-from src.jguides_2024.utils.vector_helpers import expand_interval
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import format_brain_region, get_nwb_file_name_epoch_text
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_unit_name
-from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
+from jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrials, DioWellArrivalTrialsParams, DioWellDDTrials
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort
+from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
+from jguides_2024.utils.plot_helpers import get_figsize, plot_spanning_line, save_figure, format_ax
+from jguides_2024.spikes.plot_spike_times import plot_spike_times
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_wrappers import order_units_by_trial_segments_fr
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionColor
+from jguides_2024.utils.vector_helpers import expand_interval
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import format_brain_region, get_nwb_file_name_epoch_text
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_unit_name
+from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
 
 
 # Plot trial raster with units from each brain region

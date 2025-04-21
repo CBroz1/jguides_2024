@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.jguides_2024.utils.plot_helpers import format_ax
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals
+from jguides_2024.utils.plot_helpers import format_ax
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals
 
 
 def plot_spike_times(spike_times_list, min_spike_count=None, scale_spike_idxs=1, ax=None, xlims=None, colors=None,

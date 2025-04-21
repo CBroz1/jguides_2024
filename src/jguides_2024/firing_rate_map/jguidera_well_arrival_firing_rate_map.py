@@ -3,17 +3,19 @@
 import datajoint as dj
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import make_well_trial_table_fr_df, \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_helpers import make_well_trial_table_fr_df, \
     make_well_single_trial_table_fr_df, \
     insert_firing_rate_map_unique_well_table, \
     insert_single_trial_firing_rate_map_smoothed_well_table, get_bin_centers_name
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, FrmapBase, FrmapSmBase, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, FrmapBase, FrmapSmBase, \
     TemporalFrmapParamsBase, TemporalFrmapSmParamsBase, SelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (insert_analysis_table_entry,
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import (insert_analysis_table_entry,
                                                                           get_schema_table_names_from_file,
                                                                           populate_insert)
-from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
-from src.jguides_2024.task_event.jguidera_dio_trials import (DioWellArrivalTrials, DioWellArrivalTrialsParams)
+from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimesRelabel
+from jguides_2024.task_event.jguidera_dio_trials import (DioWellArrivalTrials, DioWellArrivalTrialsParams)
 
 # Needed for table definitions:
 nd
@@ -51,7 +53,7 @@ class FrmapWellArrival(FrmapBase):
     # Firing rate as a function of time relative to well arrival
     -> FrmapWellArrivalSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     frmap_well_arrival_object_id : varchar(40)
     """
 
@@ -71,7 +73,7 @@ class FrmapUniqueWellArrival(ComputedBase):
     -> FrmapWellArrivalParams
     well_name : varchar(40)
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     frmap_unique_well_arrival_object_id : varchar(40)
     """
 
@@ -100,7 +102,7 @@ class FrmapWellArrivalSm(FrmapSmBase):
     -> FrmapWellArrival
     -> FrmapWellArrivalSmParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     frmap_well_arrival_sm_object_id : varchar(80)
     """
 
@@ -116,7 +118,7 @@ class FrmapUniqueWellArrivalSm(FrmapSmBase):
     -> FrmapUniqueWellArrival
     -> FrmapWellArrivalSmParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     frmap_unique_well_arrival_sm_object_id : varchar(80)
     """
 
@@ -127,13 +129,13 @@ class FrmapUniqueWellArrivalSm(FrmapSmBase):
 
 @schema
 class STFrmapWellArrival(ComputedBase):
-    definition = """ 
+    definition = """
     # Firing rate as a function of time relative to well arrival on single trials
     -> DioWellArrivalTrials
     -> EpochSpikeTimesRelabel
     -> FrmapWellArrivalParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     st_frmap_well_arrival_object_id : varchar(40)
     """
 
@@ -154,7 +156,7 @@ class STFrmapWellArrivalSm(ComputedBase):
     -> STFrmapWellArrival
     -> FrmapWellArrivalSmParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     st_frmap_well_arrival_sm_object_id : varchar(40)
     """
 

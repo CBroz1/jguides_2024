@@ -5,31 +5,31 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import spyglass as nd
-from spyglass.common import close_nwb_files
+from spyglass.common import close_nwb_files, AnalysisNwbfile
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, \
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, \
     plot_junction_fractions, get_val_pairs
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     PathWellPopSummBase, PopulationAnalysisSecKeyParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, SecKeyParamsBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import populate_insert, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, SecKeyParamsBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import populate_insert, \
     get_schema_table_names_from_file, insert_analysis_table_entry, \
     unique_table_column_sets, get_table_secondary_key_names
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.edeno_decoder.jguidera_edeno_decoder_run import EdenoDecodeParams, EdenoDecode, \
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.edeno_decoder.jguidera_edeno_decoder_run import EdenoDecodeParams, EdenoDecode, \
     EdenoDecodeMAP
-from src.jguides_2024.metadata.jguidera_brain_region import CurationSet, BrainRegionCohort
-from src.jguides_2024.metadata.jguidera_epoch import TrainTestEpoch, TrainTestEpochSet
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsFail, BrainRegionUnitsParams, \
+from jguides_2024.metadata.jguidera_brain_region import CurationSet, BrainRegionCohort
+from jguides_2024.metadata.jguidera_epoch import TrainTestEpoch, TrainTestEpochSet
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsFail, BrainRegionUnitsParams, \
     BrainRegionUnitsCohortType
-from src.jguides_2024.utils.df_helpers import df_from_data_list
-from src.jguides_2024.utils.dict_helpers import check_return_single_dict, add_defaults, return_shared_key_value
-from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
-from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.plot_helpers import format_ax
-from src.jguides_2024.utils.set_helpers import check_set_equality, check_membership
-from src.jguides_2024.utils.string_helpers import format_bool, replace_chars
+from jguides_2024.utils.df_helpers import df_from_data_list
+from jguides_2024.utils.dict_helpers import check_return_single_dict, add_defaults, return_shared_key_value
+from jguides_2024.utils.for_loop_helpers import print_iteration_progress
+from jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.plot_helpers import format_ax
+from jguides_2024.utils.set_helpers import check_set_equality, check_membership
+from jguides_2024.utils.string_helpers import format_bool, replace_chars
 
 schema = dj.schema("jguidera_edeno_decoder_error")
 
@@ -70,7 +70,7 @@ class EdenoDecodeErr(ComputedBase):
     # Decoding errors using edeno Bayesian decoder
     -> EdenoDecodeErrSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     edeno_decode_err_object_id : varchar(40)
     """
 
@@ -403,7 +403,7 @@ class EdenoDecodeErrSumm(PathWellPopSummBase):
     # Summary of decode errors using edeno Bayesian decoder
     -> EdenoDecodeErrSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

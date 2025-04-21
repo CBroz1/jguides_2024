@@ -12,35 +12,35 @@ from matplotlib.colors import rgb2hex
 from scipy.stats import chi2_contingency
 from statannotations.Annotator import Annotator
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import format_brain_region
-from src.jguides_2024.datajoint_nwb_utils.datajoint_fr_table_wrappers import PlotSTFRMap
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import \
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import format_brain_region
+from jguides_2024.datajoint_nwb_utils.datajoint_fr_table_wrappers import PlotSTFRMap
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import \
     abbreviate_path_name as abbreviate_condition_name, get_epochs_id, \
     format_nwb_file_name
-from src.jguides_2024.glm.get_glm_results_df import get_glm_results_df
-from src.jguides_2024.glm.glm_helpers import get_glm_file_name_base, get_glm_params_text
-from src.jguides_2024.glm.jguidera_el_net import ElNetParams
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionColor, BrainRegionCohort
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrialsParams
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
-from src.jguides_2024.utils.df_helpers import df_filter1_columns, df_filter_columns, zip_df_columns, df_pop, \
+from jguides_2024.glm.get_glm_results_df import get_glm_results_df
+from jguides_2024.glm.glm_helpers import get_glm_file_name_base, get_glm_params_text
+from jguides_2024.glm.jguidera_el_net import ElNetParams
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionColor, BrainRegionCohort
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsParams, BrainRegionUnits
+from jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrialsParams
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams
+from jguides_2024.utils.df_helpers import df_filter1_columns, df_filter_columns, zip_df_columns, df_pop, \
     unpack_df_columns, \
     df_filter_columns_greater_than, df_filter_columns_isin, convert_categorical, df_from_data_list, \
     unique_df_column_sets
-from src.jguides_2024.utils.dict_helpers import invert_dict, dict_comprehension, unpack_dicts, unpack_dict, \
+from jguides_2024.utils.dict_helpers import invert_dict, dict_comprehension, unpack_dicts, unpack_dict, \
     add_defaults
-from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
-from src.jguides_2024.utils.list_helpers import element_frequency, check_return_single_element
-from src.jguides_2024.utils.plot_helpers import get_fig_axes, get_ax_for_layout, plot_heatmap, format_ax, \
+from jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
+from jguides_2024.utils.list_helpers import element_frequency, check_return_single_element
+from jguides_2024.utils.plot_helpers import get_fig_axes, get_ax_for_layout, plot_heatmap, format_ax, \
     get_gridspec_ax_maps, \
     get_plot_idx_map, get_ticklabels, save_figure, return_n_cmap_colors, plot_violin_or_box
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.smooth_helpers import smooth_intervals
-from src.jguides_2024.utils.string_helpers import format_bool
-from src.jguides_2024.utils.vector_helpers import overlap_finite_samples, unpack_single_element, check_all_unique
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.smooth_helpers import smooth_intervals
+from jguides_2024.utils.string_helpers import format_bool
+from jguides_2024.utils.vector_helpers import overlap_finite_samples, unpack_single_element, check_all_unique
 
 """
 Currently set up to load results across units and models.

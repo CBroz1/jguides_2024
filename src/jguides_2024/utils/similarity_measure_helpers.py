@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.utils.interval_helpers import apply_merge_close_intervals
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
-from src.jguides_2024.utils.tuple_helpers import index_list_of_tuples, tuples_index_list
-from src.jguides_2024.utils.vector_helpers import find_spans_increasing_list, overlap
+from jguides_2024.utils.interval_helpers import apply_merge_close_intervals
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
+from jguides_2024.utils.tuple_helpers import index_list_of_tuples, tuples_index_list
+from jguides_2024.utils.vector_helpers import find_spans_increasing_list, overlap
 
 
 def mean_vector_around_event(time_series,

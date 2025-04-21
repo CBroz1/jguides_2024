@@ -3,13 +3,13 @@ import itertools
 import numpy as np
 from spyglass.common import IntervalList, TaskEpoch
 
-from src.jguides_2024.metadata.jguidera_premaze_durations import PremazeDurations
-from src.jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
-from src.jguides_2024.utils.exclude_intervals import exclude_intervals
+from jguides_2024.metadata.jguidera_premaze_durations import PremazeDurations
+from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
+from jguides_2024.utils.exclude_intervals import exclude_intervals
 # Note than on 12/3/22 changed widen_exclusion_factor from .001 to .002 , since
 # for J1620210604, small snippet of home session was getting included after exclusion of home sessions
 # with .001 widen_exclusion_factor
-from src.jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.set_helpers import check_membership
 
 
 class NewIntervalList:

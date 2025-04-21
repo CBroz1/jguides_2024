@@ -35,7 +35,7 @@ def exclude_intervals(starting_interval_list, exclude_interval_list):
             new_interval_list.append(valid_interval)
 
     # Plot result for checking
-    from src.jguides_2024.utils.plot_helpers import plot_intervals
+    from jguides_2024.utils.plot_helpers import plot_intervals
     for xlims in [None] + list(starting_interval_list):  # for full set of intervals and for each starting interval
         fig, ax = plt.subplots(figsize=(35, 2))
         _ = plot_intervals(starting_interval_list, ax, color="black", label="original intervals")

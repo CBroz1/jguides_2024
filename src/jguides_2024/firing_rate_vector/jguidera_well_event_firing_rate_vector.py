@@ -5,33 +5,35 @@ import datajoint as dj
 import numpy as np
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecBase, CovariateFRVecSTAveParamsBase, \
     CovariateFRVecAveSelBase, CovariateFRVecTrialAveBase, CovariateFRVecSTAveBase, CovariateFRVecSelBase, \
     CovariateFRVecAveSummSelBase, CovariateFRVecAveSummSecKeyParamsBase, \
     CovariateAveFRVecParamsBase, CovariateFRVecSTAveSummBase, CovariateAveFRVecSummBase, TimeRelWAFRVecSummBase, \
     CovariateFRVecParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, drop_
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, drop_
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_names
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec, \
     populate_jguidera_firing_rate_vector
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription, RunEpoch, RecordingSet
-from src.jguides_2024.position_and_maze.jguidera_maze import MazePathWell
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits, BrainRegionUnitsParams, \
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription, RunEpoch, RecordingSet
+from jguides_2024.position_and_maze.jguidera_maze import MazePathWell
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnits, BrainRegionUnitsParams, \
     BrainRegionUnitsCohortType
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellTrials, DioWellDDTrials
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
-from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADig, \
+from jguides_2024.task_event.jguidera_dio_trials import DioWellTrials, DioWellDDTrials
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
+from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADig, \
     populate_jguidera_time_relative_to_well_event, TimeRelWADigSingleAxis, TimeRelWADigSingleAxisParams, \
     TimeRelWADigParams
-from src.jguides_2024.utils.df_helpers import check_same_index
-from src.jguides_2024.utils.dict_helpers import make_keys
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
-from src.jguides_2024.utils.state_evolution_estimation import AverageVectorDuringLabeledProgression
+from jguides_2024.utils.df_helpers import check_same_index
+from jguides_2024.utils.dict_helpers import make_keys
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
+from jguides_2024.utils.state_evolution_estimation import AverageVectorDuringLabeledProgression
 
 # Needed for table definitions:
 nd
@@ -240,11 +242,11 @@ class TimeRelWAFRVecSel(CovariateFRVecSelBase):
 @schema
 class TimeRelWAFRVec(CovariateFRVecBase):
     definition = """
-    # Firing rate vectors averaged in contiguous stretches in time bins aligned to well arrival 
+    # Firing rate vectors averaged in contiguous stretches in time bins aligned to well arrival
     -> TimeRelWAFRVecSel
     ---
     unit_names : blob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     vector_df_object_id : varchar(40)
     ave_vector_df_object_id : varchar(40)
     diff_vector_df_object_id : varchar(40)
@@ -524,7 +526,7 @@ class TimeRelWAFRVecAveSelBase(CovariateFRVecAveSelBase):
 @schema
 class TimeRelWAFRVecSTAveSel(TimeRelWAFRVecAveSelBase):
     definition = """
-    # Selection from upstream tables for TimeRelWAFRVecSTAve 
+    # Selection from upstream tables for TimeRelWAFRVecSTAve
     -> EpochsDescription
     res_time_bins_pool_param_name : varchar(1000)
     -> TimeRelWADigParams
@@ -576,16 +578,16 @@ class TimeRelWAFRVecAveBase:
 @schema
 class TimeRelWAFRVecSTAve(TimeRelWAFRVecAveBase, CovariateFRVecSTAveBase):
     definition = """
-    # Single 'trial' comparison of firing rate vectors across combinations of time bin and path identity 
+    # Single 'trial' comparison of firing rate vectors across combinations of time bin and path identity
     -> TimeRelWAFRVecSTAveSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     """
 
     class Upstream(dj.Part):
         definition = """
-        # Achieves dependence on upstream tables 
+        # Achieves dependence on upstream tables
         -> TimeRelWAFRVecSTAve
         -> TimeRelWAFRVec
         """
@@ -615,7 +617,7 @@ class TimeRelWAAveFRVecParams(CovariateAveFRVecParamsBase):
 @schema
 class TimeRelWAAveFRVecSel(TimeRelWAFRVecAveSelBase):
     definition = """
-    # Selection from upstream tables for TimeRelWAAveFRVec 
+    # Selection from upstream tables for TimeRelWAAveFRVec
     -> EpochsDescription
     res_time_bins_pool_param_name : varchar(1000)
     -> TimeRelWADigParams
@@ -651,13 +653,13 @@ class TimeRelWAAveFRVec(TimeRelWAFRVecAveBase, CovariateFRVecTrialAveBase):
     # Comparison of average firing rate vectors across combinations of time bin, path identity, and epoch
     -> TimeRelWAAveFRVecSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     """
 
     class Upstream(dj.Part):
         definition = """
-        # Achieves dependence on upstream tables 
+        # Achieves dependence on upstream tables
         -> TimeRelWAAveFRVec
         -> TimeRelWAFRVec
         """
@@ -665,12 +667,12 @@ class TimeRelWAAveFRVec(TimeRelWAFRVecAveBase, CovariateFRVecTrialAveBase):
 
 """
 Notes on TimeRelWAFRVecSTAveSumm table setup:
-- We want to combine entries across TimeRelWAFRVecSTAve, across nwb_file_names, epochs_description, 
+- We want to combine entries across TimeRelWAFRVecSTAve, across nwb_file_names, epochs_description,
 and brain_region. For this reason, we want TimeRelWAFRVecSTAveSummSel to have all primary keys of TimeRelWAFRVecSTAve
-except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and 
-curation_name. 
+except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and
+curation_name.
   To specify the nwb_file_names and corresponding epochs_descriptions we want to combine across, we use recording_set.
-  To specify the brain regions we want to combine across, we use brain_region_cohort. 
+  To specify the brain regions we want to combine across, we use brain_region_cohort.
   To specify curation_name, we use curation_set_name.
   To specify brain region unit information, we use BrainRegionUnitsCohortType
 - We include BrainRegionUnitsCohortType in TimeRelWAFRVecSTAveSummParams so that we can stay within the
@@ -714,7 +716,7 @@ class TimeRelWAFRVecSTAveSummSel(CovariateFRVecAveSummSelBase):
     -> TimeRelWAFRVecSTAveSummParams
     ---
     upstream_keys : mediumblob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     df_concat_object_id : varchar(40)
     """
 
@@ -763,7 +765,7 @@ class TimeRelWAFRVecSTAveSumm(CovariateFRVecSTAveSummBase, TimeRelWAFRVecSummBas
     # Summary of single 'trial' comparison of firing rate vectors
     -> TimeRelWAFRVecSTAveSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)
@@ -860,7 +862,7 @@ class TimeRelWAAveFRVecSumm(CovariateAveFRVecSummBase, TimeRelWAFRVecSummBase):
     # Summary of trial average comparison of firing rate vectors
     -> TimeRelWAAveFRVecSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

@@ -11,13 +11,13 @@ from matplotlib.gridspec import GridSpec
 from matplotlib.legend_handler import HandlerTuple
 from statannotations.Annotator import Annotator
 
-from src.jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.dict_helpers import return_n_empty_dicts, add_defaults
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.stats_helpers import return_confidence_interval
-from src.jguides_2024.utils.tuple_helpers import reverse_pair
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.utils.cd_make_if_nonexistent import cd_make_if_nonexistent
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.dict_helpers import return_n_empty_dicts, add_defaults
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.stats_helpers import return_confidence_interval
+from jguides_2024.utils.tuple_helpers import reverse_pair
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 
 def format_ax(ax,
@@ -335,7 +335,7 @@ def save_figure(fig, file_name, figure_type=None, dpi=2000, save_dir=None, save_
 
 
 def plot_histogram(x, bins=None, color="gray", vertical_line_x=None, arrow_at_median=True, ax=None):
-    from src.jguides_2024.utils.make_bins import make_bin_edges
+    from jguides_2024.utils.make_bins import make_bin_edges
     if ax is None:
         fig, ax = plt.subplots()
     if bins is None:
@@ -370,13 +370,13 @@ def plot_spanning_line(
 
 
 def path_name_to_plot_string(path_name):
-    from src.jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
+    from jguides_2024.position_and_maze.jguidera_maze import RewardWellPath
     well1, well2 = path_name.split(RewardWellPath._join_well_char())
     return f"{well1.split('_well')[0]}-{well2.split('_well')[0]}"
 
 
 def plot_true_ranges(ax, valid_bool, x_vals=None, y_val=None, **kwargs):
-    from src.jguides_2024.utils.vector_helpers import find_spans_increasing_list
+    from jguides_2024.utils.vector_helpers import find_spans_increasing_list
 
     # If x values passed, check that same length as valid bool
     if x_vals is not None:

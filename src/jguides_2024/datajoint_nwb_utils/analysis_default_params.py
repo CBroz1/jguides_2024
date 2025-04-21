@@ -1,8 +1,8 @@
 import numpy as np
-from src.jguides_2024.time_and_trials.jguidera_time_bins import EpochTimeBinsParams
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
+from jguides_2024.time_and_trials.jguidera_time_bins import EpochTimeBinsParams
+from jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
 
-from src.jguides_2024.utils.dict_helpers import dict_comprehension
+from jguides_2024.utils.dict_helpers import dict_comprehension
 
 
 def get_glm_default_params_map():
@@ -11,11 +11,11 @@ def get_glm_default_params_map():
     :return: dictonary with parameter names (keys) and values (values)
     """
 
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
-    from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
+    from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
         TimeRelWADigSingleAxisParams
-    from src.jguides_2024.glm.jguidera_basis_function import RaisedCosineBasisParams
-    from src.jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
+    from jguides_2024.glm.jguidera_basis_function import RaisedCosineBasisParams
+    from jguides_2024.position_and_maze.jguidera_ppt_interp import PptDigParams
 
     time_bin_width = .1
     epoch_time_bins_param_name = EpochTimeBinsParams().lookup_param_name([time_bin_width])
@@ -100,9 +100,9 @@ def get_fr_vec_default_params_map():
     :return: dictonary with parameter names (keys) and values (values)
     """
 
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
-    from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-    from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolSel
+    from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+    from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
         TimeRelWADigSingleAxisParams
 
     time_bins_shorthand = "epoch_100ms"

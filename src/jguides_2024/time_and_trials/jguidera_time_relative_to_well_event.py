@@ -6,22 +6,24 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase, SecKeyParamsBase, \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase, SecKeyParamsBase, \
     CovariateRCB, CovariateDigParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, delete_
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.glm.jguidera_basis_function import RaisedCosineBasisParams, RaisedCosineBasis
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellTrials, DioWellDDTrials, DioWellDDTrialsParams
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool, ResTimeBinsPoolSel, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, delete_
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.glm.jguidera_basis_function import RaisedCosineBasisParams, RaisedCosineBasis
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.task_event.jguidera_dio_trials import DioWellTrials, DioWellDDTrials, DioWellDDTrialsParams
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool, ResTimeBinsPoolSel, \
     populate_jguidera_res_time_bins_pool
-from src.jguides_2024.utils.array_helpers import min_positive_val_arr
-from src.jguides_2024.utils.basis_function_helpers import sample_basis_functions
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
-from src.jguides_2024.utils.make_bins import get_peri_event_bin_edges
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import unpack_single_element, vector_midpoints
+from jguides_2024.utils.array_helpers import min_positive_val_arr
+from jguides_2024.utils.basis_function_helpers import sample_basis_functions
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.digitize_helpers import digitize_indexed_variable
+from jguides_2024.utils.make_bins import get_peri_event_bin_edges
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import unpack_single_element, vector_midpoints
 
 # These imports are called with eval or used in table definitions (do not remove):
 nd
@@ -38,7 +40,7 @@ class TimeRelWASel(SelBase):
     """
 
     def _get_potential_keys(self, key_filter=None):
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_param, get_fr_vec_default_param
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_param, get_fr_vec_default_param
         res_time_bins_pool_param_names = [
                 get_fr_vec_default_param("res_time_bins_pool_param_name"),
             get_glm_default_param("delay_res_time_bins_pool_param_name")]
@@ -52,7 +54,7 @@ class TimeRelWA(ComputedBase):
     # Time relative to well arrival
     -> TimeRelWASel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_rel_wa_object_id : varchar(100)
     """
 
@@ -120,7 +122,7 @@ class TimeRelWA(ComputedBase):
 
     def delete_(self, key=None, safemode=True):
         # Delete downstream entries first
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import \
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity_ave import \
             FRDiffVecCosSimWANnAve
         delete_(self, [FRDiffVecCosSimWANnAve], key, safemode)
 
@@ -180,7 +182,7 @@ class TimeRelWADigSel(SelBase):
 
     # Restrict combination of time bin width (TimeRelWADigParams) and time bins param name
     def _get_potential_keys(self, key_filter=None):
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params_map, get_fr_vec_default_params_map
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params_map, get_fr_vec_default_params_map
         if key_filter is None:
             key_filter = dict()
         glm_default_params_map = get_glm_default_params_map()
@@ -204,7 +206,7 @@ class TimeRelWADig(ComputedBase):
     # Digitized time relative to well arrival
     -> TimeRelWADigSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_rel_wa_dig_object_id : varchar(100)
     """
 
@@ -299,7 +301,7 @@ class TimeRelWADigSingleAxisSel(SelBase):
         if key_filter is None:
             key_filter = dict()
         # Loop through default param sets
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params_map, get_fr_vec_default_params_map
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params_map, get_fr_vec_default_params_map
         keys = []
         for params_map, meta_shorthand_name in zip([
             get_glm_default_params_map(), get_fr_vec_default_params_map()],
@@ -328,7 +330,7 @@ class TimeRelWADigSingleAxis(ComputedBase):
     # Digitized time relative to well arrival on a single axis
     -> TimeRelWADigSingleAxisSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_rel_wa_dig_single_axis_df_object_id : varchar(40)
     """
 
@@ -363,7 +365,7 @@ class TimeRelWADigSingleAxis(ComputedBase):
         return super().fetch1_dataframe(object_id_name, restore_empty_nwb_object, df_index_name)
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import TimeRelWAFRVecSel
+        from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import TimeRelWAFRVecSel
         delete_(self, [TimeRelWARCBSel, TimeRelWAFRVecSel], key, safemode)
 
     def drop_(self):
@@ -401,7 +403,7 @@ class TimeRelWARCBSel(SelBase):
         # Note we do not need bin_width to match time_bin_width in shorthand_params_map; bin_width is resolution
         # of covariate digitization, whereas time_bin_width corresponds to space between time samples. It just happens
         # that in this case, covariate has unit time
-        from src.jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params_map
+        from jguides_2024.datajoint_nwb_utils.analysis_default_params import get_glm_default_params_map
         glm_params = get_glm_default_params_map()
         default_params = {k: glm_params[k] for k in
                           ["time_rel_wa_dig_param_name", "time_rel_wa_dig_single_axis_param_name"]}
@@ -434,12 +436,12 @@ class TimeRelWARCB(CovariateRCB):
     # Sampled raised cosine basis, time relative to well arrival
     -> TimeRelWARCBSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     time_rel_wa_rcb_df_object_id : varchar(40)
     """
 
     def make(self, key):
-        # Get digitized time relative to well arrival (on single axis) as integer. Note that couldnt
+        # Get digitized time relative to well arrival (on single axis) as integer. Note that couldn't
         # save out as int upstream because some cases have nans, which seem to require float datatype to be
         # saved in analysis nwb file
         time_rel_wa_dig = (TimeRelWADigSingleAxis & key).fetch1_dataframe().time_rel_wa.astype(int)
@@ -449,7 +451,7 @@ class TimeRelWARCB(CovariateRCB):
         insert_analysis_table_entry(self, [time_rel_wa_rcb_df], key, reset_index=True)
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.glm.jguidera_measurements_interp_pool import XInterpPoolSel
+        from jguides_2024.glm.jguidera_measurements_interp_pool import XInterpPoolSel
         delete_(self, [XInterpPoolSel], key, safemode)
 
 
@@ -462,8 +464,8 @@ def populate_jguidera_time_relative_to_well_event(
 
 
 def drop_jguidera_time_relative_to_well_event():
-    from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import drop_jguidera_well_event_firing_rate_vector
-    from src.jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import \
+    from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import drop_jguidera_well_event_firing_rate_vector
+    from jguides_2024.jguidera_firing_rate_difference_vector_similarity_ave import \
         drop_jguidera_firing_rate_difference_vector_similarity_ave
     drop_jguidera_well_event_firing_rate_vector()
     drop_jguidera_firing_rate_difference_vector_similarity_ave()

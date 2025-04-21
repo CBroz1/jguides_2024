@@ -3,20 +3,20 @@ from collections import namedtuple
 
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase, SelBase, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase, SelBase, \
     ParamNameBase, CohortBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import make_param_name, get_table_name, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import make_param_name, get_table_name, \
     insert1_print, get_meta_param_name, \
     get_non_param_name_primary_key_names, valid_candidate_keys_bool, get_next_int_id, check_int_id, \
     get_table_column_names, get_key_filter, \
     table_name_from_table_type, check_single_table_entry, \
     get_table_secondary_key_names, get_param_name_separating_character, get_num_param_name, fetch_entries_as_dict, \
     check_epochs_id, get_cohort_test_entry, replace_param_name_chars, get_epochs_id
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.utils.dict_helpers import add_defaults
-from src.jguides_2024.utils.set_helpers import check_membership, check_set_equality
-from src.jguides_2024.utils.string_helpers import strip_trailing_s
-from src.jguides_2024.utils.vector_helpers import unpack_single_element, check_all_unique
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.utils.dict_helpers import add_defaults
+from jguides_2024.utils.set_helpers import check_membership, check_set_equality
+from jguides_2024.utils.string_helpers import strip_trailing_s
+from jguides_2024.utils.vector_helpers import unpack_single_element, check_all_unique
 
 """
 Documentation
@@ -574,7 +574,7 @@ class EpsCohortParamsBase(SecKeyParamsBase):
 
         # Add epochs_id to key
         # ...Ensure upstream table populated
-        from src.jguides_2024.metadata.jguidera_epoch import EpochCohortParams
+        from jguides_2024.metadata.jguidera_epoch import EpochCohortParams
         EpochCohortParams().insert_from_epochs(key["nwb_file_name"], key["epochs"])
         key.update({"epochs_id":  get_epochs_id(key["epochs"])})
 

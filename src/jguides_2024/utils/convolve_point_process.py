@@ -6,7 +6,7 @@ import numpy as np
 import psutil
 import scipy.stats
 
-from src.jguides_2024.utils.vector_helpers import vector_midpoints
+from jguides_2024.utils.vector_helpers import vector_midpoints
 
 
 # NOTE: this function must be defined at the highest level of the module to avoid a local object pickling error

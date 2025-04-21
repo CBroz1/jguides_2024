@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.utils.interpolate_helpers import interpolate_finite_intervals
-from src.jguides_2024.utils.make_bins import make_bin_edges
-from src.jguides_2024.utils.vector_helpers import vector_midpoints
+from jguides_2024.utils.interpolate_helpers import interpolate_finite_intervals
+from jguides_2024.utils.make_bins import make_bin_edges
+from jguides_2024.utils.vector_helpers import vector_midpoints
 
 
 def digitize_indexed_variable(

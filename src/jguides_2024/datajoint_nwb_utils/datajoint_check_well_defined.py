@@ -1,6 +1,6 @@
 """This module has functions to check whether data is well defined"""
 
-from src.jguides_2024.position_and_maze.jguidera_maze import AnnotatedUniversalTrackGraph
+from jguides_2024.position_and_maze.jguidera_maze import AnnotatedUniversalTrackGraph
 
 
 def check_edge_names_valid(edge_names, universal_track_graph_name="fork_maze_universal"):

@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.jguides_2024.utils.list_helpers import duplicate_elements
+from jguides_2024.utils.list_helpers import duplicate_elements
 
 
 def return_for_loop_variable_lists(for_loop_variables_lists):

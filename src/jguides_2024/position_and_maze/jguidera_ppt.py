@@ -6,32 +6,34 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import (SelBase, SecKeyParamsBase, ComputedBase)
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import (SelBase, SecKeyParamsBase, ComputedBase)
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, \
     delete_multiple_flexible_key
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     intersect_tables
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.datajoint_nwb_utils.trials_container_helpers import trials_container_default_time_vector
-from src.jguides_2024.metadata.jguidera_epoch import RunEpoch
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.position_and_maze.jguidera_maze import (TrackGraphUniversalTrackGraphMap,
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.datajoint_nwb_utils.trials_container_helpers import trials_container_default_time_vector
+from jguides_2024.metadata.jguidera_epoch import RunEpoch
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.position_and_maze.jguidera_maze import (TrackGraphUniversalTrackGraphMap,
                                                               UniversalForkMazePathEdgePathFractionMap,
                                                               AnnotatedUniversalTrackGraph)
-from src.jguides_2024.position_and_maze.jguidera_maze import get_default_environment_track_graph_name_map
-from src.jguides_2024.position_and_maze.jguidera_position import IntervalLinearizedPositionRescaled
-from src.jguides_2024.task_event.jguidera_dio_trials import (DioWellDATrials, populate_jguidera_dio_trials)
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDATrialsParams
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.df_helpers import df_filter_index, zip_df_columns, df_filter_columns, \
+from jguides_2024.position_and_maze.jguidera_maze import get_default_environment_track_graph_name_map
+from jguides_2024.position_and_maze.jguidera_position import IntervalLinearizedPositionRescaled
+from jguides_2024.task_event.jguidera_dio_trials import (DioWellDATrials, populate_jguidera_dio_trials)
+from jguides_2024.task_event.jguidera_dio_trials import DioWellDATrialsParams
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.df_helpers import df_filter_index, zip_df_columns, df_filter_columns, \
     df_filter1_columns, df_from_data_list, df_filter_columns_isin
-from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
-from src.jguides_2024.utils.make_bins import make_bin_edges
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool as in_intervals_bool
-from src.jguides_2024.utils.vector_helpers import (find_scale_factors, check_in_range,
+from jguides_2024.utils.digitize_helpers import digitize_indexed_variable
+from jguides_2024.utils.make_bins import make_bin_edges
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool as in_intervals_bool
+from jguides_2024.utils.vector_helpers import (find_scale_factors, check_in_range,
                                                    find_spans_increasing_list)
-from src.jguides_2024.utils.vector_helpers import linspace
+from jguides_2024.utils.vector_helpers import linspace
 
 # Needed for table definitions
 RunEpoch
@@ -112,7 +114,7 @@ class Ppt(ComputedBase):
     # Proportion path traversed
     -> PptSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     ppt_object_id : varchar(40)
     ppt_range : blob
     """
@@ -278,7 +280,7 @@ class Ppt(ComputedBase):
 
     def upsample_trials(self, upsample_fs):
         # Upsample ppt within trials
-        from src.jguides_2024.utils.list_helpers import return_n_empty_lists
+        from jguides_2024.utils.list_helpers import return_n_empty_lists
         upsample_t_bin_width = 1/upsample_fs
         ppt_df = self.fetch1_dataframe()
         upsample_trials_time, upsample_trials_ppt, upsample_path_names = return_n_empty_lists(3)
@@ -387,7 +389,7 @@ class Ppt(ComputedBase):
         # Get when rat first crossed maze junctions on each trial
         ppt_df = self.fetch1_dataframe()
 
-        from src.jguides_2024.position_and_maze.jguidera_maze import get_n_junction_path_junction_fractions, return_n_junction_path_names
+        from jguides_2024.position_and_maze.jguidera_maze import get_n_junction_path_junction_fractions, return_n_junction_path_names
         junction_fractions = get_n_junction_path_junction_fractions(2)
 
         # Restrict to valid paths (two maze junctions)
@@ -442,7 +444,7 @@ class PptBinEdgesParams(SecKeyParamsBase):
 @schema
 class PptBinEdges(ComputedBase):
     definition = """
-    # Bin edges for proportion path traversed 
+    # Bin edges for proportion path traversed
     -> PptBinEdgesParams
     ---
     ppt_bin_edges : blob  # proportion path traversed bin edges for maze edges
@@ -464,9 +466,9 @@ def populate_jguidera_ppt(key=None, tolerate_error=False, populate_upstream_limi
 
 
 def drop_jguidera_ppt():
-    from src.jguides_2024.position_and_maze.jguidera_ppt_interp import drop_jguidera_ppt_interp
-    from src.jguides_2024.time_and_trials.jguidera_ppt_trials import drop_jguidera_ppt_trials
-    from src.jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import drop_jguidera_ppt_firing_rate_map
+    from jguides_2024.position_and_maze.jguidera_ppt_interp import drop_jguidera_ppt_interp
+    from jguides_2024.time_and_trials.jguidera_ppt_trials import drop_jguidera_ppt_trials
+    from jguides_2024.firing_rate_map.jguidera_ppt_firing_rate_map import drop_jguidera_ppt_firing_rate_map
     from development.jguidera_position_stop import drop_jguidera_position_stop
     drop_jguidera_ppt_interp()
     drop_jguidera_ppt_trials()

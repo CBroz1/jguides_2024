@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_epoch_time_interval
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_epoch_time_interval
 
 
 def get_epoch_interval_nwbf(nwbf, epoch):

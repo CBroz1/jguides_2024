@@ -2,25 +2,27 @@ import datajoint as dj
 import spyglass as nd
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_task_phases
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_decode_table_base import \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_task_phases
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_decode_table_base import \
     DecodeCovFRVecParamsBase, DecodeCovFRVecBase, DecodeCovFRVecSelBase, DecodeCovFRVecSummBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     CovariateFRVecAveSelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, get_table_secondary_key_names
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_delay_duration
-from src.jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector_decode import DecodeCovFRVecSummSecKeyParamsBase
-from src.jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import TimeRelWAFRVec, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import delete_, get_table_secondary_key_names
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_delay_duration
+from jguides_2024.firing_rate_vector.jguidera_path_firing_rate_vector_decode import DecodeCovFRVecSummSecKeyParamsBase
+from jguides_2024.firing_rate_vector.jguidera_well_event_firing_rate_vector import TimeRelWAFRVec, \
     TimeRelWAFRVecParams
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnits, BrainRegionUnitsCohortType
-from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionCohort, CurationSet
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnits, BrainRegionUnitsCohortType
+from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWADigParams, \
     TimeRelWADigSingleAxisParams
-from src.jguides_2024.utils.dict_helpers import check_same_values_at_shared_keys
-from src.jguides_2024.utils.plot_helpers import plot_spanning_line
-from src.jguides_2024.utils.vector_helpers import unpack_single_element, unpack_single_vector
+from jguides_2024.utils.dict_helpers import check_same_values_at_shared_keys
+from jguides_2024.utils.plot_helpers import plot_spanning_line
+from jguides_2024.utils.vector_helpers import unpack_single_element, unpack_single_vector
 
 schema = dj.schema("jguidera_well_event_firing_rate_vector_decode")
 
@@ -154,7 +156,7 @@ class DecodeTimeRelWAFRVecSel(CovariateFRVecAveSelBase):
 # class DecodeTimeRelWAFRVecSel(dj.Manual):  # use when initially generating table; if not cannot update table later
 
     definition = """
-    # Selection from upstream tables for DecodeTimeRelWAFRVec 
+    # Selection from upstream tables for DecodeTimeRelWAFRVec
     -> EpochsDescription
     res_time_bins_pool_param_name : varchar(1000)
     -> TimeRelWADigParams
@@ -207,13 +209,13 @@ class DecodeTimeRelWAFRVec(DecodeCovFRVecBase):
     # Decode covariate in delay period bins
     -> DecodeTimeRelWAFRVecSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     """
 
     class Upstream(dj.Part):
         definition = """
-        # Achieves dependence on upstream tables 
+        # Achieves dependence on upstream tables
         -> DecodeTimeRelWAFRVec
         -> TimeRelWAFRVec
         """
@@ -225,12 +227,12 @@ class DecodeTimeRelWAFRVec(DecodeCovFRVecBase):
 
 """
 Notes on DecodeTimeRelWAFRVecSumm table setup:
-- We want to combine entries across DecodeTimeRelWAFRVec, across nwb_file_names, epochs_description, 
+- We want to combine entries across DecodeTimeRelWAFRVec, across nwb_file_names, epochs_description,
 and brain_region. For this reason, we want DecodeTimeRelWAFRVecSummSel to have all primary keys of DecodeTimeRelWAFRVec
-except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and 
-curation_name. 
+except for nwb_file_name, epochs_description, brain_region, brain_region_units_param_name, and
+curation_name.
   To specify the nwb_file_names and corresponding epochs_descriptions we want to combine across, we use recording_set.
-  To specify the brain regions we want to combine across, we use brain_region_cohort. 
+  To specify the brain regions we want to combine across, we use brain_region_cohort.
   To specify curation_name, we use curation_set_name.
   To specify brain region unit information, we use BrainRegionUnitsCohortType
 - We include BrainRegionUnitsCohortType in DecodeTimeRelWAFRVecSummParams so that we can stay within the
@@ -303,7 +305,7 @@ class DecodeTimeRelWAFRVecSummSel(DecodeCovFRVecSelBase):
     -> DecodeTimeRelWAFRVecSummParams
     ---
     upstream_keys : mediumblob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     df_concat_object_id : varchar(40)
     """
 
@@ -324,7 +326,7 @@ class DecodeTimeRelWAFRVecSumm(DecodeCovFRVecSummBase):
     # Summary of decodes of covariate in delay period bins
     -> DecodeTimeRelWAFRVecSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

@@ -5,43 +5,45 @@ import numpy as np
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, get_val_pairs, \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, get_val_pairs, \
     plot_junction_fractions, plot_task_phases
-from src.jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
+from jguides_2024.datajoint_nwb_utils.datajoint_covariate_firing_rate_vector_table_base import \
     PathWellFRVecSummBase, PopulationAnalysisSecKeyParamsBase, \
     PopulationAnalysisSelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, ParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_key_filter, make_param_name, delete_, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SelBase, ParamsBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_key_filter, make_param_name, delete_, \
     get_table_secondary_key_names
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_nwb_file_name_epochs_description
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import FRDiffVec, FRDiffVecParams
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_nwb_file_name_epochs_description
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector import FRDiffVec, FRDiffVecParams
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_difference_vector_similarity import \
     populate_jguidera_firing_rate_difference_vector_similarity, FRDiffVecCosSim
-from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import FRVecEucDist, \
+from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector_euclidean_distance import FRVecEucDist, \
     populate_jguidera_firing_rate_vector_euclidean_distance
-from src.jguides_2024.metadata.jguidera_brain_region import BrainRegionColor, BrainRegionCohort, CurationSet
-from src.jguides_2024.metadata.jguidera_epoch import RecordingSet, EpochsDescription
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt, PptParams
-from src.jguides_2024.position_and_maze.jguidera_ppt_interp import PptInterp, populate_jguidera_ppt_interp
-from src.jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
-from src.jguides_2024.spikes.jguidera_unit import BrainRegionUnitsCohortType
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrialsParams, DioWellDDTrials
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams, \
+from jguides_2024.metadata.jguidera_brain_region import BrainRegionColor, BrainRegionCohort, CurationSet
+from jguides_2024.metadata.jguidera_epoch import RecordingSet, EpochsDescription
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt, PptParams
+from jguides_2024.position_and_maze.jguidera_ppt_interp import PptInterp, populate_jguidera_ppt_interp
+from jguides_2024.spikes.jguidera_res_spikes import ResEpochSpikesSmParams
+from jguides_2024.spikes.jguidera_unit import BrainRegionUnitsCohortType
+from jguides_2024.task_event.jguidera_dio_trials import DioWellDDTrialsParams, DioWellDDTrials
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohortParams, \
     ResTimeBinsPoolCohortParamName
-from src.jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWA
-from src.jguides_2024.utils.df_helpers import df_from_data_list
-from src.jguides_2024.utils.dict_helpers import add_defaults, return_shared_key_value
-from src.jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
-from src.jguides_2024.utils.make_bins import get_peri_event_bin_edges
-from src.jguides_2024.utils.plot_helpers import plot_ave_conf
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.stats_helpers import average_confidence_interval
-from src.jguides_2024.utils.vector_helpers import vector_midpoints, unpack_single_element
+from jguides_2024.time_and_trials.jguidera_time_relative_to_well_event import TimeRelWA
+from jguides_2024.utils.df_helpers import df_from_data_list
+from jguides_2024.utils.dict_helpers import add_defaults, return_shared_key_value
+from jguides_2024.utils.hierarchical_bootstrap import hierarchical_bootstrap
+from jguides_2024.utils.list_helpers import zip_adjacent_elements
+from jguides_2024.utils.make_bins import get_peri_event_bin_edges
+from jguides_2024.utils.plot_helpers import plot_ave_conf
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.stats_helpers import average_confidence_interval
+from jguides_2024.utils.vector_helpers import vector_midpoints, unpack_single_element
 
 # Needed for table definitions:
 FRDiffVecCosSim
@@ -65,16 +67,16 @@ schema = dj.schema("jguidera_firing_rate_difference_vector_similarity_ave")
 
 """
 Notes on FRDiffVecCosSimPptNnAve and FRDiffVecCosSimWANnAve tables setup
-1) the parameter 'mask_duration' is the amount of time to mask on either side of a sample. This was chosen to be 
+1) the parameter 'mask_duration' is the amount of time to mask on either side of a sample. This was chosen to be
 consistent with 'mask_duration' in the single trial firing rate vector tables (PathFRVecSTAve and TimeRelWAFRVecSTAve)
 
-2) dio_well_dd_trials_param_name is a secondary key of this table, rather than a primary key here or in params table, 
-because we will require it to always have the same value (representing no trial start/end shift). So we dont want 
-it taking up space unecessarily as a primary key. It is better a secondary key in the selection table than in the 
+2) dio_well_dd_trials_param_name is a secondary key of this table, rather than a primary key here or in params table,
+because we will require it to always have the same value (representing no trial start/end shift). So we dont want
+it taking up space unnecessarily as a primary key. It is better a secondary key in the selection table than in the
 params table, because we want the secondary keys in the params table to reflect params that can change in the analysis.
 
-3) multiple epochs (epochs_id) allowed in FRDiffVecCosSim, and only single epochs allowed in PptInterp and 
-DioWellDDTrials. Unlikely that will want to do analysis across epochs, but to allow for this possibility, 
+3) multiple epochs (epochs_id) allowed in FRDiffVecCosSim, and only single epochs allowed in PptInterp and
+DioWellDDTrials. Unlikely that will want to do analysis across epochs, but to allow for this possibility,
 use epochs_id. Requires having dependencies on Ppt and DioWellDDTrials in a part table.
 """
 
@@ -351,7 +353,7 @@ class FRDiffVecCosSimPptNnAve(FRDiffVecCosSimVarNnAveBase):
     # Cosine similarity of firing rate difference vectors to nearest neighbors, averaged in proportion path traversed bins
     -> FRDiffVecCosSimPptNnAveSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     fr_diff_vec_cos_sim_ppt_nn_ave_object_id : varchar(40)
     """
 
@@ -437,7 +439,7 @@ class FRDiffVecCosSimWANnAve(FRDiffVecCosSimVarNnAveBase):
     # Cosine similarity of firing rate difference vectors to nearest neighbors, averaged in proportion path traversed bins
     -> FRDiffVecCosSimWANnAveSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     fr_diff_vec_cos_sim_to_wa_nn_ave_object_id : varchar(40)
     fr_diff_vec_cos_sim_from_wa_nn_ave_object_id : varchar(40)
     """
@@ -631,13 +633,13 @@ intervals = df.bin_edges
 x_val = np.min(trial_intervals)
 val_list = [x_val]*len(intervals)
 plot_intervals(intervals, ax, val_list, label="bin edges", interval_axis="y", color="gray")
-    
+
 for idx, df_row in df.iterrows():
     label = None
     if idx == 0:
         label = "conf ave x2"
     ax.plot([x_val]*2, df_row.mean_x2_conf, color="red", label=label)
-    
+
     label = None
     if idx == 0:
         label = "ave x2"
@@ -653,14 +655,14 @@ ax.legend()
 """
 Notes on FRDiffVecCosSimWANnAveSumm table setup:
 - We want to combine entries across FRDiffVecCosSimWANnAveSumm, across nwb_file_names, epochs_description,
-brain_region, and brain_region_units_param_names (in case want to do hierarchical bootstrap across unit subsets). 
+brain_region, and brain_region_units_param_names (in case want to do hierarchical bootstrap across unit subsets).
 For this reason, we want FRDiffVecCosSimWANnAveSummSel to have all primary keys of FRDiffVecCosSimWANnAve
-except for nwb_file_name, epochs_id, brain_region, brain_region_units_param_name, and 
-curation_name. 
+except for nwb_file_name, epochs_id, brain_region, brain_region_units_param_name, and
+curation_name.
   To specify the nwb_file_names and corresponding epochs_id we want to combine across, we use recording_set.
-  To specify the brain regions we want to combine across, we use brain_region_cohort_name. 
+  To specify the brain regions we want to combine across, we use brain_region_cohort_name.
   To specify curation_name, we use curation_set_name.
-  To specify brain region unit information, we use brain_region_units_params_cohort_name in 
+  To specify brain region unit information, we use brain_region_units_params_cohort_name in
   FRDiffVecCosSimWANnAveSummParams
 - We include BrainRegionUnitsCohortType in PathAveFRVecSummParams so that we can stay within the
 limit on number of primary keys
@@ -993,7 +995,7 @@ class FRDiffVecCosSimWANnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
     # Summary of cosine similarity of firing rate difference vectors to nearest neighbors, averaged in proportion path traversed bins
     -> FRDiffVecCosSimWANnAveSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)
@@ -1098,7 +1100,7 @@ class FRDiffVecCosSimPptNnAveSumm(FRDiffVecCosSimCovNnAveSummBase):
     # Summary of cosine similarity of firing rate difference vectors to nearest neighbors, averaged in proportion path traversed bins
     -> FRDiffVecCosSimPptNnAveSummSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     metric_df_object_id : varchar(40)
     ave_conf_df_object_id : varchar(40)
     boot_ave_df_object_id : varchar(40)

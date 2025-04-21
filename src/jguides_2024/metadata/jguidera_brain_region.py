@@ -2,28 +2,28 @@ import datajoint as dj
 import matplotlib.pyplot as plt
 import numpy as np
 import spyglass as nd
-from spyglass.common import ElectrodeGroup
+from spyglass.common import ElectrodeGroup, AnalysisNwbfile
 from spyglass.spikesorting.v0.spikesorting_recording import SortGroup
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase, SelBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, check_nwb_file_name, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase, SecKeyParamsBase, SelBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, check_nwb_file_name, \
     split_unit_name, unique_table_column_sets, \
     split_curation_name, get_curation_name, insert_analysis_table_entry, fetch_entries_as_dict
-from src.jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_epoch_keys, \
+from jguides_2024.datajoint_nwb_utils.get_datajoint_table import get_table
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_jguidera_nwbf_epoch_keys, \
     get_brain_regions, get_jguidera_nwbf_names
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_epoch import EpochsDescription
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification, JguideraNwbfile
-from src.jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns
-from src.jguides_2024.utils.list_helpers import check_return_single_element
-from src.jguides_2024.utils.plot_helpers import tint_color
-from src.jguides_2024.utils.set_helpers import check_set_equality
-from src.jguides_2024.utils.string_helpers import format_bool
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_epoch import EpochsDescription
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification, JguideraNwbfile
+from jguides_2024.time_and_trials.jguidera_interval import EpochIntervalListName
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns
+from jguides_2024.utils.list_helpers import check_return_single_element
+from jguides_2024.utils.plot_helpers import tint_color
+from jguides_2024.utils.set_helpers import check_set_equality
+from jguides_2024.utils.string_helpers import format_bool
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 # These imports are called with eval or used in table definitions (do not remove):
 ElectrodeGroup
@@ -147,7 +147,7 @@ class SortGroupTargetedLocation(ComputedBase):
 
         if exclude_no_unit_sort_group_ids:
             # Local import to avoid circular import
-            from src.jguides_2024.spikes.jguidera_spikes import EpochSpikeTimes
+            from jguides_2024.spikes.jguidera_spikes import EpochSpikeTimes
             valid_bool = [len(EpochSpikeTimes & {"nwb_file_name": nwb_file_name,
                                                   "sort_group_id": sort_group_id}) > 0
                           for sort_group_id in sort_group_ids]
@@ -340,14 +340,14 @@ class CurationSet(ComputedBase):
     # Curation names corresponding to brain regions in a brain region cohort
     -> CurationSetSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     curation_names_df_object_id : varchar(40)
     """
 
     def make(self, key):
 
         # Local import to avoid circular import error
-        from src.jguides_2024.spike_sorting_curation.jguidera_spikesorting import define_sort_intervals
+        from jguides_2024.spike_sorting_curation.jguidera_spikesorting import define_sort_intervals
 
         brain_region_cohort_name = key["brain_region_cohort_name"]
         curation_set_name = key["curation_set_name"]

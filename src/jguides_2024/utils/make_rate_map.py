@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 
-from src.jguides_2024.utils.interpolate_helpers import interpolate_at_average_sampling_rate
-from src.jguides_2024.utils.make_bins import make_int_bin_edges
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals
-from src.jguides_2024.utils.vector_helpers import check_uniform_spacing, vector_midpoints, \
+from jguides_2024.utils.interpolate_helpers import interpolate_at_average_sampling_rate
+from jguides_2024.utils.make_bins import make_int_bin_edges
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals
+from jguides_2024.utils.vector_helpers import check_uniform_spacing, vector_midpoints, \
     check_monotonic_increasing
 
 
@@ -51,7 +51,7 @@ def calculate_occupancy_trodes_epoch_constant_sampling_rate(measurements,
 
     # Find camera time differences consistent with Trodes pausing camera acquisition at
     # recording start. Exclude these from consideration below.
-    from src.jguides_2024.datajoint_nwb_utils.edge_case_helpers import identify_trodes_camera_pause_at_epoch_start
+    from jguides_2024.datajoint_nwb_utils.edge_case_helpers import identify_trodes_camera_pause_at_epoch_start
     valid_diff_mask = np.invert(identify_trodes_camera_pause_at_epoch_start(camera_times=measurement_times,
                                                                  epoch_start_time=measurement_times[0]))[:-1]
     mean_times_diff = np.mean(np.diff(measurement_times)[valid_diff_mask])  # mean time between camera samples

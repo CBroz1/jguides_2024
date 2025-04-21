@@ -4,14 +4,14 @@ from collections import namedtuple
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.utils.array_helpers import array_to_tuple_list, array_to_list
-from src.jguides_2024.utils.check_well_defined import check_shape
-from src.jguides_2024.utils.df_helpers import zip_df_columns, df_filter_columns, df_from_data_list, \
+from jguides_2024.utils.array_helpers import array_to_tuple_list, array_to_list
+from jguides_2024.utils.check_well_defined import check_shape
+from jguides_2024.utils.df_helpers import zip_df_columns, df_filter_columns, df_from_data_list, \
     check_same_index
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements, check_return_single_element, \
+from jguides_2024.utils.list_helpers import zip_adjacent_elements, check_return_single_element, \
     return_n_empty_lists
-from src.jguides_2024.utils.plot_helpers import plot_heatmap
-from src.jguides_2024.utils.vector_helpers import repeat_elements_idxs, check_all_unique, \
+from jguides_2024.utils.plot_helpers import plot_heatmap
+from jguides_2024.utils.vector_helpers import repeat_elements_idxs, check_all_unique, \
     find_spans_increasing_list, vector_midpoints
 
 

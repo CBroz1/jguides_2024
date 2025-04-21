@@ -2,19 +2,21 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase, \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase, \
     TrialsTimeBinsParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     fetch1_dataframe, get_key_filter
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_high_priority_nwb_file_names
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_epoch_time_interval
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrials, DioWellDATrials, \
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_high_priority_nwb_file_names
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_epoch_time_interval
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrials, DioWellDATrials, \
     DioWellADTrials, DioWellArrivalTrialsSub
-from src.jguides_2024.utils.df_helpers import zip_df_columns
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements, unzip_adjacent_elements
-from src.jguides_2024.utils.make_bins import make_bin_edges
-from src.jguides_2024.utils.vector_helpers import vector_midpoints
+from jguides_2024.utils.df_helpers import zip_df_columns
+from jguides_2024.utils.list_helpers import zip_adjacent_elements, unzip_adjacent_elements
+from jguides_2024.utils.make_bins import make_bin_edges
+from jguides_2024.utils.vector_helpers import vector_midpoints
 
 schema = dj.schema("jguidera_time_bins")
 
@@ -39,11 +41,11 @@ class EpochTimeBinsParams(SecKeyParamsBase):
 @schema
 class EpochTimeBins(ComputedBase):
     definition = """
-    # Time bins within epoch 
+    # Time bins within epoch
     -> TaskIdentification
     -> EpochTimeBinsParams
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     epoch_time_bins_object_id : varchar(40)
     """
 
@@ -102,7 +104,7 @@ class DioWATrialsTimeBins(ComputedBase):
     # Time bins during trials based on single well arrival detected with dios
     -> DioWATrialsTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     dio_well_arrival_trials_time_bins_object_id : varchar(40)
     """
 
@@ -150,7 +152,7 @@ class DioWATrialsSubTimeBins(ComputedBase):
     # Time bins during subset of trials based on single well arrival detected with dios
     -> DioWATrialsSubTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     dio_wa_trials_sub_time_bins_object_id : varchar(40)
     """
 
@@ -193,7 +195,7 @@ class DioWellDATrialsTimeBins(ComputedBase):
     # Time bins during trials based on single well arrival detected with dios
     -> DioWellDATrialsTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     dio_well_da_trials_time_bins_object_id : varchar(40)
     """
 
@@ -236,7 +238,7 @@ class DioWellADTrialsTimeBins(ComputedBase):
     # Time bins during trials that begin at well arrivals and end at well departure detected with dios
     -> DioWellADTrialsTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     dio_well_ad_trials_time_bins_object_id : varchar(40)
     """
 

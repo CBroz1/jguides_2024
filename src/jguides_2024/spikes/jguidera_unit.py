@@ -5,29 +5,29 @@ import numpy as np
 from spyglass.common import Electrode
 from spyglass.spikesorting.v0.spikesorting_curation import CuratedSpikeSorting
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, get_sort_group_unit_id
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, \
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import get_subject_id, get_sort_group_unit_id
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert1_print, \
     get_table_secondary_key_names, get_unit_name, split_unit_names, \
     get_key_filter, split_curation_name, delete_, get_default_param, split_unit_name, make_param_name, get_table_name, \
     get_epochs_id
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_brain_region import SortGroupTargetedLocation, BrainRegionSortGroup, \
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_brain_region import SortGroupTargetedLocation, BrainRegionSortGroup, \
     BrainRegionCohort, CurationSet, \
     ElectrodeGroupTargetedLocation, get_targeted_location_from_brain_region
-from src.jguides_2024.metadata.jguidera_epoch import EpochCohort, RunEpoch, EpochsDescription
-from src.jguides_2024.metadata.jguidera_histology import ValidShank, LivermoreD2
-from src.jguides_2024.metadata.jguidera_metadata import JguideraNwbfile
-from src.jguides_2024.spike_sorting_curation.jguidera_spikesorting import DefineSortInterval
-from src.jguides_2024.spike_sorting_curation.spikesorting_helpers import get_peak_ch_map
-from src.jguides_2024.spikes.jguidera_spikes import EpochMeanFiringRate, EpochSpikeTimesRelabel
-from src.jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns, df_pop
-from src.jguides_2024.utils.dict_helpers import dict_comprehension, dict_comprehension_repeated_keys
-from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
-from src.jguides_2024.utils.list_helpers import check_single_element, check_return_single_element
-from src.jguides_2024.utils.set_helpers import check_set_equality, check_membership
-from src.jguides_2024.utils.stats_helpers import random_sample
-from src.jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_element
+from jguides_2024.metadata.jguidera_epoch import EpochCohort, RunEpoch, EpochsDescription
+from jguides_2024.metadata.jguidera_histology import ValidShank, LivermoreD2
+from jguides_2024.metadata.jguidera_metadata import JguideraNwbfile
+from jguides_2024.spike_sorting_curation.jguidera_spikesorting import DefineSortInterval
+from jguides_2024.spike_sorting_curation.spikesorting_helpers import get_peak_ch_map
+from jguides_2024.spikes.jguidera_spikes import EpochMeanFiringRate, EpochSpikeTimesRelabel
+from jguides_2024.utils.df_helpers import df_from_data_list, df_filter_columns, df_pop
+from jguides_2024.utils.dict_helpers import dict_comprehension, dict_comprehension_repeated_keys
+from jguides_2024.utils.for_loop_helpers import print_iteration_progress
+from jguides_2024.utils.list_helpers import check_single_element, check_return_single_element
+from jguides_2024.utils.set_helpers import check_set_equality, check_membership
+from jguides_2024.utils.stats_helpers import random_sample
+from jguides_2024.utils.vector_helpers import check_all_unique, unpack_single_element
 
 schema = dj.schema("jguidera_unit")
 
@@ -859,7 +859,7 @@ class BrainRegionUnits(ComputedBase):
         return len(np.concatenate(list(sort_group_unit_ids_map.values())))
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import FRVec
         delete_(self, [FRVec], key, safemode)
 
     def populate_(self,**kwargs):
@@ -867,7 +867,7 @@ class BrainRegionUnits(ComputedBase):
         super().populate_(**kwargs)
 
     def drop(self):
-        from src.jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import drop_jguidera_firing_rate_vector
+        from jguides_2024.firing_rate_vector.jguidera_firing_rate_vector import drop_jguidera_firing_rate_vector
         drop_jguidera_firing_rate_vector()
         super().drop()
 

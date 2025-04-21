@@ -2,17 +2,19 @@ import datajoint as dj
 import pandas as pd
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, delete_
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrialsParams, DioWellADTrialsParams
-from src.jguides_2024.time_and_trials.jguidera_res_set import ResSet, populate_jguidera_res_set, ResSetParams
-from src.jguides_2024.time_and_trials.jguidera_time_bins import (EpochTimeBins, DioWATrialsTimeBins,
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, delete_
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.task_event.jguidera_dio_trials import DioWellArrivalTrialsParams, DioWellADTrialsParams
+from jguides_2024.time_and_trials.jguidera_res_set import ResSet, populate_jguidera_res_set, ResSetParams
+from jguides_2024.time_and_trials.jguidera_time_bins import (EpochTimeBins, DioWATrialsTimeBins,
                                                                  populate_jguidera_time_bins,
                                                                  EpochTimeBinsParams, DioWATrialsTimeBinsParams,
                                                                  DioWellADTrialsTimeBins,
                                                                  DioWellADTrialsTimeBinsParams)
-from src.jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolCohortParams
+from jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolCohortParams
 
 # Needed for table definitions:
 nd
@@ -55,7 +57,7 @@ class ResEpochTimeBins(ComputedBase):
     # Time bins within epoch with restrictions applied
     -> ResEpochTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_epoch_time_bins_object_id : varchar(40)
     """
 
@@ -68,7 +70,7 @@ class ResEpochTimeBins(ComputedBase):
         insert_res_time_bins_table(self, EpochTimeBins, key)
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool
+        from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool
         delete_(self, [ResTimeBinsPool], key, safemode)
 
 
@@ -121,7 +123,7 @@ class ResDioWATrialsTimeBins(ComputedBase):
     # Time bins during trials based on single well arrival detected with dios, with restrictions applied
     -> ResDioWATrialsTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_dio_well_arrival_trials_time_bins_object_id : varchar(40)
     dio_well_arrival_trials_param_name : varchar(40)  # for convenience when inserting into table
     """
@@ -190,7 +192,7 @@ class ResDioWellADTrialsTimeBins(ComputedBase):
     # Time bins during trials that begin at well arrivals and end at well departure detected with dios, with restrictions applied
     -> ResDioWellADTrialsTimeBinsSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     res_dio_well_ad_trials_time_bins_object_id : varchar(40)
     dio_well_ad_trials_param_name : varchar(40)  # for convenience when inserting into table
     """
@@ -236,6 +238,6 @@ def populate_jguidera_res_time_bins(
 
 
 def drop_jguidera_res_time_bins():
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import drop_jguidera_res_time_bins_pool
+    from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import drop_jguidera_res_time_bins_pool
     drop_jguidera_res_time_bins_pool()
     schema.drop()

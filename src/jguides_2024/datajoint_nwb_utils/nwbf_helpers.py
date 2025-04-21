@@ -1,7 +1,7 @@
 import numpy as np
 from spyglass.common import TaskEpoch, IntervalList
 
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals_bool
 
 
 def nwbf_session_id_to_file_name(nwbf):

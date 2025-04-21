@@ -1,11 +1,15 @@
 # Write import statements to a file
 import os
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_import_statements
-from src.jguides_2024.utils.save_load_helpers import get_file_contents
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_import_statements
+from jguides_2024.utils.save_load_helpers import get_file_contents
 
 
 def write_get_datajoint_table(verbose=False):
+    print(
+        "WARNING: This function uses eval() to import tables. "
+        +f"This is not recommended and should be avoided if possible."
+    )
 
     # Define file name
     file_name = "_get_datajoint_table.py"
@@ -19,6 +23,7 @@ def write_get_datajoint_table(verbose=False):
     lines = opening_lines + middle_lines + closing_lines
 
     # Change to directory where we want to write file
+    prev_dir = os.getcwd()
     write_path = "/home/jguidera/Src/jguides_2024/src/jguides_2024/datajoint_nwb_utils"
     os.chdir(write_path)
 
@@ -34,3 +39,5 @@ def write_get_datajoint_table(verbose=False):
                 f.write(line)
                 f.write(f"\n")
         f.close()
+
+    os.chdir(prev_dir)

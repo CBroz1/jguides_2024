@@ -6,19 +6,21 @@ import pandas as pd
 import spyglass as nd
 import matplotlib.pyplot as plt
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, CovDigmethBase, ComputedBase, \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, CovDigmethBase, ComputedBase, \
     CovariateDigParamsBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry
-from src.jguides_2024.datajoint_nwb_utils.metadata_helpers import get_delay_duration
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellTrials, DioWellDDTrialsParams, DioWellDDTrials
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool, ResTimeBinsPoolSel
-from src.jguides_2024.utils.check_well_defined import check_one_none
-from src.jguides_2024.utils.digitize_helpers import digitize_indexed_variable
-from src.jguides_2024.utils.make_bins import make_bin_edges
-from src.jguides_2024.utils.point_process_helpers import event_times_in_intervals, event_times_in_intervals_bool
-from src.jguides_2024.utils.set_helpers import check_membership
-from src.jguides_2024.utils.vector_helpers import unpack_single_element
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry
+from jguides_2024.datajoint_nwb_utils.metadata_helpers import get_delay_duration
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.task_event.jguidera_dio_trials import DioWellTrials, DioWellDDTrialsParams, DioWellDDTrials
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPool, ResTimeBinsPoolSel
+from jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.digitize_helpers import digitize_indexed_variable
+from jguides_2024.utils.make_bins import make_bin_edges
+from jguides_2024.utils.point_process_helpers import event_times_in_intervals, event_times_in_intervals_bool
+from jguides_2024.utils.set_helpers import check_membership
+from jguides_2024.utils.vector_helpers import unpack_single_element
 
 # Needed for table definitions:
 DioWellTrials
@@ -117,7 +119,7 @@ class RelTimeWell(RelTimeBase):
     # Relative time at well
     -> RelTimeWellSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     rel_time_well_object_id : varchar(40)
     """
 
@@ -152,7 +154,7 @@ class RelTimeDelay(RelTimeBase):
     # Relative time in 2s delay
     -> RelTimeDelaySel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     rel_time_delay_object_id : varchar(40)
     """
 
@@ -247,7 +249,7 @@ class RelTimeWellPostDelay(RelTimeBase):
     # Relative time at well following 2s delay
     -> RelTimeWellPostDelaySel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     rel_time_well_post_delay_object_id : varchar(40)
     """
 
@@ -340,7 +342,7 @@ class RelTimeWellPostDelayDig(ComputedBase):
     # Digitized relative time during post delay period
     -> RelTimeWellPostDelayDigSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     rel_time_well_post_delay_dig_object_id : varchar(100)
     """
 

@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import scipy as sp
 
-from src.jguides_2024.utils.check_well_defined import check_one_none
+from jguides_2024.utils.check_well_defined import check_one_none
 
 
 # Note that cannot import from plot_helpers (will get circular import)

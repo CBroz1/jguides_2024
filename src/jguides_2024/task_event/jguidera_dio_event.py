@@ -2,21 +2,21 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from spyglass.common import Nwbfile, Session
+from spyglass.common import Nwbfile, Session, AnalysisNwbfile
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     insert1_print, delete_
-from src.jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file, events_in_epoch_bool
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_epoch import RunEpoch
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.utils.df_helpers import df_filter_columns_contains, df_pop
-from src.jguides_2024.utils.list_helpers import return_n_empty_lists, check_alternating_elements, \
+from jguides_2024.datajoint_nwb_utils.nwbf_helpers import get_nwb_file, events_in_epoch_bool
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_epoch import RunEpoch
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.utils.df_helpers import df_filter_columns_contains, df_pop
+from jguides_2024.utils.list_helpers import return_n_empty_lists, check_alternating_elements, \
     check_return_single_element
-from src.jguides_2024.utils.plot_helpers import format_ax
-from src.jguides_2024.utils.point_process_helpers import not_small_diff_bool, event_times_in_intervals_bool
-from src.jguides_2024.utils.vector_helpers import remove_repeat_elements
+from jguides_2024.utils.plot_helpers import format_ax
+from jguides_2024.utils.point_process_helpers import not_small_diff_bool, event_times_in_intervals_bool
+from jguides_2024.utils.vector_helpers import remove_repeat_elements
 
 schema = dj.schema("jguidera_dio_event")
 
@@ -27,7 +27,7 @@ class DioEvents(ComputedBase):
     # DIO events recorded at full sampling rate
     -> TaskIdentification
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     dio_events_object_id : varchar(40)
     """
 
@@ -184,7 +184,7 @@ class ProcessedDioEvents(ComputedBase):
     ---
     diff_threshold : float
     num_excluded_dio_events : blob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     processed_dio_events_object_id : varchar(40)
     """
 
@@ -204,8 +204,8 @@ class ProcessedDioEvents(ComputedBase):
         -> ProcessedDioEvents.Pokes
         ---
         dio_first_poke_names : blob
-        dio_first_poke_times : blob   
-        dio_first_poke_values : blob        
+        dio_first_poke_times : blob
+        dio_first_poke_values : blob
         """
 
     class LastDownPokes(dj.Part):
@@ -214,8 +214,8 @@ class ProcessedDioEvents(ComputedBase):
         -> ProcessedDioEvents.Pokes
         ---
         dio_last_poke_names : blob
-        dio_last_poke_times : blob 
-        dio_last_poke_values : blob        
+        dio_last_poke_times : blob
+        dio_last_poke_values : blob
         """
 
     class Pumps(dj.Part):
@@ -365,8 +365,8 @@ class ProcessedDioEvents(ComputedBase):
         return super().fetch1_dataframe().set_index("dio_event_times")
 
     def delete_(self, key=None, safemode=True):
-        from src.jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPool
-        from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
+        from jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPool
+        from jguides_2024.position_and_maze.jguidera_ppt import Ppt
         delete_(self, [TrialsPool, Ppt], key, safemode)
 
 
@@ -408,7 +408,7 @@ def convert_dio_description(dio_description, convert_to_type=None):
         raise Exception(f"convert_to_type must be in {valid_types}")
     # Get digital in as integer (helpful for all cases below)
     if isinstance(dio_description, str):
-        dio_description_int = int(dio_description.split("Din")[-1].split("Dout")[-1])
+        dio_description_int = int(dio_description.split("Din")[-1].split("Doubt")[-1])
     else:
         dio_description_int = int(dio_description)
     # Return in desired form

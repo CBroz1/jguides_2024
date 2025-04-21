@@ -5,17 +5,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-# Import custom datajoint tables
-os.chdir("/home/jguidera/Src/jguides_2024/")
+from spyglass.common import AnalysisNwbfile
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
+# Import custom datajoint tables
+
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import insert_analysis_table_entry, \
     get_schema_table_names_from_file, populate_insert
-from src.jguides_2024.position_and_maze.jguidera_position import IntervalPositionInfoRelabel
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.task_event.jguidera_dio_trials import DioWellDATrials, DioWellDATrialsParams
-from src.jguides_2024.utils.plot_helpers import plot_spanning_line, format_ax
-from src.jguides_2024.utils.similarity_measure_helpers import SimilarOverlapPeriods
+from jguides_2024.position_and_maze.jguidera_position import IntervalPositionInfoRelabel
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt
+from jguides_2024.task_event.jguidera_dio_trials import DioWellDATrials, DioWellDATrialsParams
+from jguides_2024.utils.plot_helpers import plot_spanning_line, format_ax
+from jguides_2024.utils.similarity_measure_helpers import SimilarOverlapPeriods
 
 
 schema_name = "jguidera_position_stop"
@@ -86,7 +87,7 @@ class StopLikeWellArrival(ComputedBase):
     above_overlap_thresh_idxs : blob
     above_overlap_thresh_spans : blob
     valid_above_overlap_thresh_spans : blob
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     stop_like_well_arrival_object_id : varchar(40)
     """
 

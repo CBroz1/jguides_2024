@@ -3,10 +3,10 @@ import multiprocessing as mp
 
 import numpy as np
 
-from src.jguides_2024.utils.df_helpers import df_from_data_list
-from src.jguides_2024.utils.for_loop_helpers import print_iteration_progress
-from src.jguides_2024.utils.parallelization_helpers import show_error
-from src.jguides_2024.utils.string_helpers import format_optional_var
+from jguides_2024.utils.df_helpers import df_from_data_list
+from jguides_2024.utils.for_loop_helpers import print_iteration_progress
+from jguides_2024.utils.parallelization_helpers import show_error
+from jguides_2024.utils.string_helpers import format_optional_var
 
 
 def _get_setting_bool(half_setting):

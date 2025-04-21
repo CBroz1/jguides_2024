@@ -4,12 +4,12 @@ import datajoint as dj
 import numpy as np
 import pandas as pd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import get_schema_table_names_from_file, \
     populate_insert, replace_param_name_chars, delete_
-from src.jguides_2024.position_and_maze.jguidera_ppt import Ppt
-from src.jguides_2024.utils.basis_function_helpers import RaisedCosineBasis as RCB
-from src.jguides_2024.utils.basis_function_helpers import plot_basis_functions
+from jguides_2024.position_and_maze.jguidera_ppt import Ppt
+from jguides_2024.utils.basis_function_helpers import RaisedCosineBasis as RCB
+from jguides_2024.utils.basis_function_helpers import plot_basis_functions
 
 schema = dj.schema("jguidera_basis_function")
 
@@ -50,7 +50,7 @@ class RaisedCosineBasisParams(SecKeyParamsBase):
         return self.lookup_param_name(list(self.shorthand_params_map()[shorthand_param_name]._asdict().values()))
 
     def delete_(self, key, safemode=True):
-        from src.jguides_2024.glm.jguidera_measurements_interp_pool import XInterpPool
+        from jguides_2024.glm.jguidera_measurements_interp_pool import XInterpPool
         delete_(self, [XInterpPool], key, safemode)
 
 

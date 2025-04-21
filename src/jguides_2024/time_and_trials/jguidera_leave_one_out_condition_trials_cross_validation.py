@@ -3,14 +3,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import spyglass as nd
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_horizontal_lines
-from src.jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import \
+from spyglass.common import AnalysisNwbfile
+
+from jguides_2024.datajoint_nwb_utils.datajoint_analysis_helpers import plot_horizontal_lines
+from jguides_2024.datajoint_nwb_utils.datajoint_cross_validation_table_helpers import \
     insert_cross_validation_table
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.time_and_trials.jguidera_condition_trials import ConditionTrials, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SelBase, ComputedBase
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.time_and_trials.jguidera_condition_trials import ConditionTrials, \
     populate_jguidera_condition_trials
-from src.jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohort
+from jguides_2024.time_and_trials.jguidera_res_time_bins_pool import ResTimeBinsPoolCohort
 
 # Needed for table definitions
 nd
@@ -35,7 +37,7 @@ class LOOCTTrainTestSplit(ComputedBase):
     # Train and test indices for leave one out cross validation on condition trials
     -> LOOCTTrainTestSplitSel
     ---
-    -> nd.common.AnalysisNwbfile
+    -> AnalysisNwbfile
     train_set_df_object_id = "none" : varchar(40)
     test_set_df_object_id = "none" : varchar(40)
     train_test_set_df_object_id : varchar(40)
@@ -87,6 +89,6 @@ def populate_jguidera_leave_one_out_condition_trials_cross_validation(
 
 
 def drop_jguidera_leave_one_out_condition_trials_cross_validation():
-    from src.jguides_2024.time_and_trials.jguidera_cross_validation_pool import drop_jguidera_cross_validation_pool
+    from jguides_2024.time_and_trials.jguidera_cross_validation_pool import drop_jguidera_cross_validation_pool
     drop_jguidera_cross_validation_pool()
     schema.drop()

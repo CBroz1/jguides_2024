@@ -2,19 +2,19 @@ import datajoint as dj
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, ComputedBase, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_base import SecKeyParamsBase, ComputedBase, \
     ParamNameBase, PartBase
-from src.jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import convert_array_none, make_param_name, \
+from jguides_2024.datajoint_nwb_utils.datajoint_table_helpers import convert_array_none, make_param_name, \
     insert1_print, get_key_filter
-from src.jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
-from src.jguides_2024.metadata.jguidera_metadata import TaskIdentification
-from src.jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolCohort, TrialsPoolCohortParams, \
+from jguides_2024.datajoint_nwb_utils.schema_helpers import populate_schema
+from jguides_2024.metadata.jguidera_metadata import TaskIdentification
+from jguides_2024.time_and_trials.jguidera_trials_pool import TrialsPoolCohort, TrialsPoolCohortParams, \
     populate_jguidera_trials_pool
-from src.jguides_2024.utils.dict_helpers import sort_dict_by_keys
-from src.jguides_2024.utils.interval_helpers import CombineIntervalLists
-from src.jguides_2024.utils.list_helpers import zip_adjacent_elements
-from src.jguides_2024.utils.plot_helpers import plot_intervals, format_ax
-from src.jguides_2024.utils.point_process_helpers import bins_in_intervals_bool
+from jguides_2024.utils.dict_helpers import sort_dict_by_keys
+from jguides_2024.utils.interval_helpers import CombineIntervalLists
+from jguides_2024.utils.list_helpers import zip_adjacent_elements
+from jguides_2024.utils.plot_helpers import plot_intervals, format_ax
+from jguides_2024.utils.point_process_helpers import bins_in_intervals_bool
 
 schema = dj.schema("jguidera_res_set")
 
@@ -324,8 +324,8 @@ def populate_jguidera_res_set(key=None, tolerate_error=False, populate_upstream_
 
 
 def drop_jguidera_res_set():
-    from src.jguides_2024.spikes.jguidera_res_spikes import drop_jguidera_res_spikes
-    from src.jguides_2024.time_and_trials.jguidera_res_time_bins import drop_jguidera_res_time_bins
+    from jguides_2024.spikes.jguidera_res_spikes import drop_jguidera_res_spikes
+    from jguides_2024.time_and_trials.jguidera_res_time_bins import drop_jguidera_res_time_bins
     drop_jguidera_res_spikes()
     drop_jguidera_res_time_bins()
     schema.drop()
