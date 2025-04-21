@@ -236,7 +236,7 @@ def _get_fr_df_unit_ids_two_entries(key, fr_df, original_key_names):
             )  # check same bin edges across epochs
             == _unit_data(fr_df_2, unit_id, "ppt_bin_edges")
         ):
-            raise Exception(f"Bin edges across epochs dont match")
+            raise Exception("Bin edges across epochs dont match")
     return fr_df_1, fr_df_2, unit_ids
 
 

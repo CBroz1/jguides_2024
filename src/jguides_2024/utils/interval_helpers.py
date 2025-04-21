@@ -23,7 +23,7 @@ def check_intervals_list(intervals, require_monotonic_increasing=True):
     # Require intervals to be n by 2 dimensional
     check_n_by_2(
         intervals,
-        error_message=f"arr must have dimension n x 2 (should contain a list of start/stop times in rows)",
+        error_message="arr must have dimension n x 2 (should contain a list of start/stop times in rows)",
     )
     # Check interval starts before interval ends
     check_interval_start_before_end(*zip(*intervals))
@@ -67,7 +67,7 @@ def apply_merge_close_intervals(intervals_1, merge_threshold, intervals_2):
     :return: intervals_2 after merging corresponding rows that were merged in intervals_1
     """
     if np.shape(intervals_1) != np.shape(intervals_2):
-        raise Exception(f"intervals_1 and intervals_2 must have same shape")
+        raise Exception("intervals_1 and intervals_2 must have same shape")
     start_bool, end_bool = merge_close_intervals_bool(
         intervals_1, merge_threshold
     )
@@ -117,7 +117,7 @@ def check_interval_start_before_end(start_times, end_times):
     # Check that interval end times after interval start times
     if any(np.asarray(end_times) - np.asarray(start_times) < 0):
         raise Exception(
-            f"All interval end times must be after interval start times"
+            "All interval end times must be after interval start times"
         )
 
 
@@ -198,7 +198,7 @@ def match_samples_to_intervals(samples, intervals):
     idxs = np.searchsorted(np.concatenate(intervals), samples)
     if not all(idxs % 2 == 1):
         raise Exception(
-            f"At least one element in samples is not within any interval in intervals"
+            "At least one element in samples is not within any interval in intervals"
         )
     return np.asarray((idxs - 1) / 2).astype(int)
 
@@ -331,7 +331,7 @@ class CombineIntervalLists:
 
             # Case 2: List with interval lists is empty: raise error
             if len(combination_interval_list_names) == 0:
-                raise Exception(f"No interval list names passed")
+                raise Exception("No interval list names passed")
 
             # Case 3: More than one interval list passed
             else:
@@ -496,7 +496,7 @@ def fill_trial_values(
     # Check same number of trial values and trials in trials valid bool
     if len(trial_values) != len(trials_valid_bools):
         raise Exception(
-            f"trial_values and trials_valid_bools should have same length"
+            "trial_values and trials_valid_bools should have same length"
         )
 
     # Initialize vector to return as pandas series

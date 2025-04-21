@@ -53,7 +53,7 @@ def populate_schema(
             tolerate_error=tolerate_error,
         )
 
-    print(f"\n")
+    print("\n")
 
 
 def check_schema_populated(schema_name, key):

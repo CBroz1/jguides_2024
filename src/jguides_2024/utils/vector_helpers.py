@@ -14,7 +14,7 @@ from jguides_2024.utils.check_well_defined import check_one_none
 def expand_interval(interval, expand_amount=None, expand_factor=None):
     # Check inputs well defined
     if len(interval) != 2:
-        raise Exception(f"interval must have two entries")
+        raise Exception("interval must have two entries")
     check_one_none(
         [expand_amount, expand_factor], ["expand_amount", "expand_factor"]
     )
@@ -91,7 +91,7 @@ def unpack_single_vector(vectors, error_message=None):
 
 def vector_midpoints(x):
     if len(np.shape(x)) != 1:
-        raise Exception(f"x must be 1D array-like")
+        raise Exception("x must be 1D array-like")
     return x[:-1] + np.diff(x) / 2
 
 
@@ -116,7 +116,7 @@ def check_uniform_spacing(x, valid_diff_mask=None, error_tolerance=None):
     )  # max tolerated sample time diff deviation from average
     if abs(np.max(abs(x_diff)) - np.median(x_diff)) > epsilon:
         raise Exception(
-            f"Difference between sample times deviates from average by more than tolerance"
+            "Difference between sample times deviates from average by more than tolerance"
         )
 
 
@@ -162,7 +162,7 @@ def vectors_finite_idxs(arr):
     """
 
     if len(np.unique([len(x) for x in arr])) != 1:
-        raise Exception(f"Elements of passed list must all be same length")
+        raise Exception("Elements of passed list must all be same length")
 
     return np.isfinite(np.sum(np.asarray(arr), axis=0))
 
@@ -202,7 +202,7 @@ def unpack_single_element(x, tolerate_no_entry=False, return_no_entry=None):
 
 def check_in_range(p, r):
     if len(r) != 2:
-        raise Exception(f"Range must have two elements")
+        raise Exception("Range must have two elements")
     if not np.logical_and(p >= np.min(r), p <= np.max(r)):
         raise Exception(f"{p} not in range {r}")
 
@@ -211,7 +211,7 @@ def check_all_whole(x):
     if not all(
         [x_i == int(x_i) for x_i in x]
     ):  # return True if all entries in x are whole numbers
-        raise Exception(f"Not all entries in x are whole numbers")
+        raise Exception("Not all entries in x are whole numbers")
 
 
 def check_all_unique(x, tolerate_error=False):
@@ -223,7 +223,7 @@ def check_all_unique(x, tolerate_error=False):
         return passed_check
     # Otherwise, raise exception if failed check
     if not passed_check:
-        raise Exception(f"Not all elements unique")
+        raise Exception("Not all elements unique")
 
 
 def find_spans_increasing_list(x, max_diff=1, slice_idxs=False, verbose=False):
@@ -332,9 +332,9 @@ def cosine_similarity_one_to_many(reference_vector, comparison_vectors):
 
 def cosine_similarity_vector_groups(vectors_by_group):
     if np.unique([len(np.shape(arr)) for arr in vectors_by_group]) != 2:
-        raise Exception(f"All arrays must be 2D")
+        raise Exception("All arrays must be 2D")
     if len(np.unique([np.shape(arr)[1] for arr in vectors_by_group])) != 1:
-        raise Exception(f"All arrays must have same second dimension")
+        raise Exception("All arrays must have same second dimension")
 
     def _arr_idxs(m, i, j):
         return list(map(int, m * i + j - ((i + 2) * (i + 1)) / 2))
@@ -398,9 +398,9 @@ def overlap(x, y, normalized=None):
 
     z = list(x) + list(y)
     if not all(np.isfinite(z)):
-        raise Exception(f"All elements must be finite")
+        raise Exception("All elements must be finite")
     if not all(np.asarray(z) >= 0):
-        raise Exception(f"All elements must be nonnegative")
+        raise Exception("All elements must be nonnegative")
 
     # First normalize each curve to have area of one, if indicated
     if normalized:
@@ -434,7 +434,7 @@ def index_vectors(vectors, idx):
 
 def check_monotonic_increasing(x):
     if not all(np.diff(x) >= 0):
-        raise Exception(f"x must be monotonic increasing")
+        raise Exception("x must be monotonic increasing")
 
 
 def min_max(x):
@@ -443,9 +443,9 @@ def min_max(x):
 
 def fraction_in_interval(x, interval):
     if len(interval) != 2:
-        raise Exception(f"Interval must have exactly two elements")
+        raise Exception("Interval must have exactly two elements")
     if not all(np.logical_and(x - interval[0] >= 0, x - interval[1] <= 0)):
-        raise Exception(f"All elements of x must be within interval")
+        raise Exception("All elements of x must be within interval")
     return (x - interval[0]) / np.diff(interval)[0]
 
 
@@ -491,7 +491,7 @@ def match_increasing_elements(x1, x2, check_x2_dense_in_x1=True):
     # element.
     if check_x2_dense_in_x1:
         if not all(valid_post_match_bool[:-1]):
-            raise Exception(f"x2 should be dense in x1")
+            raise Exception("x2 should be dense in x1")
     post_match_idxs = post_match_idxs[
         valid_post_match_bool
     ]  # exclude idxs outside x2
@@ -577,8 +577,8 @@ def histogram_disjoint_intervals(
         and not tolerate_overlapping_edges
     ):
         raise Exception(
-            f"entries in bin_edges list must be strictly increasing, "
-            f"since otherwise events in x could be double counted"
+            "entries in bin_edges list must be strictly increasing, "
+            "since otherwise events in x could be double counted"
         )
 
     return np.concatenate(
@@ -601,6 +601,6 @@ def unique_in_order(x):
 
     unique_elements = []
     for x_i in x:
-        if not tuple(x_i) in [tuple(z) for z in unique_elements]:
+        if tuple(x_i) not in [tuple(z) for z in unique_elements]:
             unique_elements.append(x_i)
     return unique_elements

@@ -177,8 +177,8 @@ def hierarchical_bootstrap(
         == 1
     ):
         raise Exception(
-            f"Either ave_diff_group_column_names_ and ave_diff_column_name_ must both be None, or must "
-            f"both not be None"
+            "Either ave_diff_group_column_names_ and ave_diff_column_name_ must both be None, or must "
+            "both not be None"
         )
 
     # Note that declaring variables as global allows us to not pass to function in for loop, and this
@@ -211,7 +211,7 @@ def hierarchical_bootstrap(
         # ...raise error if no pairs found
         if len(x_pairs) == 0:
             raise Exception(
-                f"No pairs found for which to find bootstrapped average difference"
+                "No pairs found for which to find bootstrapped average difference"
             )
         # Define name of column with pairs
         ave_diff_pair_column_names = [

@@ -220,8 +220,8 @@ class ResSetParams(SecKeyParamsBase):
         # Check that exactly one param name
         if len(trials_pool_param_names) != 1:
             raise Exception(
-                f"Must have exactly one entry in trials_pool_param_names to be able to "
-                f"insert no combination case"
+                "Must have exactly one entry in trials_pool_param_names to be able to "
+                "insert no combination case"
             )
 
         # Define combination params
@@ -246,8 +246,8 @@ class ResSetParams(SecKeyParamsBase):
         # Check that at least two param names, otherwise cannot do intersection
         if len(trials_pool_param_names) < 2:
             raise Exception(
-                f"Must have at least two entries in trials_pool_param_names to be able to "
-                f"intersect trial sets"
+                "Must have at least two entries in trials_pool_param_names to be able to "
+                "intersect trial sets"
             )
 
         # Each combination is between two elements. Therefore, we iteratively intersect trial sets
@@ -291,8 +291,8 @@ class ResSetParams(SecKeyParamsBase):
         # Exit if no entries in TrialsPoolCohort
         if len(potential_keys) == 0:
             print(
-                f"No entries in TrialsPoolCohort that could be used for simple intersection, so cannot insert "
-                f"test entry into ResSetParams; exiting"
+                "No entries in TrialsPoolCohort that could be used for simple intersection, so cannot insert "
+                "test entry into ResSetParams; exiting"
             )
             return
 
@@ -336,7 +336,7 @@ class ResSetParams(SecKeyParamsBase):
         )  # convert ["none"] to None
 
     def delete_(self, key):
-        raise Exception(f"need to write")
+        raise Exception("need to write")
         # TODO (feature): figure out if a good way to track entries up through pipeline from here. currently
         #  challenging because many different param names. leads to proposal to delete entries that are not
         #  dependent on what we want to delete.

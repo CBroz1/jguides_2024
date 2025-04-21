@@ -31,9 +31,9 @@ def check_num_units(num_units, max_num_units=None):
 
     # Check num_units well defined
     if not isinstance(num_units, int):
-        raise Exception(f"num_units must be an integer")
+        raise Exception("num_units must be an integer")
     if num_units < 1:
-        raise Exception(f"num_units must be greater than zero")
+        raise Exception("num_units must be greater than zero")
     if max_num_units is not None:
         if num_units > max_num_units:
             raise Exception(f"num_units must be less than {max_num_units}")
@@ -48,6 +48,6 @@ def check_unit_subset_vars(unit_subset, num_units, max_num_units=None):
     """
 
     if not isinstance(unit_subset, bool):
-        raise Exception(f"unit_subset must be a boolean")
+        raise Exception("unit_subset must be a boolean")
     if unit_subset:
         check_num_units(num_units, max_num_units)

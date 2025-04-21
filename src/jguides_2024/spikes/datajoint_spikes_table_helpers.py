@@ -64,7 +64,7 @@ def spikes_table_data_across_sort_groups(
     # Check that sort_group_id_label_map not empty (if it is, error results)
     if sort_group_id_label_map is not None:
         if len(sort_group_id_label_map) == 0:
-            raise Exception(f"No entries in sort_group_id_label_map")
+            raise Exception("No entries in sort_group_id_label_map")
 
     # Make copy of key to avoid altering the passed key
     key = copy.deepcopy(key)
@@ -186,7 +186,7 @@ def firing_rate_across_sort_groups_epochs(
     if keys is not None:
         if len(keys) != len(epochs):
             raise Exception(
-                f"Length of passed keys must be same as number of epochs"
+                "Length of passed keys must be same as number of epochs"
             )
 
     # If single key passed, copy to avoid changing outside function and convert to keys

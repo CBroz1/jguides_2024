@@ -106,7 +106,7 @@ def get_curation_spreadsheet_notes(
     """
 
     # Define directory with service account file
-    service_account_dir = f"/home/jguidera/Src/jguides_2024_archive/nwb_custom_analysis_untracked/spikesorting_notebooks/curation_merge_notes"
+    service_account_dir = "/home/jguidera/Src/jguides_2024_archive/nwb_custom_analysis_untracked/spikesorting_notebooks/curation_merge_notes"
 
     # Define name of service account file
     service_account_json = "frank-lab-jupyter-01e1afefcf28.json"
@@ -361,7 +361,7 @@ def make_curation_data(
     if not ignore_invalid_sort_group_ids and not set(sort_group_ids).issubset(
         set(valid_sort_group_ids)
     ):
-        raise ValueError(f"List of sort groups includes invalid sort group IDs")
+        raise ValueError("List of sort groups includes invalid sort group IDs")
 
     # Get correlogram default params
     default_params = get_correlogram_default_params()
@@ -458,7 +458,7 @@ def make_curation_data(
 
         # Get timestamps
         if verbose:
-            print(f"Getting timestamps...")
+            print("Getting timestamps...")
         recording_path = (SpikeSortingRecording & sort_group_key).fetch1(
             "recording_path"
         )
@@ -473,7 +473,7 @@ def make_curation_data(
         # Get spikes data
 
         if verbose:
-            print(f"Getting spikes data...")
+            print("Getting spikes data...")
 
         # ...First get valid unit IDs, for the passed curation_id and metric restrictions.
         # If not unit IDs for given sort group, continue
@@ -569,7 +569,7 @@ def make_curation_data(
                 # Get max cosine similarity across waveforms shifts
                 if verbose:
                     print(
-                        f"Getting max cosine similarity across waveform shifts..."
+                        "Getting max cosine similarity across waveform shifts..."
                     )
                 data_subset["max_cosine_similarities"] = (
                     get_max_shift_cosine_similarities(
@@ -579,14 +579,14 @@ def make_curation_data(
 
                 # Get cosine similarity
                 if verbose:
-                    print(f"Getting cosine similarities...")
+                    print("Getting cosine similarities...")
                 data_subset["cosine_similarities"] = get_cosine_similarities(
                     data_subset["average_waveforms"]
                 )
 
                 # Get correlogram quantities
                 if verbose:
-                    print(f"Getting correlograms...")
+                    print("Getting correlograms...")
                 data_subset["correlograms"] = get_correlograms(
                     data_subset["spike_times"],
                     max_dt=correlogram_max_dt,
@@ -615,7 +615,7 @@ def make_curation_data(
 
                 # Get amplitude overlap
                 if verbose:
-                    print(f"Getting amplitude overlaps...")
+                    print("Getting amplitude overlaps...")
                 data_subset["amplitude_overlaps"] = get_amplitude_overlaps(
                     data_subset
                 )
@@ -634,7 +634,7 @@ def make_curation_data(
                 if include_amplitude_decrement_quantities:
                     # Get amplitude decrement metrics
                     if verbose:
-                        print(f"Getting amplitude decrement quantities...")
+                        print("Getting amplitude decrement quantities...")
                     for max_dt in [0.015, 0.4]:
                         data_subset[f"amplitude_decrements_{max_dt}"] = (
                             get_unit_amplitude_decrements(data_subset, max_dt)
@@ -650,7 +650,7 @@ def make_curation_data(
 
                     # Valid lower amplitude fractions
                     if verbose:
-                        print(f"Getting valid lower amplitude fractions...")
+                        print("Getting valid lower amplitude fractions...")
                     data_subset["valid_lower_amplitude_fractions"] = (
                         get_valid_lower_amplitude_fractions(data_subset)
                     )

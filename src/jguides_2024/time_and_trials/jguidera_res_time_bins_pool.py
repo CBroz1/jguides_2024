@@ -487,7 +487,7 @@ class ResTimeBinsPoolCohortParams(PoolCohortParamsBase):
         # Check same number of epochs and res_time_bins_pool_param_names
         if len(key["epochs"]) != len(key["res_time_bins_pool_param_names"]):
             raise Exception(
-                f"Must have same number of epochs and res_time_bins_pool_param_names"
+                "Must have same number of epochs and res_time_bins_pool_param_names"
             )
         # Run base class insert1 and forgo checking that iterables unique (they need not be here; we checked that
         # iterables valid above)
@@ -539,7 +539,7 @@ class ResTimeBinsPoolCohortParams(PoolCohortParamsBase):
             }
             if len(ResTimeBinsPoolSel & upstream_key) == 0:
                 raise Exception(
-                    f"cannot insert entry because no corresponding entries in upstream table"
+                    "cannot insert entry because no corresponding entries in upstream table"
                 )
         # Insert into table
         self.insert1(key)
@@ -741,8 +741,8 @@ class ResTimeBinsPoolCohortParams(PoolCohortParamsBase):
         )
         if not valid_approach_taken:
             raise Exception(
-                f"Must pass EITHER pool_param_names, OR key_search_params_list "
-                f"and key_search_params_list"
+                "Must pass EITHER pool_param_names, OR key_search_params_list "
+                "and key_search_params_list"
             )
 
         # Get param names for each cohort entry if these were not passed
@@ -820,8 +820,8 @@ class ResTimeBinsPoolCohortParams(PoolCohortParamsBase):
 
     def cleanup(self, safemode=True):
         print(
-            f"Before clearing entries in ResTimeBinsPoolCohortParams with no upstream entry in ResTimeBinsPool, "
-            f"populating ResTimeBinsPool..."
+            "Before clearing entries in ResTimeBinsPoolCohortParams with no upstream entry in ResTimeBinsPool, "
+            "populating ResTimeBinsPool..."
         )
         ResTimeBinsPool.populate()
         for key in self.fetch("KEY"):

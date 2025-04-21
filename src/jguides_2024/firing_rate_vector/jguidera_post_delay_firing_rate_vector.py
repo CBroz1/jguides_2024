@@ -99,7 +99,7 @@ class RelPostDelFRVecSel(CovariateFRVecSelBase):
     def _get_potential_keys(self, key_filter=None, verbose=True):
 
         if verbose:
-            print(f"getting potential keys for RelPostDelFRVecSel...")
+            print("getting potential keys for RelPostDelFRVecSel...")
 
         min_epoch_mean_firing_rate = 0.1
         brain_region_cohort_name = "all_targeted"
@@ -166,7 +166,7 @@ class RelPostDelFRVecSel(CovariateFRVecSelBase):
                     key.update({"curation_name": curation_name})
 
                     if verbose:
-                        print(f"on unit subset cases...")
+                        print("on unit subset cases...")
                     for unit_subset_iteration in unit_subset_iterations:
                         unit_params.update(
                             {"unit_subset_iteration": unit_subset_iteration}

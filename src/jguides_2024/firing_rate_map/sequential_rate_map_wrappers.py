@@ -260,7 +260,7 @@ class SmoothedFiringRateMaps:
             self.parameters["trial_param_names"]
         ):
             raise Exception(
-                f"Same number of trial align events and trial param names must be passed (these correspond 1:1)"
+                "Same number of trial align events and trial param names must be passed (these correspond 1:1)"
             )
 
         # Check that trial_align_events valid
@@ -695,9 +695,9 @@ class SmoothedFiringRateMaps:
 
         # Check inputs
         if len(epoch_pair) != 2:
-            raise Exception(f"epoch_pair must have exactly two elements")
+            raise Exception("epoch_pair must have exactly two elements")
         if len(label_name_pair) != 2:
-            raise Exception(f"label_name_pair must have exactly two elements")
+            raise Exception("label_name_pair must have exactly two elements")
 
         # Try both orderings of path names and ensure at most one is present
         if (
@@ -758,9 +758,9 @@ class SmoothedFiringRateMaps:
 
         # Check inputs
         if len(epoch_pair) != 2:
-            raise Exception(f"epoch_pair must have exactly two elements")
+            raise Exception("epoch_pair must have exactly two elements")
         if len(label_name_pair) != 2:
-            raise Exception(f"label_name_pair must have exactly two elements")
+            raise Exception("label_name_pair must have exactly two elements")
 
         # Try both orderings of path names and ensure at most one is present
         if (
@@ -1381,8 +1381,8 @@ class SmoothedFiringRateMaps:
                                 if tolerate_empty_plot:
                                     continue
                                 raise Exception(
-                                    f"unit_order is empty. Make sure reference_epoch, targeted_location, "
-                                    f"reference_trial_align_event, use_reference_trial_feature_value are what you expect"
+                                    "unit_order is empty. Make sure reference_epoch, targeted_location, "
+                                    "reference_trial_align_event, use_reference_trial_feature_value are what you expect"
                                 )
 
                             # Get axis

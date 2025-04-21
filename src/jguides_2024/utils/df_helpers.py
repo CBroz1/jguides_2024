@@ -215,10 +215,10 @@ def copy_df_columns(
 ):
     # Check inputs
     if len(copy_from_df) != len(copy_to_df):
-        raise Exception(f"copy_from_df and copy_to_df must be same length")
+        raise Exception("copy_from_df and copy_to_df must be same length")
     if not allow_overwrite and any([k in copy_to_df for k in column_names]):
         raise Exception(
-            f"Some of column_names already exist in copy_to_df, which isnt allowed when allow_overwrite is False"
+            "Some of column_names already exist in copy_to_df, which isnt allowed when allow_overwrite is False"
         )
     for k in column_names:
         copy_to_df[k] = copy_from_df[k]
@@ -269,7 +269,7 @@ def add_column_to_df(df, column, column_name):
 def check_single_df(dfs, tolerate_error=False):
     passed_check = all([df.equals(dfs[0]) for df in dfs[1:]])
     if not tolerate_error and not passed_check:
-        raise Exception(f"list of dfs must contain identical dfs")
+        raise Exception("list of dfs must contain identical dfs")
     return passed_check
 
 
@@ -308,8 +308,8 @@ def df_filter1_columns_symmetric(
     # Check inputs
     if not all([isinstance(x, dict) for x in [column_set_1, column_set_2]]):
         raise Exception(
-            f"column_sets must be dictionaries but this was not the case for at least one of "
-            f"column_set_1 and column_set_2"
+            "column_sets must be dictionaries but this was not the case for at least one of "
+            "column_set_1 and column_set_2"
         )
 
     def _get_df_key(d1, d2):
@@ -350,13 +350,13 @@ def df_filter1_columns_symmetric(
                 0
             ]  # all members of df_entries are empty dfs, so just return the first
         # Otherwise raise exception
-        raise Exception(f"No df entries found")
+        raise Exception("No df entries found")
     # If one df entry found, return entry
     elif len(nonempty_df_entries) == 1:
         return unpack_single_element(nonempty_df_entries)
     # If more than one df entry found, raise error
     else:
-        raise Exception(f"Found more than one df entry")
+        raise Exception("Found more than one df entry")
 
 
 def restore_df_columns(

@@ -155,5 +155,5 @@ format_ax(
 )
 
 # Save figure
-file_name = f"performance_summary_single_contingency"
+file_name = "performance_summary_single_contingency"
 save_figure(fig, file_name, save_fig=save_fig)

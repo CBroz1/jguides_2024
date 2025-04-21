@@ -320,7 +320,7 @@ class TimeExpecVal(CovDigmethBase):
         trial_times = table_entry.get_post_delay_or_departure_trials()
         if len(epoch_trial_nums) != len(trial_times):
             raise Exception(
-                f"different number of trial numbers and trial times"
+                "different number of trial numbers and trial times"
             )
 
         # Find the index of the trial interval in which each time falls
@@ -395,7 +395,7 @@ class TimeExpecVal(CovDigmethBase):
 
             # Check exclusion type passed if want to exclude
             if "exclusion_types" not in exclusion_params:
-                raise Exception(f"exclusion_types must be in exclusion_params")
+                raise Exception("exclusion_types must be in exclusion_params")
 
             # Check exclusion types valid
             exclusion_types = exclusion_params["exclusion_types"]

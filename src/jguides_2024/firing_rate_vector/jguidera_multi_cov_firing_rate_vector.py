@@ -194,7 +194,7 @@ class MultiCovFRVecSel(CovariateFRVecSelBase):
         # Approach: avoid a combinatorial explosion of entries
 
         if verbose:
-            print(f"getting potential keys for MultiCovFRVecSel...")
+            print("getting potential keys for MultiCovFRVecSel...")
 
         min_epoch_mean_firing_rate = 0.1
         brain_region_cohort_name = "all_targeted"
@@ -262,7 +262,7 @@ class MultiCovFRVecSel(CovariateFRVecSelBase):
                     key.update({"curation_name": curation_name})
 
                     if verbose:
-                        print(f"on unit subset cases...")
+                        print("on unit subset cases...")
                     for unit_subset_iteration in unit_subset_iterations:
                         unit_params.update(
                             {"unit_subset_iteration": unit_subset_iteration}
@@ -444,7 +444,7 @@ class MultiCovFRVec(CovariateFRVecBase):
             # Check that no overlap in new bin numbers and running list
             if any(x in new_bin_nums for x in new_table_bin_numbers):
                 raise Exception(
-                    f"bin numbers from current table overlap with previous ones"
+                    "bin numbers from current table overlap with previous ones"
                 )
             # Update running list with all bin numbers
             new_bin_nums += new_table_bin_numbers

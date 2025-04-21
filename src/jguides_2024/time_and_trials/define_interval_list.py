@@ -61,8 +61,8 @@ class NewIntervalList:
             ]
         ):
             raise Exception(
-                f"no entry in valid_starting_interval_list_names is allowed to be contained within "
-                f"another"
+                "no entry in valid_starting_interval_list_names is allowed to be contained within "
+                "another"
             )
         return valid_starting_interval_list_names
 
@@ -124,9 +124,9 @@ class NewIntervalList:
             new_interval_list_name
         ):
             raise Exception(
-                f"starting_interval_list_names not as expected; one way this can happen is if passed "
-                f"new_interval_list_name is not constructed solely from _valid_starting_interval_list_names"
-                f" and exclusion text"
+                "starting_interval_list_names not as expected; one way this can happen is if passed "
+                "new_interval_list_name is not constructed solely from _valid_starting_interval_list_names"
+                " and exclusion text"
             )
         return starting_interval_list_names
 

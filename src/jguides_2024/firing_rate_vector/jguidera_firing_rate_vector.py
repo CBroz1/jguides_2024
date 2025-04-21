@@ -93,7 +93,7 @@ class FRVecSel(SelBase):
             elif "epoch" in key:
                 epochs = [key["epoch"]]
             else:
-                raise Exception(f"epochs_id not in key, and no way to define")
+                raise Exception("epochs_id not in key, and no way to define")
             key["epochs_id"] = get_epochs_id(epochs)
         # ...check for case 1: all runs
         key.pop("epoch")  # drop epoch and use just epochs_id
@@ -116,7 +116,7 @@ class FRVecSel(SelBase):
 
     def _get_potential_keys(self, key_filter=None):
 
-        print(f"Getting potential keys for FRVecSel...")
+        print("Getting potential keys for FRVecSel...")
 
         # Get inputs if not passed
         if key_filter is None:
@@ -357,9 +357,9 @@ class FRVecSel(SelBase):
         verbose = key_filter.pop("verbose", True)
         if verbose:
             print(
-                f"Cases of missing sort group IDs in ResEpochSpikesSmDs preventing population of FRVecSel: "
-                f"(Note that the following only includes entries in immediate upstream tables (so files of "
-                f"interest that are not in those upstream tables will not be printed here))"
+                "Cases of missing sort group IDs in ResEpochSpikesSmDs preventing population of FRVecSel: "
+                "(Note that the following only includes entries in immediate upstream tables (so files of "
+                "interest that are not in those upstream tables will not be printed here))"
             )
             missing_summary = list(set(missing_summary))
             missing_summary.sort(
@@ -477,7 +477,7 @@ class FRVec(ComputedBase):
 
         # Check inputs
         if "sort_group_id" in key:
-            raise Exception(f"sort_group_id must not be in key")
+            raise Exception("sort_group_id must not be in key")
 
         # Get inputs to firing rate across function
         sort_group_unit_ids_map, sort_group_id_label_map, label_name = (

@@ -120,7 +120,7 @@ def get_brain_region_from_targeted_location(targeted_location):
 def get_targeted_location_from_brain_region(brain_region):
     # Check input has expected form
     if brain_region[-9:] != "_targeted":
-        raise Exception(f"brain_region must end with _targeted")
+        raise Exception("brain_region must end with _targeted")
     return brain_region.split("_targeted")[0]
 
 

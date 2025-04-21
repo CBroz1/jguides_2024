@@ -69,7 +69,7 @@ class PCAContainer:
         # Check inputs
         if axes is not None:
             if len(axes) != 2:
-                raise Exception(f"axes must be 2 dimensional")
+                raise Exception("axes must be 2 dimensional")
         # Initialize plot if not passed
         if axes is None:
             fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)

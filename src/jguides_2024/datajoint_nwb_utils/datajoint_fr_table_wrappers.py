@@ -635,7 +635,7 @@ class PlotSTFRMap:
                     }
 
                 else:
-                    raise Exception(f"case not accounted for")
+                    raise Exception("case not accounted for")
 
                 # Get max y value of lines. For first subplot with single trial firing rates, set
                 # always to max y value in each plot (to avoid bars that go up past where trials end).
@@ -712,9 +712,9 @@ def order_units_by_trial_segments_fr(
         )
         and well_name is None
     ):
-        raise Exception(f"well_name should have been passed")
+        raise Exception("well_name should have been passed")
     if "FrmapPuptSm" in df_names and path_name is None:
-        raise Exception(f"path_name should have been passed")
+        raise Exception("path_name should have been passed")
 
     # Define key for querying tables
     key = {

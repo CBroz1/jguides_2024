@@ -269,7 +269,7 @@ class CovariateFRVecParamsBase(SecKeyParamsBase):
             ).single_element
         else:
             raise Exception(
-                f"case not accounted for in getting labels description"
+                "case not accounted for in getting labels description"
             )
 
     def update_labels(self, labels):
@@ -393,7 +393,7 @@ class CovariateFRVecBase(ComputedBase):
 
         # Separate method so can access inputs from outside make function (alternative would be to store these,
         # but that would be wasteful of space since computation isn't happening to get these inputs)
-        raise Exception(f"This method should be implemented in child class")
+        raise Exception("This method should be implemented in child class")
 
     def _plot_labels(self, labels_pre_post_alteration, labels, verbose, ax):
 
@@ -524,13 +524,13 @@ class CovariateFRVecBase(ComputedBase):
         return pd.concat(dfs, axis=0)
 
     def get_bin_centers(self):
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     def get_valid_covariate_bin_nums(self, key):
-        raise Exception(f"This method should be implemented in child class")
+        raise Exception("This method should be implemented in child class")
 
     def get_bin_centers_map(self, **kwargs):
-        raise Exception(f"This method should be implemented in child class")
+        raise Exception("This method should be implemented in child class")
 
     def metric_across_epochs(self, key, metric_name, vector_type):
 
@@ -599,9 +599,9 @@ class CovariateFRVecBase(ComputedBase):
         # ...first check that no None in labels
         if any([x is None for x in labels]):
             raise Exception(
-                f"Code expects no None in labels to be able to check whether "
-                f"even/odd assigned to all labels. Must make changes to code if "
-                f"want to allow None in labels"
+                "Code expects no None in labels to be able to check whether "
+                "even/odd assigned to all labels. Must make changes to code if "
+                "want to allow None in labels"
             )
         # ...now initialize vector with None
         new_labels = np.asarray([None] * len(labels))
@@ -619,7 +619,7 @@ class CovariateFRVecBase(ComputedBase):
 
         # Raise error if could not assign even/odd to all labels
         if any([x is None for x in new_labels]):
-            raise Exception(f"could not assign even/odd to all labels")
+            raise Exception("could not assign even/odd to all labels")
 
         # Return labels
         return pd.Series(new_labels, index=labels.index)
@@ -994,7 +994,7 @@ class CovariateFRVecAveSelBase(SelBase):
     @staticmethod
     def _fr_vec_table():
 
-        raise Exception(f"Must override this method in child class")
+        raise Exception("Must override this method in child class")
 
     def _get_cov_fr_vec_param_names(self):
 
@@ -1105,7 +1105,7 @@ class CovariateFRVecAveBase(ComputedBase):
     @staticmethod
     def _fr_vec_table():
 
-        raise Exception(f"This method should be overwritten in child class")
+        raise Exception("This method should be overwritten in child class")
 
     def _get_label_relationship_inputs(
         self,
@@ -1140,8 +1140,8 @@ class CovariateFRVecAveBase(ComputedBase):
     def _metric_column_name(metric_name):
 
         raise Exception(
-            f"This method should be overwritten in child class and provide a map from metric name"
-            f" to name of column with metric"
+            "This method should be overwritten in child class and provide a map from metric name"
+            " to name of column with metric"
         )
 
     def _get_param_quantity(self, param_quantity_name):
@@ -1252,7 +1252,7 @@ class CovariateFRVecAveBase(ComputedBase):
 
         # Check inputs
         if not all([float(x).is_integer() for x in [epoch_1, epoch_2]]):
-            raise Exception(f"epoch_1 and epoch_2 must both be integers")
+            raise Exception("epoch_1 and epoch_2 must both be integers")
 
         return cls._eps_labels_split_char().join(
             [str(epoch_1), str(epoch_2), label_1, label_2]
@@ -1322,8 +1322,8 @@ class CovariateFRVecAveBase(ComputedBase):
         # Raise error if metric map empty
         if len(metric_map) == 0:
             raise Exception(
-                f"metric_map empty. Check if the variable relationships is as expected. If it is not, "
-                f"check if label_name is as expected, as this determines relationships."
+                "metric_map empty. Check if the variable relationships is as expected. If it is not, "
+                "check if label_name is as expected, as this determines relationships."
             )
         # Convert to dfs
         return {k: pd.concat(v, axis=1) for k, v in metric_map.items()}
@@ -1348,7 +1348,7 @@ class CovariateFRVecAveBase(ComputedBase):
                 for x, y in zip(*z)
             ]
             if len(row_column_idxs) != len(set(row_column_idxs)):
-                raise Exception(f"Duplicate matrix entries. This is unexpected")
+                raise Exception("Duplicate matrix entries. This is unexpected")
 
         # We want to put entries for (label_1 = a, label_2 = b, epoch_1 = c, epoch_2 = d) in the same array,
         # regardless of whether label_1, epoch_1 comes "first" or "second" (i.e. whether
@@ -1447,7 +1447,7 @@ class CovariateFRVecAveBase(ComputedBase):
                     != 0
                 ):
                     raise Exception(
-                        f"overlapping elements across arrays; this is unexpected"
+                        "overlapping elements across arrays; this is unexpected"
                     )
 
                 # Put finite elements from first array into final array (use final since this corresponds with
@@ -1700,7 +1700,7 @@ class CovariateFRVecAveBase(ComputedBase):
 
     def get_default_relationships(self, **kwargs):
         # Return relationships between entities (e.g. paths if a path-based table, wells if a well-based table)
-        raise Exception(f"Must be implemented in child class")
+        raise Exception("Must be implemented in child class")
 
     def _add_default_relationships(self, kwargs):
 
@@ -1739,7 +1739,7 @@ class CovariateFRVecAveBase(ComputedBase):
             pool.join()
 
         # Return concatenated entries
-        print(f"Returning df with concatenated entries...")
+        print("Returning df with concatenated entries...")
         df_concat = None
         if len(df_list) > 0:
             return pd.concat(df_list)
@@ -1956,7 +1956,7 @@ class CovariateFRVecAveBase(ComputedBase):
         # check that epochs same; current code assumes this
         if not all(df.epoch_1 == df.epoch_2):
             raise Exception(
-                f"Code currently only set up for case where epoch_1 equals epoch_2"
+                "Code currently only set up for case where epoch_1 equals epoch_2"
             )
         # find relationships for each row of df. There is one case where a matching relationship is expected
         # to not be found: if the two labels are not in a relationship that is coded up (e.g. path pairs that
@@ -1985,7 +1985,7 @@ class CovariateFRVecAveBase(ComputedBase):
         # raise error if no valid relationships found; this is unexpected
         if len(data_list) == 0:
             raise Exception(
-                f"No identified relationships matched those in passed relationships; this is unexpected"
+                "No identified relationships matched those in passed relationships; this is unexpected"
             )
 
         # make df
@@ -2006,7 +2006,7 @@ class CovariateFRVecAveBase(ComputedBase):
         # Raise error if empty df
         if len(df) == 0:
             raise Exception(
-                f"within get_same_diff_x_ratio_df. No entries left in df; this is unexpected"
+                "within get_same_diff_x_ratio_df. No entries left in df; this is unexpected"
             )
 
         return df
@@ -2030,7 +2030,7 @@ class CovariateFRVecAveBase(ComputedBase):
             from jguides_2024.utils.parallelization_helpers import show_error
 
         if keys is None:
-            raise Exception(f"Not yet coded")
+            raise Exception("Not yet coded")
 
         data_list = []
 
@@ -2717,7 +2717,7 @@ class PathWellPopSummBase(ComputedBase):
     @staticmethod
     def _upstream_table():
         # Return upstream covariate firing rate vector average table
-        raise Exception(f"Must be implemented in child class")
+        raise Exception("Must be implemented in child class")
 
     def _get_vals_index_name(self, **kwargs):
 
@@ -2747,7 +2747,7 @@ class PathWellPopSummBase(ComputedBase):
 
     def _get_relationship_div_column_params(self, **kwargs):
 
-        raise Exception(f"Must be defined in child class")
+        raise Exception("Must be defined in child class")
 
     @staticmethod
     def _get_pair_column_names(target_column_name):
@@ -2842,7 +2842,7 @@ class PathWellPopSummBase(ComputedBase):
                     continue
                 else:
                     raise Exception(
-                        f"No overlapping column sets; this is not expected"
+                        "No overlapping column sets; this is not expected"
                     )
 
             print(f"len(column_sets_2): {len(column_sets_2)}")
@@ -2869,7 +2869,7 @@ class PathWellPopSummBase(ComputedBase):
         # Define new df
         data_list = []
         print(
-            f"Making new df with difference in values of brain region pairs..."
+            "Making new df with difference in values of brain region pairs..."
         )
         print(f"len(common_column_sets_map): {len(common_column_sets_map)}")
         for pair, common_column_sets in common_column_sets_map.items():
@@ -2946,7 +2946,7 @@ class PathWellPopSummBase(ComputedBase):
         return None
 
     def get_ordered_relationships(self):
-        raise Exception(f"Must be implemented in child class")
+        raise Exception("Must be implemented in child class")
 
     def _get_brain_region_meta_name(self):
 
@@ -3162,18 +3162,18 @@ class PathWellPopSummBase(ComputedBase):
         return colors_df
 
     def _get_val_text(self):
-        raise Exception(f"Must be implemented in child class")
+        raise Exception("Must be implemented in child class")
 
     def _get_val_lims(self, **kwargs):
         # Get a set range for value, e.g. for use in plotting value on same range across plots
-        raise Exception(f"Must be implemented in child class")
+        raise Exception("Must be implemented in child class")
 
     def _get_val_ticks(self):
         # Get axis ticks for value, e.g. for use across plots
         return None  # default is none
 
     def _get_xticks(self):
-        raise Exception(f"Must be implemented in child class")
+        raise Exception("Must be implemented in child class")
 
     def _get_xticklabels(self, ticks=None):
 
@@ -3192,10 +3192,10 @@ class PathWellPopSummBase(ComputedBase):
         return [str(x) for x in ticks]
 
     def _get_x_text(self):
-        raise Exception(f"Must be implemented in child class")
+        raise Exception("Must be implemented in child class")
 
     def _get_x_lims(self):
-        raise Exception(f"Must be implemented in child class")
+        raise Exception("Must be implemented in child class")
 
     def _plot_params(self):
         return {"reverse_brain_region_panel_order": False}
@@ -3253,7 +3253,7 @@ class PathWellPopSummBase(ComputedBase):
             ]
             # Raise error if no relationship vals
             if len(relationship_vals) == 0:
-                raise Exception(f"relationship_vals empty; this is unexpected")
+                raise Exception("relationship_vals empty; this is unexpected")
 
         # Get brain region values if not passed
         # Get brain region meta name
@@ -3847,7 +3847,7 @@ class PathWellPopSummBase(ComputedBase):
 
         row_iterables = [0]  # default
         if params["row_iterable_name"] is not None:
-            raise Exception(f"must code this condition")
+            raise Exception("must code this condition")
 
         column_iterables = [0]  # default
         if params["column_iterable_name"] == "relationship_vals":
@@ -3909,7 +3909,7 @@ class PathWellPopSummBase(ComputedBase):
 
         row_iterable = 0
         if kwargs["row_iterable_name"] is not None:
-            raise Exception(f"must code this condition")
+            raise Exception("must code this condition")
 
         return (
             kwargs["recording_set_name"],
@@ -3919,7 +3919,7 @@ class PathWellPopSummBase(ComputedBase):
         )
 
     def _get_multiplot_fig_name(self, brain_region_vals, keys, plot_name):
-        raise Exception(f"Must overwrite in child class")
+        raise Exception("Must overwrite in child class")
 
     def _save_multiplot_fig(self, brain_region_vals, keys, fig, plot_name=""):
         # Save figure and parameters
@@ -3935,7 +3935,7 @@ class PathWellPopSummBase(ComputedBase):
         save_figure(fig, f"{fig_name}", figure_type=figure_type, dpi=dpi)
 
         # Save params
-        params_name = fig_name + f"_fig_keys"
+        params_name = fig_name + "_fig_keys"
         save_json(params_name, keys)
 
     def multiplot(
@@ -4145,7 +4145,7 @@ class PathWellPopSummBase(ComputedBase):
 
     def _get_multiplot_params(self):
         # Define params for plotting multiple table entries. One param set per table entry.
-        raise Exception(f"Must overwrite in child class")
+        raise Exception("Must overwrite in child class")
 
 
 def _get_metric_on_column_set(arg_set):
@@ -4243,7 +4243,7 @@ class PathWellFRVecSummBase(PathWellPopSummBase):
                 relationships_text = f"_rel{num_relationships[0]}"
             else:
                 raise Exception(
-                    f"have not accounted for case with multiple numbers of relationships across keys"
+                    "have not accounted for case with multiple numbers of relationships across keys"
                 )
 
         # Define map to abbreviate parts of param names so that can meet file name character limit
@@ -4337,7 +4337,7 @@ class PathWellFRVecSummBase(PathWellPopSummBase):
         hierarchical_bootstrap.py
         """
 
-        print(f"Getting bootstrap difference parameters...")
+        print("Getting bootstrap difference parameters...")
 
         # Define inputs if not passed
         if exclude_columns is None:
@@ -4415,10 +4415,10 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
         # Get params
         boot_set_name = (self._get_params_table() & key).fetch1("boot_set_name")
 
-        print(f"Fetching metric_df...")
+        print("Fetching metric_df...")
         metric_df = (self._get_selection_table() & key).fetch1_dataframe()
 
-        print(f"Getting bootstrap parameters...")
+        print("Getting bootstrap parameters...")
 
         # Define name of value index
         vals_index_name = self._get_vals_index_name(key=key)
@@ -4840,7 +4840,7 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
         # Average across eps_labels in metric_df. Meant to be used in cases where comparing relationships
         # whose eps_labels dont have a direct correspondence (e.g. same path vs. outbound paths)
 
-        print(f"Averaging across eps_labels in metric_df...")
+        print("Averaging across eps_labels in metric_df...")
 
         # Get unique settings of columns within which we want to average
         column_sets = unique_df_column_sets(
@@ -4947,43 +4947,43 @@ class CovariateFRVecAveSummBase(PathWellFRVecSummBase):
             boot_set_name
             in params_table._valid_relationship_div_boot_set_names()
         ):
-            val_text += f"\nratio"
+            val_text += "\nratio"
         elif (
             boot_set_name
             in params_table._valid_brain_region_diff_boot_set_names()
         ):
-            val_text += f"\nbrain region diff"
+            val_text += "\nbrain region diff"
         elif (
             boot_set_name
             in params_table._valid_brain_region_diff_boot_set_names()
         ):
-            val_text += f"\nbrain region diff"
+            val_text += "\nbrain region diff"
         elif (
             boot_set_name
             in params_table._valid_stay_leave_diff_boot_set_names()
         ):
-            val_text += f"\nstay/stay - stay/leave"
+            val_text += "\nstay/stay - stay/leave"
         elif (
             boot_set_name
             in params_table._valid_stay_leave_diff_brain_region_diff_boot_set_names()
         ):
-            val_text += f"\nstay/stay - stay/leave\nbrain region diff"
+            val_text += "\nstay/stay - stay/leave\nbrain region diff"
         elif (
             boot_set_name
             in params_table._valid_same_different_outbound_path_correct_diff_boot_set_names()
         ):
-            val_text += f"\nsame - diff outbound"
+            val_text += "\nsame - diff outbound"
         elif (
             boot_set_name
             in params_table._valid_same_different_outbound_path_correct_diff_brain_region_diff_boot_set_names()
         ):
-            val_text += f"\nsame - diff outbound\nbrain region diff"
+            val_text += "\nsame - diff outbound\nbrain region diff"
 
         # Return text describing value
         return val_text
 
     def _get_default_plot_cov_fr_vec_param_name(self):
-        raise Exception(f"Must be overwritten in child class")
+        raise Exception("Must be overwritten in child class")
 
     def _get_param_names_obj(self, **kwargs):
 
@@ -5495,7 +5495,7 @@ class PopulationAnalysisParamsBase(ParamsBase):
         return self._valid_default_boot_set_names()
 
     def get_params(self):
-        raise Exception(f"Must be overwritten in child class")
+        raise Exception("Must be overwritten in child class")
 
     def get_boot_params(self, bonferroni_num_tests):
         return get_boot_params(
@@ -5579,11 +5579,11 @@ class PopulationAnalysisSelBase(SelBase):
         )
 
     def _get_param_name_map(self, key_filter, brain_region_units_cohort_types):
-        raise Exception(f"Must be defined in child class")
+        raise Exception("Must be defined in child class")
 
     def _format_param_name_map_key(self, **kwargs):
         # Make key to param name map given a set of parameters
-        raise Exception(f"Must be defined in child class")
+        raise Exception("Must be defined in child class")
 
     # TODO (feature): limit search more fully with key_filter
     def _get_potential_keys(
@@ -5862,7 +5862,7 @@ class PopulationAnalysisSelBase(SelBase):
                     # Raise error if no upstream keys
                     if len(upstream_keys) == 0:
                         raise Exception(
-                            f"upstream_keys is empty; this is not expected"
+                            "upstream_keys is empty; this is not expected"
                         )
 
                     # Get part of key corresponding to main table (across epochs, brain regions, etc.)
@@ -5884,7 +5884,7 @@ class PopulationAnalysisSelBase(SelBase):
 
                         if verbose:
                             print(
-                                f"Upstream table populated for current key..."
+                                "Upstream table populated for current key..."
                             )
 
                         # Add in summary table param name
@@ -5947,7 +5947,7 @@ class CovariateFRVecAveSummSelBase(PopulationAnalysisSelBase):
             expected_empty_df_concat_keys = []
 
             if len(df_concat) == 0 and key not in expected_empty_df_concat_keys:
-                raise Exception(f"df_concat is empty. This is not expected")
+                raise Exception("df_concat is empty. This is not expected")
 
             # Insert into main table
             key = insert_analysis_table_entry(
@@ -6050,7 +6050,7 @@ class CovariateFRVecAveSummSelBase(PopulationAnalysisSelBase):
         )
 
     def _default_cov_fr_vec_param_names(self):
-        raise Exception(f"Must overwrite in child class")
+        raise Exception("Must overwrite in child class")
 
     @staticmethod
     def _get_matching_potential_key(key, potential_keys):
@@ -6080,7 +6080,7 @@ class CovariateFRVecAveSummSelBase(PopulationAnalysisSelBase):
         if not passed_check and debug_mode:
             print([x for x in dict_list_2 if x not in dict_list_1])
             print([x for x in dict_list_1 if x not in dict_list_2])
-            print(f"\n")
+            print("\n")
 
         return passed_check
 

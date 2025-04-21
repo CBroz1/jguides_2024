@@ -95,7 +95,7 @@ def append_multiple_lists(variables, lists):
     # Check inputs
     if len(variables) != len(lists):
         raise Exception(
-            f"number of lists to be appended must be same as number of variables"
+            "number of lists to be appended must be same as number of variables"
         )
     appended_lists = []
     for variable, list_ in zip(variables, lists):
@@ -107,7 +107,7 @@ def append_multiple_lists(variables, lists):
 def check_alternating_elements(x, element_1, element_2):
     # Check inputs
     if element_1 == element_2:
-        raise Exception(f"elements 1 and 2 cannot be the same")
+        raise Exception("elements 1 and 2 cannot be the same")
     x = np.asarray(x)  # convert to array
     x1_idxs = np.where(x == element_1)[0]  # where array has first element
     x2_idxs = np.where(x == element_2)[0]  # where array has second element

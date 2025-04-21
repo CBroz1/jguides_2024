@@ -129,7 +129,7 @@ def get_eps_labels(epochs_1, epochs_2, labels_1=None, labels_2=None):
 
     if not np.logical_or(labels_none, no_labels_none):
         raise Exception(
-            f"label_1 and label_2 must both be None or neither must be None"
+            "label_1 and label_2 must both be None or neither must be None"
         )
 
     epochs_1_text = "&".join([str(x) for x in epochs_1])
@@ -152,7 +152,7 @@ class DecodeCovFRVecParamsBase(SecKeyParamsBase):
         )
 
     def get_valid_bin_nums(self, **kwargs):
-        raise Exception(f"Must overwrite in child class")
+        raise Exception("Must overwrite in child class")
 
 
 class DecodeCovFRVecSelBase(PopulationAnalysisSelBase):
@@ -652,7 +652,7 @@ class DecodeCovFRVecSelBase(PopulationAnalysisSelBase):
             ]
 
             if len(df_concat) == 0 and key not in expected_empty_df_concat_keys:
-                raise Exception(f"df_concat is empty. This is not expected")
+                raise Exception("df_concat is empty. This is not expected")
 
             # Insert into main table
             key = insert_analysis_table_entry(
@@ -689,7 +689,7 @@ class DecodeCovFRVecBase(ComputedBase):
 
     @staticmethod
     def _fr_vec_table():
-        raise Exception(f"Must overwrite in child class")
+        raise Exception("Must overwrite in child class")
 
     def delete_(self, key, safemode=True):
         delete_(self, [], key, safemode)
@@ -847,7 +847,7 @@ class DecodeCovFRVecBase(ComputedBase):
             epoch_1, epoch_2 = epochs
             # Raise error until fully code up multiple epochs case
             raise Exception(
-                f"Code currently not equipped to run with multiple epochs"
+                "Code currently not equipped to run with multiple epochs"
             )
 
         # Define x to iterate over separately. If we are decoding task progression, want to
@@ -872,7 +872,7 @@ class DecodeCovFRVecBase(ComputedBase):
             iterate_x_list = np.unique(vector_df.x)
             # Check that no nans in list with x
             if np.sum(np.isnan(iterate_x_list) > 0):
-                raise Exception(f"nans in x, this is unexpected")
+                raise Exception("nans in x, this is unexpected")
         else:
             raise Exception(
                 f"Defining x to iterate over. Case with decode_var = {decode_var} not accounted for."
@@ -972,7 +972,7 @@ class DecodeCovFRVecBase(ComputedBase):
                                     f"On x = {x}. Insufficient trials for labels {label}. Skipping..."
                                 )
                             num_skipped_iterations += 1
-                            raise Exception(f"check this code")
+                            raise Exception("check this code")
                         else:
                             valid_labels.append(label)
 
@@ -1335,7 +1335,7 @@ class DecodeCovFRVecBase(ComputedBase):
 
                     # ...Otherwise raise an exception
                     else:
-                        raise Exception(f"case not accounted for")
+                        raise Exception("case not accounted for")
 
                     # Test each trial having trained on remaining trials
                     # We also need to track corresponding iloc_idxs so we can store
@@ -1583,7 +1583,7 @@ class DecodeCovFRVecBase(ComputedBase):
                 parse_char = self._parse_char()
                 if any([parse_char in x for x in cmat_df[column_name]]):
                     raise Exception(
-                        f"Cannot reformat data because parse_char is in data"
+                        "Cannot reformat data because parse_char is in data"
                     )
                 cmat_df[column_name] = [
                     parse_char.join(x) for x in cmat_df[column_name]
@@ -1881,7 +1881,7 @@ class DecodeCovFRVecBase(ComputedBase):
             pool.join()
 
         # Return concatenated entries
-        print(f"Returning df with concatenated entries...")
+        print("Returning df with concatenated entries...")
         df_concat = None
         if len(df_list) > 0:
             return pd.concat(df_list)
@@ -1892,7 +1892,7 @@ class DecodeCovFRVecSummBase(PathWellFRVecSummBase):
 
     @staticmethod
     def _upstream_table():
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     def _get_relationship_div_column_params(self, **kwargs):
 
@@ -2265,8 +2265,8 @@ class DecodeCovFRVecSummBase(PathWellFRVecSummBase):
             != 1
         ):
             raise Exception(
-                f"These must all be same length: "
-                f"table_names, label_names, relationship_vals_list, decode_cov_fr_vec_param_names"
+                "These must all be same length: "
+                "table_names, label_names, relationship_vals_list, decode_cov_fr_vec_param_names"
             )
 
         param_sets = []

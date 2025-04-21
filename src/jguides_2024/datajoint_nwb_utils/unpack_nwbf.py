@@ -154,7 +154,7 @@ def get_epoch_timestamps_nwbf(
             for t1, t2 in zip([ptp_times[0], ptp_times[-1]], epoch_interval)
         ]
     ):  # check that times not too far from epoch bounds
-        raise Exception(f"Sample time start or end too far from epoch interval")
+        raise Exception("Sample time start or end too far from epoch interval")
 
     # Use times identified above to take a subset of full sample times (both ptp and trodes) that span the epoch
     return {

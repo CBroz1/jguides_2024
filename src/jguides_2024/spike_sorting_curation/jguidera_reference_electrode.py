@@ -181,7 +181,7 @@ def make_refs_dict(nwb_file_name):
             refs_dict[electrode_group_name] = int(
                 (
                     ReferenceElectrode() & {"nwb_file_name": nwb_file_name}
-                ).fetch1(f"ctx_reference")
+                ).fetch1("ctx_reference")
             )
         else:
             raise Exception(

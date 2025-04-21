@@ -84,7 +84,7 @@ class RelTimeBase(CovDigmethBase):
 
     @staticmethod
     def _valid_interval_fn_name():
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     @staticmethod
     def get_range():
@@ -93,7 +93,7 @@ class RelTimeBase(CovDigmethBase):
     @classmethod
     def make_bin_edges(cls, **kwargs):
         if "bin_width" not in kwargs:
-            raise Exception(f"bin_width must be passed")
+            raise Exception("bin_width must be passed")
         return make_bin_edges(cls.get_range(), kwargs["bin_width"])
 
     def make(self, key):
@@ -250,7 +250,7 @@ class RelTimeDelay(RelTimeBase):
         if exclusion_params is not None:
             # Check exclusion type passed if want to exclude
             if "exclusion_type" not in exclusion_params:
-                raise Exception(f"exclusion_type must be in exclusion_params")
+                raise Exception("exclusion_type must be in exclusion_params")
             # Check exclusion type valid
             exclusion_type = exclusion_params["exclusion_type"]
             check_membership(
@@ -293,7 +293,7 @@ class RelTimeDelay(RelTimeBase):
                 if exclusion_type == "long_well_duration":
                     if "max_duration" not in exclusion_params:
                         raise Exception(
-                            f"max_duration must be passed if exclusion_type is long_well_duration"
+                            "max_duration must be passed if exclusion_type is long_well_duration"
                         )
                     valid_bool = (
                         well_durations <= exclusion_params["max_duration"]
@@ -301,7 +301,7 @@ class RelTimeDelay(RelTimeBase):
                 elif exclusion_type == "short_well_duration":
                     if "min_duration" not in exclusion_params:
                         raise Exception(
-                            f"min_duration must be passed if exclusion type is short_well_duration"
+                            "min_duration must be passed if exclusion type is short_well_duration"
                         )
                     valid_bool = (
                         well_durations >= exclusion_params["min_duration"]
@@ -399,7 +399,7 @@ class RelTimeWellPostDelay(RelTimeBase):
                 raise_error = True
         if raise_error:
             raise Exception(
-                f"exclusion_params not accounted for in RelTimeWellPostDelay currently"
+                "exclusion_params not accounted for in RelTimeWellPostDelay currently"
             )
 
         return df
@@ -450,7 +450,7 @@ class RelTimeWellPostDelayDigParams(CovariateDigParamsBase):
 
     def make_bin_edges(self, **kwargs):
         if "bin_width" not in kwargs:
-            raise Exception(f"bin_width must be passed")
+            raise Exception("bin_width must be passed")
         return RelTimeWellPostDelay.make_bin_edges(**kwargs)
 
     def get_valid_bin_nums(self, **kwargs):

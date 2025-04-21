@@ -111,7 +111,7 @@ ordered_brain_regions = ["mPFC_targeted", "OFC_targeted", "CA1_targeted"]
 brain_regions = [x for x in ordered_brain_regions if x in brain_regions_]
 if len(brain_regions) != len(brain_regions_):
     raise Exception(
-        f"brain regions from BrainRegionCohort did not match ordered_brain_regions"
+        "brain regions from BrainRegionCohort did not match ordered_brain_regions"
     )
 
 # Get plot x ranges

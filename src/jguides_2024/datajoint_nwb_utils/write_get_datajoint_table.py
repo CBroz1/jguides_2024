@@ -10,7 +10,7 @@ from jguides_2024.utils.save_load_helpers import get_file_contents
 def write_get_datajoint_table(verbose=False):
     print(
         "WARNING: This function uses eval() to import tables. "
-        + f"This is not recommended and should be avoided if possible."
+        + "This is not recommended and should be avoided if possible."
     )
 
     # Define file name
@@ -36,14 +36,14 @@ def write_get_datajoint_table(verbose=False):
 
     # Write file if different from existing (reduces amount of writing, which may be helpful since seems can get errors
     # when writing/reading from multiple processes)
-    current_file = get_file_contents(f"_get_datajoint_table.py", write_path)
+    current_file = get_file_contents("_get_datajoint_table.py", write_path)
     if current_file != "\n".join(lines) + "\n":
         if verbose:
             print(f"Overwriting {file_name}...")
         with open(file_name, "w") as f:
             for line in lines:
                 f.write(line)
-                f.write(f"\n")
+                f.write("\n")
         f.close()
 
     os.chdir(prev_dir)

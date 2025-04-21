@@ -174,7 +174,7 @@ class EpochIntervalListName(ComputedBase):
             matched_pos_interval_list_names
         ):
             raise Exception(
-                f"At least one pos interval list name was matched with more than one epoch"
+                "At least one pos interval list name was matched with more than one epoch"
             )
         # Check that exactly one pos interval was matched to each epoch
         num_matches = [

@@ -76,7 +76,7 @@ def trials_train_test_split(
     # assign those outside samples to train/test
     if not all(event_times_in_intervals_bool(time_vector, trial_intervals)):
         raise Exception(
-            f"All samples in time_vector must be in trial_intervals"
+            "All samples in time_vector must be in trial_intervals"
         )
 
     # Get indices of test and train trials
@@ -103,7 +103,7 @@ def trials_train_test_split(
         == np.arange(0, len(time_vector))
     ):
         raise Exception(
-            f"Each idx in time_vector should be appear once in either test_idxs and train_idxs but this was not the case"
+            "Each idx in time_vector should be appear once in either test_idxs and train_idxs but this was not the case"
         )
 
     # Check that proportion of idxs in test set does not deviate too much from test_size (as indicated)
@@ -242,7 +242,7 @@ class CrossValidate:
                 and self.cross_validation_params["random_state"] != -1
             ):
                 raise Exception(
-                    f"random_state must be -1 if use_random_state is 0 (False)"
+                    "random_state must be -1 if use_random_state is 0 (False)"
                 )
             # Check that number of splits is integer
             n_splits = self.cross_validation_params["n_splits"]
@@ -431,7 +431,7 @@ class CrossValidate:
 
         # ...Check that at least some trials left
         if len(params["condition_trials_map"]) == 0:
-            raise Exception(f"condition_trials_map is empty")
+            raise Exception("condition_trials_map is empty")
 
         # Convert condition trial slice (start/stop range) into full vector of idxs ([start, ..., stop])
         # add one to x2 since trial indices include endpoint (i.e. NOT slice indices) and np.arange does not include

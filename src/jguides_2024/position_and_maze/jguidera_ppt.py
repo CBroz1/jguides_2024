@@ -249,7 +249,7 @@ class Ppt(ComputedBase):
 
                 if len(path_fraction_map_entry) > 1:
                     raise Exception(
-                        f"More than one entry found in path_fraction_map for given position/edge"
+                        "More than one entry found in path_fraction_map for given position/edge"
                     )
 
                 elif (
@@ -589,7 +589,7 @@ class Ppt(ComputedBase):
 
                 if crossed_idx == 0:
                     raise Exception(
-                        f"Expecting idx for when rat first crossed junction to be greater than zero"
+                        "Expecting idx for when rat first crossed junction to be greater than zero"
                     )
 
                 time_estimate = np.interp(

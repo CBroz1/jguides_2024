@@ -497,8 +497,8 @@ def create_analysis_nwbf(key, nwb_objects, nwb_object_names):
         nwb_file_name = (TrainTestEpochSet & key).fetch1("nwb_file_names")[0]
     else:
         raise Exception(
-            f"nwb_file_name, recording_set_name, or train_test_epoch_set_name must be in key to"
-            f" define nwb file name for making analysis nwb file"
+            "nwb_file_name, recording_set_name, or train_test_epoch_set_name must be in key to"
+            " define nwb file name for making analysis nwb file"
         )
 
     # Create analysis nwb file
@@ -508,7 +508,7 @@ def create_analysis_nwbf(key, nwb_objects, nwb_object_names):
     # Check that objects all dfs (code currently assumes this in defining table_name)
     if not all([isinstance(x, pd.DataFrame) for x in nwb_objects]):
         raise Exception(
-            f"create_analysis_nwbf currently assumes all objects dfs"
+            "create_analysis_nwbf currently assumes all objects dfs"
         )
 
     for nwb_object_name, nwb_object in zip(nwb_object_names, nwb_objects):
@@ -801,7 +801,7 @@ def get_epochs_id(epochs):
     if not isinstance(epochs, Iterable):
         raise Exception(f"epochs must be iterable but is type {type(epochs)}")
     if len(epochs) == 0:
-        raise Exception(f"epochs must not be empty")
+        raise Exception("epochs must not be empty")
 
     return make_param_name(np.sort(epochs), separating_character="_")
 
@@ -1024,7 +1024,7 @@ def get_meta_param_name(table, verbose=False):
 
     except DataJointError:
         print(
-            f"DataJointError when getting meta param name; this occurs when table not yet defined in schema"
+            "DataJointError when getting meta param name; this occurs when table not yet defined in schema"
         )
 
 
@@ -1104,7 +1104,7 @@ def get_cohort_test_entry(table, col_vary, num_entries, verbose=True):
 
     # Check that column set to vary is a primary key of table
     if col_vary not in table.primary_key:
-        raise Exception(f"Column set to vary is not a primary key of table")
+        raise Exception("Column set to vary is not a primary key of table")
     # Define columns requiring same value across rows as all those except the column whose value can vary across rows
     col_same = [x for x in table.primary_key if x != col_vary]
     col_vary_vals = table.fetch(col_vary)
@@ -1515,7 +1515,7 @@ def get_key_filter(k):
     # in this case
 
     if not isinstance(k, dict) and k is not None:
-        raise Exception(f"input should be dictionary with key filter or None")
+        raise Exception("input should be dictionary with key filter or None")
     if isinstance(k, dict):
         if "key_filter" in k:
             if k["key_filter"] is None:

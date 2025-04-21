@@ -161,7 +161,7 @@ class ForkMazeRewardWellPathPairSel(SelBase):
     def insert1(self, key, **kwargs):
         if key["universal_track_graph_name"] != "fork_maze_universal":
             raise Exception(
-                f"universal_track_graph_name must be fork_maze_universal"
+                "universal_track_graph_name must be fork_maze_universal"
             )
         super().insert1(key, **kwargs)
 
@@ -234,7 +234,7 @@ class MazeElementColorBase(dj.Manual):
 
     @staticmethod
     def _maze_element_name():
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     def get_color_map(self, universal_track_graph_name="fork_maze_universal"):
         names, colors = (
@@ -1023,11 +1023,11 @@ def return_directional_edges(path_names_, path_edge_names_list_):
         np.asarray([len(k) for j in path_edge_names_list_ for k in j]) == 2
     ):
         raise Exception(
-            f"Path edge names list must be a list of path edges, each of which is a length two array-like"
+            "Path edge names list must be a list of path edges, each of which is a length two array-like"
         )
     if not np.shape(np.asarray(path_names_))[1] == 2:
         raise Exception(
-            f"Path names must be a 2D array-like, where second dimension (nodes) are in columns"
+            "Path names must be a 2D array-like, where second dimension (nodes) are in columns"
         )
 
     # Convert to array
@@ -1349,7 +1349,7 @@ def populate_track_graph_tables_fork_maze():
         for s in x:
             if "right" in s and "left" in s:
                 raise Exception(
-                    f"Both left and right found in string; code not built to account for this"
+                    "Both left and right found in string; code not built to account for this"
                 )
             if "right" in s:
                 new_list.append(s.replace("right", "left"))
@@ -1472,7 +1472,7 @@ class MazePathWell:
             contingency is not None
         ) != 1:
             raise Exception(
-                f"must pass either nwb_file_name and epoch, OR contingency"
+                "must pass either nwb_file_name and epoch, OR contingency"
             )
 
         # Get contingency if not passed
@@ -1497,8 +1497,8 @@ class MazePathWell:
             ]
         ):
             raise Exception(
-                f"Performance outcomes do not have expected form (begin with correct, "
-                f"incorrect or neutral followed by underscore)"
+                "Performance outcomes do not have expected form (begin with correct, "
+                "incorrect or neutral followed by underscore)"
             )
         correct_outcome_idxs = [
             idx
@@ -1547,7 +1547,7 @@ class MazePathWell:
             != 1
         ):
             raise Exception(
-                f"If rewarded_wells is True, must pass either nwb_file_name and epoch, OR contingency"
+                "If rewarded_wells is True, must pass either nwb_file_name and epoch, OR contingency"
             )
         # check valid well order
         check_membership([well_order], ["left_right", None])
@@ -1569,7 +1569,7 @@ class MazePathWell:
         if well_order == "left_right":
             ordered_well_names = np.concatenate(
                 [
-                    ["left_well", f"{home}_well", f"right_well"]
+                    ["left_well", f"{home}_well", "right_well"]
                     for home in ["center", "handle"]
                 ]
             )
@@ -1612,7 +1612,7 @@ class MazePathWell:
             contingency is not None
         ) != 1:
             raise Exception(
-                f"must pass either nwb_file_name and epoch, OR contingency"
+                "must pass either nwb_file_name and epoch, OR contingency"
             )
 
         # Get names of potentially rewarded path in a contingency
@@ -1812,7 +1812,7 @@ class MazePathWell:
             contingency is not None
         ) != 1:
             raise Exception(
-                f"must pass either nwb_file_name and epoch, OR contingency"
+                "must pass either nwb_file_name and epoch, OR contingency"
             )
 
         # Get contingency if not passed
@@ -2013,7 +2013,7 @@ class MazePathWell:
             elif path_name.endswith(cls.low_speed_trial_text("low_speed")):
                 trial_text = cls.low_speed_trial_text("low_speed")
             else:
-                raise Exception(f"trial text not identified")
+                raise Exception("trial text not identified")
 
         # Check inputs
         check_membership([trial_text], cls.low_speed_trial_text())
@@ -2336,7 +2336,7 @@ class MazePathWell:
                     previous_trial=previous_trial
                 )
             else:
-                raise Exception(f"case not accounted for")
+                raise Exception("case not accounted for")
 
             suffix_sets = _get_suffix_sets(t1, t2, symmetric_suffix)
 
@@ -2446,7 +2446,7 @@ class MazePathWell:
             contingency is not None
         ) != 1:
             raise Exception(
-                f"must pass either nwb_file_name and epoch, OR contingency"
+                "must pass either nwb_file_name and epoch, OR contingency"
             )
 
         # If rewarded_wells True, restrict to potentially rewarded wells

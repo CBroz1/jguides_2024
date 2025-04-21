@@ -14,7 +14,7 @@ def identify_trodes_camera_pause_at_epoch_start(camera_times, epoch_start_time):
     """
 
     if len(np.shape(camera_times)) > 1:  # check that camera_times is 1D array
-        raise Exception(f"camera_times must be 1D array")
+        raise Exception("camera_times must be 1D array")
 
     # *** HARD CODED VALUES ***
     timestamps_diff_threshold = 0.3
@@ -22,7 +22,7 @@ def identify_trodes_camera_pause_at_epoch_start(camera_times, epoch_start_time):
     # *************************
 
     if any(camera_times < epoch_start_time):
-        raise Exception(f"Camera times cannot be before epoch start time")
+        raise Exception("Camera times cannot be before epoch start time")
 
     # Find large jumps in camera timestamps
     # append False to return vector length of camera_times

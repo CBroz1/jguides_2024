@@ -85,7 +85,7 @@ class ParamsBase(dj.Manual):
         # Raise error if current table doesnt following naming convention (require override of this method in that case)
         if table_name[-6:] != "Params":
             raise Exception(
-                f"Non canonical params table name; must override this method for current table given this"
+                "Non canonical params table name; must override this method for current table given this"
             )
 
         # Return main table name. By convention, this has the same name as the current able without the final "Sel"
@@ -99,7 +99,7 @@ class ParamsBase(dj.Manual):
         )  # set verbose to True to print warnings
 
     def lookup_param_name(self, **kwargs):
-        raise Exception(f"Must be implemented in child class")
+        raise Exception("Must be implemented in child class")
 
     def insert1(self, key, **kwargs):
 
@@ -302,7 +302,7 @@ class SelBase(dj.Manual):
         # Raise error if current table doesnt following naming convention (require override of this method in that case)
         if table_name[-3:] != "Sel":
             raise Exception(
-                f"Non canonical selection table name; must override this method for current table given this"
+                "Non canonical selection table name; must override this method for current table given this"
             )
 
         # Return main table name. By convention, this has the same name as the current able without the final "Sel"
@@ -537,7 +537,7 @@ class ComputedBase(dj.Computed):
         if len(
             set(get_upstream_table_names(self)) - set(populated_tables)
         ) < len(set(get_upstream_table_names(self))):
-            print(f"recursive populate working (outer)")
+            print("recursive populate working (outer)")
         if recursive:
             for upstream_table_name in set(
                 get_upstream_table_names(self)
@@ -644,7 +644,7 @@ class TemporalFrmapSmParamsBase(SecKeyParamsBase):
 class FrmapBase(ComputedBase):
 
     def make(self, key):
-        raise Exception(f"Must implement this method in subclass")
+        raise Exception("Must implement this method in subclass")
 
     def fetch1_dataframe(self):
         return super().fetch1_dataframe().set_index("unit_id")
@@ -695,7 +695,7 @@ class FrmapSmBase(ComputedBase):
 
     @staticmethod
     def _data_type():
-        raise Exception(f"Must define data type in subclass")
+        raise Exception("Must define data type in subclass")
 
 
 class EventTrialsParamsBase(SecKeyParamsBase):
@@ -1006,7 +1006,7 @@ class ParamNameBase(dj.Manual):
         super().insert1(key, **kwargs)
 
     def get_full_param_name(self, **kwargs):
-        raise Exception(f"Must implement in subclass")
+        raise Exception("Must implement in subclass")
 
     def lookup_param_name(self, full_param_name=None, as_dict=False, **kwargs):
         return self.get_insert_param_name(
@@ -1248,7 +1248,7 @@ class AcrossFRVecTypeTableSelBase(SelBase):
 
     @staticmethod
     def _fr_vec_table():
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     # Takes a long time to run
     def _get_potential_keys(self, key_filter=None):
@@ -1300,7 +1300,7 @@ class AcrossFRVecTypeTableSelBase(SelBase):
 class CovariateRCB(ComputedBase):
 
     def make(self, key):
-        raise Exception(f"This method must be overitten in child class")
+        raise Exception("This method must be overitten in child class")
 
     def visualize_result(self):
         plot_params = {"xlabel": "sample num", "ylabel": "basis function num"}
@@ -1336,7 +1336,7 @@ class CovariateDigParamsBase(SecKeyParamsBase):
     def get_bin_centers(self, **kwargs):
         if "bin_width" in kwargs:
             raise Exception(
-                f"bin_width should not be passed as it is defined here based on table entry"
+                "bin_width should not be passed as it is defined here based on table entry"
             )
         table_subset = self
         if "key" in kwargs:
@@ -1347,7 +1347,7 @@ class CovariateDigParamsBase(SecKeyParamsBase):
     def get_num_bin_edges(self, **kwargs):
         if "bin_width" in kwargs:
             raise Exception(
-                f"kwargs should not contain bin_width as this is defined based on table entry"
+                "kwargs should not contain bin_width as this is defined based on table entry"
             )
         table_subset = self
         if "key" in kwargs:
@@ -1360,10 +1360,10 @@ class CovariateDigParamsBase(SecKeyParamsBase):
 
     def get_valid_bin_nums(self, **kwargs):
         # Bin nums depends on how table handles negative values, so require custom function in each child class
-        raise Exception(f"This method should be overridden in child class")
+        raise Exception("This method should be overridden in child class")
 
     def make_bin_edges(self, **kwargs):
-        raise Exception(f"This method should be overridden in child class")
+        raise Exception("This method should be overridden in child class")
 
 
 class CovDigmethBase(ComputedBase):
@@ -1373,16 +1373,16 @@ class CovDigmethBase(ComputedBase):
 
     @staticmethod
     def _covariate_name():
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     @staticmethod
     def get_range():
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     @classmethod
     def make_bin_edges(cls, **kwargs):
         if "bin_width" not in kwargs:
-            raise Exception(f"bin_width must be passed")
+            raise Exception("bin_width must be passed")
         return make_bin_edges(cls.get_range(), kwargs["bin_width"])
 
     def fetch1_dataframe_exclude(
@@ -1394,7 +1394,7 @@ class CovDigmethBase(ComputedBase):
     ):
         # Return df with exclusion criteria applied
 
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     def digitized(
         self,

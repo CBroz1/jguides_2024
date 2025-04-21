@@ -96,7 +96,7 @@ def initialize_covariate_coefficients(covariate_names, initialize_method):
             np.random.sample(len(covariate_names)) * 0.1, index=covariate_names
         )  # initialize to random value
     else:
-        raise Exception(f"initialize_params must be zero or random")
+        raise Exception("initialize_params must be zero or random")
 
 
 # PLOTTING
@@ -179,7 +179,7 @@ class DesignMatrix:
             sampled_raised_cosine_basis_list is None
             and sampled_relative_measure_basis_list is None
         ):
-            raise Exception(f"No basis lists passed")
+            raise Exception("No basis lists passed")
         if all(
             [
                 len(x) == 0
@@ -190,11 +190,11 @@ class DesignMatrix:
                 if x is not None
             ]
         ):
-            raise Exception(f"Empty basis list(s)")
+            raise Exception("Empty basis list(s)")
 
         if self.intercept not in [True, False]:
             raise Exception(
-                f"intercept is a flag to indicate whether or not to use intercept and must be True or False"
+                "intercept is a flag to indicate whether or not to use intercept and must be True or False"
             )
 
     @staticmethod
@@ -644,7 +644,7 @@ class ElasticNetContainer:
                 len(new_index) == len(df_subset.index),
             ):
                 raise Exception(
-                    f"new index has different elements from previous index"
+                    "new index has different elements from previous index"
                 )
             df_subset = df_subset.reindex(new_index)  # inplace not available
 
@@ -731,7 +731,7 @@ class SimulatedSpikes:
     def _check_inputs(self):
 
         if not isinstance(self.design_matrix_obj, DesignMatrix):
-            raise Exception(f"design_df must be instance of DesignMatrix")
+            raise Exception("design_df must be instance of DesignMatrix")
 
         if not all(
             [
@@ -740,7 +740,7 @@ class SimulatedSpikes:
             ]
         ):
             raise Exception(
-                f"replace_parameters_map keys must all be in design_df.covariate_group_names"
+                "replace_parameters_map keys must all be in design_df.covariate_group_names"
             )
 
         # Ensure replace_parameters_map entries well-defined
@@ -762,11 +762,11 @@ class SimulatedSpikes:
                 )
             if np.min(list(covariate_group_map.keys())) < 0:
                 raise Exception(
-                    f"Keys in replace_parameters_map.values() must be greater than zero"
+                    "Keys in replace_parameters_map.values() must be greater than zero"
                 )
 
         if self.initialize_parameters not in ["zero", "random"]:
-            raise Exception(f"initialize_params must be zero or random")
+            raise Exception("initialize_params must be zero or random")
 
     def _get_parameters(self):
 

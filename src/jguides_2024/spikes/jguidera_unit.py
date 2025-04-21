@@ -149,7 +149,7 @@ class EpsUnitsSel(SelBase):
             if len(brain_region_sort_group_id_map_subset) == 0:
                 if verbose:
                     print(
-                        f"no entry in brain_region_sort_group_id_map_subset for df_key, continuing..."
+                        "no entry in brain_region_sort_group_id_map_subset for df_key, continuing..."
                     )
                 continue
             brain_region = unpack_single_element(
@@ -241,10 +241,10 @@ class EpsUnitsSel(SelBase):
                 if epoch_mean_fr_populated and valid_epochs:
                     unique_curation_names = np.unique(curation_names)
                     if len(unique_curation_names) > 1 and verbose:
-                        print(f"len(unique_curation_names) > 1. Continuing...")
+                        print("len(unique_curation_names) > 1. Continuing...")
                         continue
                     else:
-                        print(f"Adding key...")
+                        print("Adding key...")
                         key.update({"curation_name": curation_names[0]})
                         potential_keys.append(copy.deepcopy(key))
 
@@ -530,7 +530,7 @@ class BrainRegionUnitsParams(SecKeyParamsBase):
         if "unit_subset" in key:
             if not key["unit_subset"] and key["unit_subset_size"] is not None:
                 raise Exception(
-                    f"unit_subset_size must be None if no unit subset"
+                    "unit_subset_size must be None if no unit subset"
                 )
 
         # Check unit_subset_type valid
@@ -548,7 +548,7 @@ class BrainRegionUnitsParams(SecKeyParamsBase):
                 ]
             ):
                 raise Exception(
-                    f"unit_subset_size and unit_subset_iteration must be None if unit_subset_type is all"
+                    "unit_subset_size and unit_subset_iteration must be None if unit_subset_type is all"
                 )
 
     @staticmethod
@@ -652,7 +652,7 @@ class BrainRegionUnitsParams(SecKeyParamsBase):
             return True
 
         else:
-            raise Exception(f"unit_subset_type not accounted for")
+            raise Exception("unit_subset_type not accounted for")
 
     def _make_param_name(
         self,
@@ -742,8 +742,8 @@ class BrainRegionUnitsParams(SecKeyParamsBase):
                 )  # insert runs
             else:
                 raise Exception(
-                    f"Need to write function for inserting epochs into EpochsDescription when "
-                    f"epochs not all runs"
+                    "Need to write function for inserting epochs into EpochsDescription when "
+                    "epochs not all runs"
                 )
         epochs_description = EpochsDescription().lookup_epochs_description(
             nwb_file_name, epochs
@@ -903,7 +903,7 @@ class BrainRegionUnitsSel(SelBase):
 
                     if len(curation_names) == 0:
                         if verbose:
-                            print(f"curation_names is empty, continuing...")
+                            print("curation_names is empty, continuing...")
                         continue
 
                     # Limit to desired curation name
@@ -917,7 +917,7 @@ class BrainRegionUnitsSel(SelBase):
                     # ...continue if no entry in CurationSet
                     if len(table_subset) == 0:
                         if verbose:
-                            print(f"no entry in CurationSet, continuing...")
+                            print("no entry in CurationSet, continuing...")
                         continue
 
                     epochs = (EpochsDescription & k3).fetch1("epochs")
@@ -940,7 +940,7 @@ class BrainRegionUnitsSel(SelBase):
                         x for x in valid_curation_names if x is not None
                     ]
                     if len(valid_curation_names) == 0:
-                        raise Exception(f"valid_curation_names is empty")
+                        raise Exception("valid_curation_names is empty")
                     valid_curation_name = check_return_single_element(
                         valid_curation_names
                     ).single_element
@@ -948,7 +948,7 @@ class BrainRegionUnitsSel(SelBase):
                         x for x in curation_names if x == valid_curation_name
                     ]
                     if len(curation_names) == 0:
-                        print(f"curation_names is empty. Continuing...")
+                        print("curation_names is empty. Continuing...")
 
                     for curation_name in curation_names:
 
@@ -959,7 +959,7 @@ class BrainRegionUnitsSel(SelBase):
 
                         # Insert into table if all sort group ids present
                         if self.check_sort_group_ids_present(k3):
-                            print(f"Adding key...")
+                            print("Adding key...")
                             keys.append(
                                 {
                                     k: v
@@ -1151,7 +1151,7 @@ class BrainRegionUnits(ComputedBase):
                     )
 
                 if len(valid_chs) == 0:
-                    raise Exception(f"No valid_chs found. This is unexpected.")
+                    raise Exception("No valid_chs found. This is unexpected.")
 
                 # Update units to be those within valid range from probe tip to edge of target region
                 for sort_group_id, unit_ids in sort_group_unit_ids_map.items():

@@ -70,7 +70,7 @@ def merge_dicts(dict_list):
     merged_dict = dict()
     for d in dict_list:
         if any([k in merged_dict.keys() for k in d.keys()]):
-            raise Exception(f"Keys in passed dictionaries must all be unique")
+            raise Exception("Keys in passed dictionaries must all be unique")
         merged_dict.update(d)
     return merged_dict
 
@@ -81,7 +81,7 @@ def merge_dicts_lists(dict_list):
     for d in dict_list:
         for k, v in d.items():
             if not isinstance(v, list):
-                raise Exception(f"dictionary values must all be lists")
+                raise Exception("dictionary values must all be lists")
             if k not in merged_dict:
                 merged_dict[k] = v
             else:
@@ -105,7 +105,7 @@ def find_keys_for_list_value(dict_, target_element):
     if not isinstance(dict_, dict):
         raise Exception(f"dict_ must be a dictionary but is {type(dict_)}")
     if not all([isinstance(x, Iterable) for x in dict_.values()]):
-        raise Exception(f"All values in dict_ must be iterables")
+        raise Exception("All values in dict_ must be iterables")
     return [k for k, v in dict_.items() if target_element in v]
 
 
@@ -320,7 +320,7 @@ def check_dict_equality(
         passed_check *= check_set_equality(
             d1.keys(),
             d2.keys(),
-            f"dictionary 0 in passed list",
+            "dictionary 0 in passed list",
             f"dictionary {idx + 1} in passed list",
             tolerate_error,
             issue_warning,
@@ -365,7 +365,7 @@ def check_equality(x_list):
         )  # convert to array since check fails on lists
     else:
         raise Exception(
-            f"Only cases covered in check_equality are all elements of type: dictionary, sequence, or string"
+            "Only cases covered in check_equality are all elements of type: dictionary, sequence, or string"
         )
 
 

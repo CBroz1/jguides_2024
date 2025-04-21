@@ -172,7 +172,7 @@ class PptDigParams(CovariateDigParamsBase):
     def make_bin_edges(self, **kwargs):
         # Path fraction bin edges to be used to digitize path fraction
         if "bin_width" not in kwargs:
-            raise Exception(f"bin_width must be passed")
+            raise Exception("bin_width must be passed")
         return Ppt.make_bin_edges(kwargs["bin_width"])
 
     def get_valid_bin_nums(self, **kwargs):

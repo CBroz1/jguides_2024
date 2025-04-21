@@ -206,7 +206,7 @@ class GLMContainer:
 
         else:
             raise Exception(
-                f"Need to write code to get brain_region_units_param_name for multi epoch case"
+                "Need to write code to get brain_region_units_param_name for multi epoch case"
             )
 
         return {
@@ -380,7 +380,7 @@ class GLMContainer:
         ]
         df = get_glm_results_df(arg_sets, tolerate_missing_units)
         if len(df) == 0:
-            raise Exception(f"no data found")
+            raise Exception("no data found")
         return self._convert_categorical(df)
 
     @staticmethod
@@ -1297,7 +1297,7 @@ class GLMContainer:
                     if idx > 0:
                         if not all(metric_names == previous_metric_names):
                             raise Exception(
-                                f"metric_names should not change while iterating over df rows"
+                                "metric_names should not change while iterating over df rows"
                             )
                     previous_metric_names = copy.deepcopy(metric_names)
 
@@ -2633,7 +2633,7 @@ class GLMContainer:
         similarity_df_subset = similarity_df_subset[valid_bool]
         if any(np.isnan(similarity_df_subset.similarity_val)):
             raise Exception(
-                f"at least one nan in similarity vals; must consider how to account for this"
+                "at least one nan in similarity vals; must consider how to account for this"
             )
 
         # Impose order of brain region in brain_regions by converting brain region column in df
@@ -3012,7 +3012,7 @@ class GLMContainer:
 
         # Define plot variables
         x = "k"
-        y = f"k_coeff_sum_ecs"
+        y = "k_coeff_sum_ecs"
         hue = "brain_region"
 
         # Define colors (color represents brain region. If tint_glm_restriction is True, shade represents

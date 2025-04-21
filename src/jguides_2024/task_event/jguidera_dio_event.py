@@ -202,7 +202,7 @@ class DioEvents(ComputedBase):
                 != 1
             ):
                 raise Exception(
-                    f"dio up end idxs should be one more than dio up idxs"
+                    "dio up end idxs should be one more than dio up idxs"
                 )
             dio_up_periods = list(
                 zip(
@@ -465,7 +465,7 @@ class ProcessedDioEvents(ComputedBase):
             .values
         ):
             raise Exception(
-                f"Not all well identities the same for first dio ups and last dio downs"
+                "Not all well identities the same for first dio ups and last dio downs"
             )
         # Check that each dio down after same index dio up and before next index dio up
         if not np.logical_and(
@@ -489,7 +489,7 @@ class ProcessedDioEvents(ComputedBase):
             ),
         ):
             raise Exception(
-                f"At least one dio down is not after same index dio up and next index dio up"
+                "At least one dio down is not after same index dio up and next index dio up"
             )
 
         # Populate subtable for well pokes
@@ -582,7 +582,7 @@ class ProcessedDioEvents(ComputedBase):
                 if "nwb_file_name" in key:
                     if len(RunEpoch & key) == 0:
                         print(
-                            f"Only populating ProcessedDioEvents for run epochs. Continuing..."
+                            "Only populating ProcessedDioEvents for run epochs. Continuing..."
                         )
                         return
         super().populate_(**kwargs)
@@ -663,7 +663,7 @@ def convert_dio_description(dio_description, convert_to_type=None):
     ):
         return f"Din{dio_description_int}"
     else:
-        raise Exception(f"No valid conditions met to convert digital input")
+        raise Exception("No valid conditions met to convert digital input")
 
 
 def populate_jguidera_dio_event(

@@ -13,13 +13,13 @@ from jguides_2024.utils.vector_helpers import vectors_finite_idxs
 
 def check_confidence_interval(confidence_interval, allow_small_values=False):
     if len(confidence_interval) != 2:
-        raise Exception(f"Confidence interval must have two elements")
+        raise Exception("Confidence interval must have two elements")
     if np.diff(confidence_interval) < 0:
         raise Exception(
-            f"Second element of confidence interval must be greater than first"
+            "Second element of confidence interval must be greater than first"
         )
     if np.logical_or(confidence_interval[0] < 0, confidence_interval[1] > 100):
-        raise Exception(f"Confidence interval must be on [0 100]")
+        raise Exception("Confidence interval must be on [0 100]")
     if (
         np.max(confidence_interval) < 1 and not allow_small_values
     ):  # check that confidence interval reasonable
@@ -146,7 +146,7 @@ def average_difference_confidence_interval(
     x, y, num_bootstrap_samples=1000, alpha=0.05, average_function=None
 ):
     raise Exception(
-        f"Think carefully about whether this is the appropriate function"
+        "Think carefully about whether this is the appropriate function"
     )
     if average_function is None:
         average_function = np.mean
@@ -179,7 +179,7 @@ def average_confidence_interval(
 
 def percent_match(x, y):
     if len(x) != len(y):
-        raise Exception(f"x and y must same length")
+        raise Exception("x and y must same length")
     return np.sum((x == y) / len(x))
 
 
@@ -188,10 +188,10 @@ def mean_squared_error(x, y, tolerate_nan=True):
     if tolerate_nan:
         mean_function = np.nanmean
     if len(x) != len(y):
-        raise Exception(f"x and y must be same length")
+        raise Exception("x and y must be same length")
     ndims = len(np.shape(x))
     if ndims > 2:
-        raise Exception(f"x and y must be either 1 or 2 dimensional")
+        raise Exception("x and y must be either 1 or 2 dimensional")
     elif ndims == 1:
         return mean_function((np.asarray(x) - np.asarray(y)) ** 2)
     elif ndims == 2:
@@ -211,7 +211,7 @@ def finite_corr(v1, v2):
 
 def random_sample(x, size, replace=True, seed=None, tolerate_error=False):
     if len(x) < size and tolerate_error:
-        print(f"Could not subsample x because fewer than size.")
+        print("Could not subsample x because fewer than size.")
         return
     rng = np.random.default_rng(seed)
     return rng.choice(x, size, replace)
@@ -233,7 +233,7 @@ def _recursive_resample(
         upstream_level_vals = []
     upstream_level_vals = copy.deepcopy(upstream_level_vals)
     if len(resample_levels) == 0:
-        raise Exception(f"Must pass at least one level at which to resample")
+        raise Exception("Must pass at least one level at which to resample")
     resample_level = resample_levels[0]
     boot_sample = return_bootstrap_sample(np.unique(df[resample_level]))
     # If at final level at which to resample, return tuple with level values and resampled value

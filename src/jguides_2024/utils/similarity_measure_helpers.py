@@ -41,7 +41,7 @@ def sliding_overlap(vector, profile):
     :return: overlap between vector and profile in sliding window
     """
     if len(profile) // 2 == 0:
-        raise Exception(f"profile must have odd number of values")
+        raise Exception("profile must have odd number of values")
     num_samples_before = int(
         np.floor(len(profile) / 2)
     )  # number of samples to look backwards from center value
@@ -104,11 +104,11 @@ class SimilarOverlapPeriods:
         if self.external_time_series is not None:
             if self.external_time_series_lower_threshold is None:
                 raise Exception(
-                    f"external_time_series_lower_threshold must not be None if external_time_series passed"
+                    "external_time_series_lower_threshold must not be None if external_time_series passed"
                 )
             if self.external_time_series_upper_threshold is None:
                 raise Exception(
-                    f"external_time_series_upper_threshold must not be None if external_time_series passed"
+                    "external_time_series_upper_threshold must not be None if external_time_series passed"
                 )
 
     def _get_average_profile(self):

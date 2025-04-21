@@ -1,7 +1,7 @@
 def _get_table(table_name):
     print(
         "WARNING: This function uses eval() to import tables. "
-        + f"This is not recommended and should be avoided if possible."
+        + "This is not recommended and should be avoided if possible."
     )
     # Avoid circular import
     from jguides_2024.metadata.jguidera_histology import ValidShank
@@ -464,7 +464,6 @@ def _get_table(table_name):
         EdenoDecodeParams,
         EdenoDecodeSel,
         EdenoDecode,
-        EdenoDecodeMAPSel,
         EdenoDecodeMAPSel,
         EdenoDecodeMAP,
     )

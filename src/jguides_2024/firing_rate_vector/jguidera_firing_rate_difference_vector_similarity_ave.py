@@ -139,7 +139,7 @@ class FRDiffVecCosSimCovNnAveParamsBase(ParamsBase):
 
         # Check that passed parameters is a dictionary
         if not isinstance(params, dict):
-            raise Exception(f"params must be a dictionary")
+            raise Exception("params must be a dictionary")
 
         # Get parameter name based on params
         param_name = self._make_param_name(params)
@@ -232,7 +232,7 @@ class FRDiffVecCosSimVarNnAveSelBase(SelBase):
 
     @staticmethod
     def _get_covariate_table():
-        raise Exception(f"must override in parent class")
+        raise Exception("must override in parent class")
 
     @staticmethod
     def _valid_dio_well_dd_trials_param_name():
@@ -300,14 +300,14 @@ class FRDiffVecCosSimVarNnAveBase(ComputedBase):
 
     @staticmethod
     def _covariate_name():
-        raise Exception(f"must overwrite in child class")
+        raise Exception("must overwrite in child class")
 
     @classmethod
     def _get_covariate_entry_fns(cls):
-        raise Exception(f"must overwrite in child class")
+        raise Exception("must overwrite in child class")
 
     def _make_bin_edges(self, bin_width, **kwargs):
-        raise Exception(f"must overwrite in child class")
+        raise Exception("must overwrite in child class")
 
     # The following methods are used in the make function. They are standalone to allow testing/verification.
     def _get_trial_intervals(self, key):
@@ -970,10 +970,10 @@ class FRDiffVecCosSimCovNnAveSummSelBase(PopulationAnalysisSelBase):
 class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
 
     def _get_upstream_data(self, upstream_key):
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     def _additional_restrict_metric_df(self, metric_df, key):
-        raise Exception(f"This method must be overwritten in child class")
+        raise Exception("This method must be overwritten in child class")
 
     def _get_vals_index_name(self, **kwargs):
         return "x_val"
@@ -1118,9 +1118,9 @@ class FRDiffVecCosSimCovNnAveSummBase(PathWellFRVecSummBase):
             # ***
 
             raise Exception(
-                f"Verify that metric_df2 == metric_df, resample_levels2 == resample_levels, and "
-                f"ave_group_column_names2 == ave_group_column_names, then delete what is between *** "
-                f"and *** (old code), then remove this exception if all values equal"
+                "Verify that metric_df2 == metric_df, resample_levels2 == resample_levels, and "
+                "ave_group_column_names2 == ave_group_column_names, then delete what is between *** "
+                "and *** (old code), then remove this exception if all values equal"
             )
 
         # Raise exception if boot set name not accounted for in code

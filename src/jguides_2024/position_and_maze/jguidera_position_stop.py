@@ -76,7 +76,7 @@ class StopLikeWellArrivalSel(SelBase):
         ).trial_shifts()
         if trial_start_time_shift != 0 or trial_end_time_shift != 0:
             raise Exception(
-                f"Trial start and end time for dio well departure to arrival trials must both be zero"
+                "Trial start and end time for dio well departure to arrival trials must both be zero"
             )
         super().insert1(key, skip_duplicates=True)
 

@@ -129,7 +129,7 @@ class ElNetSel(SelBase):
             & key_filter
         ).fetch("KEY")
         if verbose:
-            print(f"Getting potential keys for ElNetSel...")
+            print("Getting potential keys for ElNetSel...")
         for k1 in k1s:
             if verbose:
                 print(f"\nOn k1 {k1}...")
@@ -151,7 +151,7 @@ class ElNetSel(SelBase):
                 ):  # proceed if entry for all epochs in cohort
                     insert_key = {**k1, **k2}
                     if verbose:
-                        print(f"Adding keys...")
+                        print("Adding keys...")
                     for k3 in (ResEpochSpikeCounts.Unit & insert_key).fetch(
                         "KEY"
                     ):
@@ -162,7 +162,7 @@ class ElNetSel(SelBase):
                         f"Cannot insert, ResEpochSpikeCounts not fully populated for each of these keys: {k4_list}"
                     )
         if verbose:
-            print(f"Returning keys...")
+            print("Returning keys...")
         return keys
 
     def delete_(self, key, safemode=True):
@@ -281,7 +281,7 @@ class ElNet(ComputedBase):
         ):
             if not all(x1.index == x2.index):
                 raise Exception(
-                    f"index should match across y_test_predicted and y_test_predicted_count"
+                    "index should match across y_test_predicted and y_test_predicted_count"
                 )
         results_folds_merged_df = preserve_df_row_idx(
             results_folds_merged_df, "y_test_predicted"
@@ -403,7 +403,7 @@ class ElNet(ComputedBase):
             epochs = (EpochCohort & k2).fetch1("epochs")
             if len(epochs) > 1:
                 raise Exception(
-                    f"code currently only equipped to work with single epoch"
+                    "code currently only equipped to work with single epoch"
                 )
             k2.update(
                 {

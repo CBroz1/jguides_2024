@@ -20,7 +20,7 @@ class DecodeMultiCovFRVecParams(
 
     def get_valid_bin_nums(self, **kwargs):
         key = kwargs.pop("key")
-        raise Exception(f"Must write this")
+        raise Exception("Must write this")
 
     def insert_defaults(self, **kwargs):
 

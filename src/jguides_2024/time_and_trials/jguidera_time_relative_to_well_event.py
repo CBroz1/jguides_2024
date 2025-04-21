@@ -231,8 +231,8 @@ class TimeRelWADigParams(CovariateDigParamsBase):
         # Check bin edges type passed
         if "bin_edges_type" not in kwargs:
             raise Exception(
-                f"must pass bin_edges_type to specify whether want bin edges for time relative to, "
-                f"or from, well arrival"
+                "must pass bin_edges_type to specify whether want bin edges for time relative to, "
+                "or from, well arrival"
             )
         bin_edges_type = kwargs.pop("bin_edges_type")
 
@@ -247,7 +247,7 @@ class TimeRelWADigParams(CovariateDigParamsBase):
     def get_valid_bin_nums(self, **kwargs):
         bin_centers = self.get_bin_centers(**kwargs)
         if any(bin_centers == 0):
-            raise Exception(f"bin_centers not expected to contain zero")
+            raise Exception("bin_centers not expected to contain zero")
         return np.arange(1, len(bin_centers) + 1)
 
 
@@ -387,8 +387,8 @@ class TimeRelWADigSingleAxisParams(SecKeyParamsBase):
         # to account for it in code)
         if any(bin_centers == 0):
             raise Exception(
-                f"Did not expect a bin center to be zero, as bin edges should be completely on one or the"
-                f"other side of well arrival"
+                "Did not expect a bin center to be zero, as bin edges should be completely on one or the"
+                "other side of well arrival"
             )
         num_pos = np.sum(bin_centers > 0)
         num_neg = np.sum(bin_centers < 0)
@@ -533,7 +533,7 @@ class TimeRelWADigSingleAxis(ComputedBase):
         delete_(self, [TimeRelWARCBSel, TimeRelWAFRVecSel], key, safemode)
 
     def drop_(self):
-        raise Exception(f"must finish writing")
+        raise Exception("must finish writing")
 
 
 @schema

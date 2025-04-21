@@ -131,8 +131,8 @@ def nearest_neighbor_interpolation(
     valid_after_idxs = after_idxs[after_idx_bool]
     if len(valid_before_idxs) + len(valid_after_idxs) != len(new_index):
         raise Exception(
-            f"Identified indices of closest matches in original_index to new_index should have "
-            f"length equal to length of new_index, but does not"
+            "Identified indices of closest matches in original_index to new_index should have "
+            "length equal to length of new_index, but does not"
         )
     valid_idxs = np.sort(np.concatenate((valid_before_idxs, valid_after_idxs)))
 

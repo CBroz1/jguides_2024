@@ -496,7 +496,7 @@ class ResEpochSpikesSm(ComputedBase):
                 )
             ):
                 raise Exception(
-                    f"Not all spike times fell within valid intervals"
+                    "Not all spike times fell within valid intervals"
                 )
 
             # For each unit, loop through valid intervals and smooth spikes falling within the interval
@@ -798,7 +798,7 @@ class ResEpochSpikesSmDs(ComputedBase):
                     time_bin_centers, valid_time_intervals
                 )
             ):
-                raise Exception(f"All time bins must be in valid intervals")
+                raise Exception("All time bins must be in valid intervals")
 
             # Interpolate firing rate on new index
             data_list = []

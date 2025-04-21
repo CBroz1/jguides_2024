@@ -553,7 +553,7 @@ class ProcessedStatescriptEvents(ComputedBase):
             # code if present)
             if len(dio_df_subset) == 0:
                 if "Haigth" in dio_name_nwbf:
-                    raise Exception(f"Haigth typo in file")
+                    raise Exception("Haigth typo in file")
             epoch_dio_events_ptp = dio_df_subset["dio_event_values"]
             epoch_dio_times_ptp = dio_df_subset.index
             epoch_dio_up_times_ptp = df_filter_columns(
